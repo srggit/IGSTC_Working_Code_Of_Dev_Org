@@ -2,7 +2,13 @@ angular.module('cp_app').controller('AchievementsIF_Ctrl', function($scope,$root
     $scope.siteURL = siteURL;  
     $scope.achievementDetails = {};
     $rootScope.proposalId;
-
+	
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.getAchievements = function(){
         debugger;
         ApplicantPortal_Contoller.getAchievements($rootScope.candidateId, function(result,event){

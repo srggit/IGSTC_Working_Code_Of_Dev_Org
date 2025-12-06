@@ -19,6 +19,14 @@ angular.module('cp_app').controller('AttachmentsIF_Ctrl', function ($scope, $sce
     $scope.allSixDoc = {};
     $scope.baseUrl = window.location.origin;
     $scope.baseUrl = $scope.baseUrl + '/servlet/servlet.FileDownload?file=';
+
+  // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+
+
     console.log("base url=>" + $scope.baseUrl);
     debugger
     $scope.redirectPageURL = function (URL) {
@@ -283,7 +291,7 @@ angular.module('cp_app').controller('AttachmentsIF_Ctrl', function ($scope, $sce
     }
 
     // ADD FILE SIZE VALIDATION FOR 1 MB ↓
-    var maxFileSize = 1048576; // 1 MB in bytes
+    var maxFileSize = 6000000; // 1 MB in bytes
     
     if (file.size > maxFileSize) {
         swal('Info', 'File size must be less than 1 MB. Your file is ' + (file.size / 1024 / 1024).toFixed(2) + ' MB', 'info');

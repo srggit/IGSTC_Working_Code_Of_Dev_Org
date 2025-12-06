@@ -9,6 +9,13 @@ angular.module('cp_app').controller('FellowshipDetailsIF_Ctrl', function($scope,
     $scope.siteURL = siteURL;
     $scope.objRtf=[{charCount:0,maxCharLimit:250,errorStatus:false}];
     $scope.accountDetails = {}
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
 $scope.callRTF=function(){
   debugger
   //var textValue=$scope.accDetails.Organisation_Posrt__c;

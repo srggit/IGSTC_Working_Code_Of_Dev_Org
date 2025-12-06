@@ -17,9 +17,8 @@ public withOut sharing class ReviewerPortal_Controller {
     public String candidateId {get;set;}
 
       //************************************** Getting Custom Setting Data ***********************************************
-
     @RemoteAction
-    public static void updateReviewerReport(List<String> proposalIds) {
+    public static String updateReviewerReport(List<String> proposalIds) {
         system.debug('proposalIds--'+proposalIds);
         List<Application_Proposal__c> submitted = [ SELECT Id, ReviewerReport_Submitted__c FROM Application_Proposal__c WHERE ReviewerReport_Submitted__c = true ];
 
@@ -35,6 +34,8 @@ public withOut sharing class ReviewerPortal_Controller {
             ap.ReviewerReport_Submitted__c = true;
         }
         update target;
+        String pdfData = CongaHelperToolLightning1.generateReport1(proposalIds[0]);
+        return pdfData;
     }
 
 
@@ -217,19 +218,19 @@ public withOut sharing class ReviewerPortal_Controller {
                 System.debug('The Purposal ID :'+PurposalId);
                 System.debug('The Campaign ID :'+PurpoId.Reviewer__r.Campaign__c);
             }
-         
+        
             List<Application_Proposal__c> PurposalList = [SELECT Id,Name,Title_Of__c,Title_In_German__c,Awarded_Amount__c,Proposal_Stages__c, Campaign__c, Question_Template__r.Yearly_Call__r.Year__c,
-                                                          Thematic_Topic__c,Equipment__c,Acronym__c,Summary__c,KeyWords__c,Criteria_For_Abandoning_The_Project__c,
-                                                          Current_State_Of_The_Art__c,Expected_Deliverables__c,Duration_In_Months_Max_36__c,Innovative_Aspects__c,
-                                                          Application_Date__c,Research_Scholars__c,Necessity_Of_Funding__c,Research_Approach_Objectives__c,
-                                                          Project_Description__c,Reasons_For_And_Benefits_Of_Cooperation__c,Sum_of_Reviewer_ratings__c,
-                                                          (SELECT  Name,AccountName__c,Department,Email,Account_Phone__c,Account_BillingCity__c FROM Contacts__r),
-                                                          (SELECT Name,Title__c,Duration_End_Month__c,Duration_Start_Month__c FROM Work_Package__r),
-                                                          (SELECT Id,ParentId,Name FROM Attachments), (SELECT Name,Budget__c,Funding_Agency__c,Title__c FROM Existing_Grants__r),
-                                                          (SELECT Name FROM Proposal_Thematic_Areas__r), Question_Template__c,
-                                                          (SELECT Id,Name,Stage__c FROM Reviewer_Mapping__r 
-                                                           WHERE Reviewer__r.Login_Hash_Code__c =: hashId) 
-                                                          FROM Application_Proposal__c WHERE ID =: PurposalId];
+                                                        Thematic_Topic__c,Equipment__c,Acronym__c,Summary__c,KeyWords__c,Criteria_For_Abandoning_The_Project__c,
+                                                        Current_State_Of_The_Art__c,Expected_Deliverables__c,Duration_In_Months_Max_36__c,Innovative_Aspects__c,
+                                                        Application_Date__c,Research_Scholars__c,Necessity_Of_Funding__c,Research_Approach_Objectives__c,
+                                                        Project_Description__c,Reasons_For_And_Benefits_Of_Cooperation__c,Sum_of_Reviewer_ratings__c,
+                                                        (SELECT  Name,AccountName__c,Department,Email,Account_Phone__c,Account_BillingCity__c FROM Contacts__r),
+                                                        (SELECT Name,Title__c,Duration_End_Month__c,Duration_Start_Month__c FROM Work_Package__r),
+                                                        (SELECT Id,ParentId,Name FROM Attachments), (SELECT Name,Budget__c,Funding_Agency__c,Title__c FROM Existing_Grants__r),
+                                                        (SELECT Name FROM Proposal_Thematic_Areas__r), Question_Template__c,
+                                                        (SELECT Id,Name,Stage__c FROM Reviewer_Mapping__r 
+                                                        WHERE Reviewer__r.Login_Hash_Code__c =: hashId) 
+                                                        FROM Application_Proposal__c WHERE ID =: PurposalId];
             // String richTextToPlainText = PurposalList[0].Project_Description__c.stripHtmlTags();
             // System.debug('djsjdshdsjdsgd----'+richTextToPlainText);
             if(PurposalList.size()>0){

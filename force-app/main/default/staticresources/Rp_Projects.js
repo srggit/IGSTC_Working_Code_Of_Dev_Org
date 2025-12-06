@@ -523,37 +523,51 @@ angular.module('rp_app').controller('projects_ctrl', function ($scope, $sce, $ro
         $scope.allProgrammes.forEach(p => (p.selected = false));
     };
     //for button download all reviews---------------------------------------------------------------------------------------------------------------------------------------------------------------
-    $scope.downloadDocument = function (proposalIds) {
-    debugger;
+        $scope.downloadDocument = function () {
+        debugger;
 
-    // update records
-    ReviewerPortal_Controller.updateReviewerReport({ proposalIds: proposalIds })
-        .then(function (result) {
-            console.log('Successfully updated');
+        var proposalId = 'a04e1000000FuzZAAS';
 
-            //Generate report
-            return CongaHelperToolLightning.generateReport($scope.reportLink);
-        })
-        .then(function (result) {
+        ReviewerPortal_Controller.updateReviewerReport([proposalId], function(result, event) {
 
-            var fileContent = atob(result);  
-            var array = [];
-
-            for (var i = 0; i < fileContent.length; i++) {
-                array.push(fileContent.charCodeAt(i));
+            if (!event.status) {
+                console.error("Error updating reviewer report:", event.message);
+                return;
             }
 
-            var blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
+            try {
+                var base64Pdf = result;
 
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = "Report.pdf"; // filename
-            link.click();
-        })
-        .catch(function (error) {
-            console.error('Error:', error);
+                if (!base64Pdf) {
+                    console.error("No PDF data returned");
+                    return;
+                }
+
+                var fileContent = atob(base64Pdf);
+                var array = [];
+
+                for (var i = 0; i < fileContent.length; i++) {
+                    array.push(fileContent.charCodeAt(i));
+                }
+
+                var blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'ReviewerReport.pdf';
+                link.click();
+
+            } catch (e) {
+                console.error("Error in PDF generation:", e);
+            }
+
         });
-};
+    };
+
+
+
+
+
+
 
     // ----------------------
     // STATUS FILTER LOGIC

@@ -1,20 +1,21 @@
 angular.module('cp_app').controller('coordinators_ctrl', function ($scope, $rootScope) {
     debugger;
 
-    if (localStorage.getItem('proposalId')) {
-        $rootScope.proposalId = localStorage.getItem('proposalId');
-        $rootScope.proposalId = null;
-        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
-    }
+    // if (localStorage.getItem('proposalId')) {
+    //     $rootScope.proposalId = localStorage.getItem('proposalId');
+    //     $rootScope.proposalId = null;
+    //     console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    // }
     $rootScope.projectId;
     $scope.siteURL = siteURL;
     $scope.countrytype = countrytype;
-    $scope.allCoordinatorDetails = [];
+    $scope.allCoordinatorDetails = []; 
     $scope.signleCoordinatorDetails = {};
     $scope.disableAddButton = false;
     $scope.disableSubmit = false;
     $scope.listOfIds = [];
     $rootScope.proposalId;
+    $rootScope.campaignId;
 
     // $scope.checkEmail = function(email,contId){
     //     debugger;

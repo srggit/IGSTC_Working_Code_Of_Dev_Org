@@ -13,6 +13,12 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
         link.href = '#/' + URL + '';
         link.click();
     }
+    
+     // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
 
     $scope.selectedFile;
 
@@ -36,7 +42,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
 
         $scope.selectedFile = '';
         $('#file_frame').attr('src', '');
-        ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId, function (result, event) {
+        ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId,$rootScope.proposalId,function (result, event) {
             debugger
             console.log('result return onload :: ');
             console.log(result);
@@ -66,7 +72,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
         })
     }
     $scope.getOnload = function () {
-        IndustrialFellowshipController.getContactSingh($rootScope.userHashId, function (result, event) {
+        IndustrialFellowshipController.getContactSingh($rootScope.candidateId, function (result, event) {
             debugger
             console.log(result);
             console.log(event);
@@ -157,7 +163,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
     }
     $scope.submitApplicationDetail = function (saveType, year, month, day) {
         delete $scope.objContact.Attachments
-        IndustrialFellowshipController.submitProposalIF($scope.objContact, saveType, $rootScope.projectId, year, month, day, function (result, event) {
+        IndustrialFellowshipController.submitProposalIF($scope.objContact, saveType, $rootScope.proposalId, year, month, day, function (result, event) {
             console.log(result);
             console.log(event);
             debugger
@@ -240,6 +246,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                     return;
                 } */
                 var fileReader = new FileReader();
+                var maxStringSize = 6000000;
                 fileReader.onloadend = function (e) {
                     attachment = window.btoa(this.result);  //Base 64 encode the file before sending it
                     positionIndex = 0;
@@ -285,6 +292,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
     $scope.uploadAttachment = function (type, userDocId, fileId) {
         debugger;
         var attachmentBody = "";
+        var chunkSize = 750000;
         if (fileId == undefined) {
             fileId = " ";
         }

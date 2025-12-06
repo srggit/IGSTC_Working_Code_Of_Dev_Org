@@ -498,8 +498,15 @@ return proposalRecord;
 
 
             // MAIN LOGIC — CONTACT ALREADY HAS WORKSHOP PROPOSAL
-
-
+	
+			/*
+            List<Applicant_Proposal_Association__c> apaListForPropsals = [
+                SELECT Id, Name, Proposals__c, Contact__c, Proposals__r.RecordTypeId
+                FROM Applicant_Proposal_Association__c
+                WHERE Proposals__c = :proposalId
+                AND Proposals__r.RecordTypeId = :workshopRecordTypeId
+            ];*/
+            
             List<Applicant_Proposal_Association__c> apaListForPropsals = [
                 SELECT Id, Name, Proposals__c, Contact__c, Proposals__r.RecordTypeId
                 FROM Applicant_Proposal_Association__c
@@ -508,6 +515,8 @@ return proposalRecord;
             ];
             System.debug('apaListForPropsals : ' + apaListForPropsals.size());
             System.debug('apaListForPropsals : ' + apaListForPropsals);
+           
+            
 
             Set<Id> contactIdSet = new Set<Id>();
             for(Applicant_Proposal_Association__c apa : apaListForPropsals){
@@ -855,6 +864,7 @@ return proposalRecord;
         return proposalRecord;
     }
     */
+    
     public static Application_Proposal__c getProjectdetils(String proposalId){
         System.debug('-------------- getProjectdetils() ------------------');
 
@@ -1592,6 +1602,8 @@ return proposalRecord;
     }
     */
 
+    // ================================== WORKSHOP METHOD ===================================== //
+    	
     // NEW METHOD WITH PROPOSAL ID
     public static String insertCoordinatorsInformation2(
         List<Account> accList,
@@ -1609,14 +1621,10 @@ return proposalRecord;
                 System.debug('acc::'+acc.BillingState);
                 acc.BillingState = acc.Shipping_State__c;
             }
-
-            Map<String,String> accMap = new Map<String,String>();
-            for(Account accRecord : accList){
-                accMap.put(accRecord.Name,'');
-            }
             upsert accList;
-
+	
             // Populate the ID into accMap
+            Map<String,String> accMap = new Map<String,String>();
             for(Account acc : accList){
                 accMap.put(acc.Name, acc.Id);
             }
@@ -1625,24 +1633,22 @@ return proposalRecord;
             // 2. UPDATE CONTACTS
             // ----------------------------- //
             List<Id> conIds = new List<Id>();
+            
+            for (Contact con : conList) {
+            	
+                conIds.add(con.Id);
 
-            for(Contact conRecord : conList){
-
-                conIds.add(conRecord.Id);
-                System.debug('Contact Id : ' + conRecord.Id);
-
-                if(String.isBlank(conRecord.LastName)){
-                    conRecord.LastName = conRecord.FirstName;
+                if (String.isBlank(con.LastName)) {
+                    con.LastName = con.FirstName;
                 }
-
-                if(accMap.containsKey(conRecord.AccountId)){
-                    conRecord.AccountId = accMap.get(conRecord.AccountId);
+            
+                String tempAccName = con.AccountId; // Receiving Account Name from Angular Js
+            
+                if (accMap.containsKey(tempAccName)) {
+                    con.AccountId = accMap.get(tempAccName);  // Replace with real Account Id
                 }
             }
-
-            upsert accList;
             upsert conList;
-
             System.debug('Updated conList====>'+conList);
 
             // ------------------------------------------- //
@@ -1691,10 +1697,13 @@ return proposalRecord;
                 .getRecordTypeInfosByName()
                 .get('Workshop')
                 .getRecordTypeId();
-
+			
+            Campaign camp = [SELECT Id, Name FROM Campaign WHERE Name = 'Workshop'];
+            
             Application_Proposal__c newProposal = new Application_Proposal__c(
                 Title_Of__c = 'Workshop',
-                RecordTypeId = workshopRecordTypeId
+                RecordTypeId = workshopRecordTypeId,
+                Campaign__c = camp.Id
             );
             insert newProposal;
 
@@ -5239,7 +5248,96 @@ return null;
         }
     }
     
-    
+  //New Method Updated and ADDED By Karthik(For ATTACH Refered Image.)
+  
+     public static List<UserDocumentWrapper> getAllUserDocSignatureNEW(String parentId) {
+        try {
+            List<UserDocumentWrapper> udWrapperList = new List<UserDocumentWrapper>();
+            
+            // Step 1: Fetch all User Documents for the Proposal
+            List<User_Document__c> getUserDoc = [
+                SELECT Name, Id, Status__c, (SELECT Id FROM Attachments)
+                FROM User_Document__c
+                WHERE Proposals__c = :parentId
+            ];
+            if (getUserDoc.isEmpty()) return udWrapperList;
+            
+            // Step 2: Collect all IDs
+            Map<String, User_Document__c> idXUserDoc = new Map<String, User_Document__c>();
+            Set<String> userDocIdSet = new Set<String>();
+            for (User_Document__c userDoc : getUserDoc) {
+                userDocIdSet.add(userDoc.Id);
+                idXUserDoc.put(userDoc.Id, userDoc);
+            }
+            
+            // Step 3: Fetch related ContentDocumentLink records
+            List<ContentDocumentLink> allDocuments = [
+                SELECT Id, LinkedEntityId, ContentDocumentId, Visibility, IsDeleted, ShareType,
+                ContentDocument.Title, ContentDocument.CreatedDate, ContentDocument.FileType
+                FROM ContentDocumentLink
+                WHERE LinkedEntityId IN :userDocIdSet
+            ];
+            
+            // Step 4: Fetch ContentDistribution for each User Document
+            List<ContentDistribution> contentDistrbtn = [
+                SELECT DistributionPublicUrl, PdfDownloadUrl, RelatedRecordId
+                FROM ContentDistribution
+                WHERE RelatedRecordId IN :userDocIdSet
+            ];
+            
+            // Step 5: Map relationships
+            Map<String, ContentDocumentLink> userDocIdXcdLink = new Map<String, ContentDocumentLink>();
+            Map<String, ContentDistribution> userDocIdXcDistrbtn = new Map<String, ContentDistribution>();
+            Set<String> allDocId = new Set<String>();
+            
+            for (ContentDocumentLink doc : allDocuments) {
+                userDocIdXcdLink.put(doc.LinkedEntityId, doc);
+                allDocId.add(doc.ContentDocumentId);
+            }
+            for (ContentDistribution dist : contentDistrbtn) {
+                userDocIdXcDistrbtn.put(dist.RelatedRecordId, dist);
+            }
+            
+            // Step 6: Fetch latest ContentVersion
+            Map<String, ContentVersion> cdocIdXcVersion = new Map<String, ContentVersion>();
+            if (!allDocId.isEmpty()) {
+                for (ContentVersion cv : [
+                    SELECT Id, Title, ContentDocumentId
+                    FROM ContentVersion
+                    WHERE IsLatest = TRUE
+                    AND ContentDocumentId IN :allDocId
+                    ORDER BY CreatedDate DESC
+                ]) {
+                    cdocIdXcVersion.put(cv.ContentDocumentId, cv);
+                }
+            }
+            
+            // Step 7: Build Wrapper List
+            for (String udId : userDocIdSet) {
+                UserDocumentWrapper udWrapper = new UserDocumentWrapper();
+                udWrapper.userDocument = idXUserDoc.get(udId);
+                
+                ContentDocumentLink cdl = userDocIdXcdLink.get(udId);
+                if (cdl != null && cdocIdXcVersion.containsKey(cdl.ContentDocumentId)) {
+                    udWrapper.contentVersion = cdocIdXcVersion.get(cdl.ContentDocumentId);
+                }
+                
+                if (userDocIdXcDistrbtn.containsKey(udId)) {
+                    udWrapper.ContentDistribution = userDocIdXcDistrbtn.get(udId);
+                }
+                
+                udWrapperList.add(udWrapper);
+            }
+            
+            return udWrapperList;
+            
+        } catch (Exception e) {
+            System.debug('Error at line ' + e.getLineNumber() + ' - ' + e.getMessage());
+            return new List<UserDocumentWrapper>();
+        }
+    }
+
+
     
     
     

@@ -613,13 +613,13 @@
         <ng-view>
         </ng-view>
     </div>
-    <div ng-if="isLoading">
+    <!-- <div ng-if="isLoading">
         <div class="modal fade show d-block" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered justify-content-center" role="document">
                 <span class="loader"></span>
             </div>
         </div>
         <div class="modal-backdrop fade show"></div>
-    </div>
+    </div> -->
     </body>
 </apex:page>

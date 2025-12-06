@@ -294,7 +294,7 @@
     <script src="{!$Resource.Parent_Organization}" />
     <script src="{!$Resource.ExistingGrantWISER}" />
     <script src="{!$Resource.IntimationLetter_IF}" />
-    <script src="{!$Resource.IntimationLetter_pecfar}" />
+    <script src="{!$Resource.IntimationLetter_pecfar}"  />
     <script src="{!$Resource.WORKSHOPDocUpload}" />
     <script src="{!$Resource.ConnectPlusAdditionalinfo}" />
     <script src="{!$Resource.WORKSHOPDocUpload2}" />

@@ -81,8 +81,8 @@ angular.module('cp_app').controller('wiserseuc_ctrl', function ($scope,$sce,$roo
         $scope.filesrec = $sce.trustAsResourceUrl(window.location.origin +'/ApplicantDashboard/servlet/servlet.FileDownload?file='+$scope.selectedFile.userDocument.Attachments[0].Id);
         $('#file_frame').attr('src', $scope.filesrec);
     
-        var myModal = new bootstrap.Modal(document.getElementById('filePreview'))Â  Â  Â  Â  
-        myModal.show('slow')Â ;
+        var myModal = new bootstrap.Modal(document.getElementById('filePreview'))
+        myModal.show('slow');
         $scope.$apply();
     
     }

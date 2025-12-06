@@ -32,8 +32,8 @@ public class IndustrialFellowshipModel {
                 (SELECT Id,FirstName,LastName,Email,Addess_same_as__c,MailingCity,MailingState,MailingCountry,MailingPostalCode,MailingStreet,Position_of_the_Mentor__c,Brief_portfolio__c,OtherStreet,OtherCity,OtherState,OtherCountry,OtherPostalCode from Contacts1__r) FROM Contact WHERE Login_Hash_Code__c=: loginHashCode Limit 1];
     }
    //**********************************************************************************/
-   @RemoteAction
-    public static Contact getContactSingh(String loginHashCode){
+//    @RemoteAction
+    public  Contact getContactSingh(String loginHashCode){
         return [SELECT id,FirstName,LastName,Signature_Place__c,Account.Name, Industrial_Fellowship_Type__c,Uploaded__c,Declaration_Sign_Date__c,MailingCity,MailingState,MailingCountry,MailingPostalCode,MailingStreet,Nationality__c,Institute_Name__c,Department,Designation__c,Phone,Email,Homepage_URL__c,Birthdate,Profile_Pic_Attachment_Id__c,Institution_Name__c,(select name,id from Attachments Order By CreatedDate DESC limit 1)
                 From Contact WHERE Login_Hash_Code__c=: loginHashCode Limit 1];
     }

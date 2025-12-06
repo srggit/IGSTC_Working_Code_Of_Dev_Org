@@ -10,7 +10,7 @@
             </script>
         </head>
 
-        <body ng-init="getDependentPicklistValues()">
+        <body ng-init="getDependentPicklistValues()"> 
             <div class="container mt-5">
                 <div class="row mx-5">
                     <div class="col-md-12">

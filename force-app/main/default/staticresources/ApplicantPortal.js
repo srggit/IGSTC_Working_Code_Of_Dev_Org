@@ -301,7 +301,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     $scope.getContactName = function () {
         debugger;
 
-        $scope.isLoading = true;
+        //$scope.isLoading = true;
         ApplicantPortal_Contoller.getContactName($scope.candidateId, function (result, event) {
             if (event.status && result != null) {
                 $rootScope.contactName = result;
@@ -337,6 +337,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                         category: 'applied'
                     }
                 }) : [];
+                
                 if (!$scope.appliedPrograms || !$scope.appliedPrograms.length) {
                     // If no applied programs → keep all campaigns
                     $scope.allPrograms = $scope.allCamapigns.map(item => ({
@@ -393,6 +394,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     $scope.redirectToForm = function (val) {
         debugger;
         if (val.category == 'applied' && (val.proposalId != undefined || val.proposalId != '')) {
+            localStorage.setItem('proposalId', val.proposalId);
             const proposalData = $scope.proposalWrapperList.find(item => item.Id == val.proposalId);
             $rootScope.proposalId = proposalData.Id;
             if (proposalData.stage == "1st Stage") {

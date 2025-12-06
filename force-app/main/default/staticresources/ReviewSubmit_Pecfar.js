@@ -5,7 +5,7 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
     $scope.objDocFirst={};
     $scope.objDocSecond={};
     debugger
-    if($rootScope.isPrimaryContact!="false"){
+    if($rootScope.isPrimaryContact!="false") { 
         $('#btnSubmit').show();
     }
      // Fetching the proposalId from Local Storage
@@ -14,7 +14,9 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
         console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
     }
     
+    
     debugger
+    /*
     $scope.getProjectdetils = function(){
         debugger;        
         ApplicantPortal_Contoller.getProjectdetils($rootScope.candidateId,function(result,event){
@@ -26,10 +28,10 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
                 location.reload();
             }
         },
-                                                  {escape: true}
-                                                 )
+        {escape: true}
+      )
     }
-
+	*/
     
     $scope.getPECFARProposalDetails=function(){
         ApplicantPortal_Contoller.getPECFARProposalDetails($rootScope.proposalId, function(result,event){
@@ -48,7 +50,7 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
         });
     }
     $scope.getPECFARProposalDetails();
-    $scope.getProjectdetils();
+   // $scope.getProjectdetils();
     $scope.saveDetails = function(){
         debugger;
         ApplicantPortal_Contoller.saveAsDraftPecfar($scope.proposalDetails, function(result,event){

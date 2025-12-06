@@ -4,6 +4,13 @@ angular.module('cp_app').controller('EmploymentDetails_Ctrl', function($scope,$r
   $scope.showFellCurr=false;
   $scope.showIGSTCProg=false;
    $rootScope.proposalId;
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
   $scope.objRtf=[{charCount:0,maxCharLimit:500,errorStatus:false}];
   $scope.available_followship=$rootScope.available_followship;
           $scope.associated_with_igstc=$rootScope.associated_with_igstc;

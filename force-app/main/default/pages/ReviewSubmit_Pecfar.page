@@ -319,12 +319,13 @@
                         <div class="col-md-12 d-flex justify-content-center my-4">
                         <a href="#/PrivacyPolicyIGSTC" target="_blank">Click to View Privacy Policy</a>
                     </div>
+                                        
                     </div>
 
                     <div class="row" ng-if="!proposalStage">
                         <div class="col-md-12 d-flex justify-content-center my-4">
                             <button type="button" class="btn btn-success float-end me-4" ng-click="redirectPageURL('Declaration_Pecfar')">Previous</button>
-                            <button type="button" class="btn btn-primary me-3" ng-click="saveDetails()">Save As Draft..............................</button>
+                            <button type="button" class="btn btn-primary me-3" ng-click="saveDetails()">Save As Draft</button>
                             <button type="button" class="btn btn-success float-end me-4" ng-click="saveFinal()">Submit</button>
                         </div>
                     </div>

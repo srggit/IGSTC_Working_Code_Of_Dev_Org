@@ -401,6 +401,8 @@ public without sharing class WorkshopController {
         return Proposal_Controller.getPatnerDetails2(applicantHashCode);
     }
     
+    
+    // ======================================== WORKSHOP METHOD =============================================== //
     @RemoteAction
     public static  list<account> getPatnerDetails3(String applicantHashCode, String proposalId){
         return Proposal_Controller.getPatnerDetails3(applicantHashCode, proposalId);
@@ -638,6 +640,7 @@ public without sharing class WorkshopController {
         return Proposal_Controller.finalSubmit(proposalDetails);
     }
     //************************************** Industraial Fellowship **********************************************************
+    /*
     @RemoteAction
     public static String updateIndusrianFellowshipBasicDet(String ContactId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwardYear,Integer phdAwardMonth,Integer phdAwardDay,Integer phdThesisYear,Integer phdThesisMonth,Integer phdThesisDay,Application_Proposal__c prop){
         IndustrialFellowshipHelper instanceIFH=new IndustrialFellowshipHelper();
@@ -653,6 +656,7 @@ public without sharing class WorkshopController {
         IndustrialFellowshipModel instanceIFM=new IndustrialFellowshipModel();
         return instanceIFM.getCampaignEndDate(campaignName);
     }
+	*/
     //************************************** WORKSHOP **********************************************************
     
     //************************************** Coordinators Page **********************************************************
@@ -1134,6 +1138,7 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
         return Proposal_Controller.getAllUserDoc(parentId);
     }
     
+    // ================================== WORKSHOP METHOD ===================================== //
     @RemoteAction
     public static String insertCoordinatorsInformation2(List<Account> accList,List<Contact> conList, String proposalId){
         return Proposal_Controller.insertCoordinatorsInformation2(accList, conList, proposalId);

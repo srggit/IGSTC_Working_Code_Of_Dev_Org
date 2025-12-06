@@ -45,9 +45,11 @@ Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwa
 }
 
 	*/
-    
+
+   
    public String updateIndusrianFellowshipBasicDet(
-    String contactId,
+    String campaignId,
+    String candidateId,
     Contact InstanceCon,
     Integer birthDay,
     Integer birthMonth,
@@ -91,10 +93,11 @@ Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwa
 
 
         prop.RecordTypeId = Utility.getProposalRecordType('Industrial Fellowship');
+        prop.Campaign__c= campaignId;
         upsert prop;
 
         
-        InstanceCon.Login_Hash_Code__c = contactId;
+        InstanceCon.Login_Hash_Code__c = candidateId;
         update InstanceCon;
 
 
@@ -126,12 +129,10 @@ Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwa
         system.debug('exception: ' + e.getMessage() + ' line no. ' + e.getLineNumber());
         return 'exception: ' + e.getMessage() + ' line no. ' + e.getLineNumber();
     }
-}  
+}   
     
  
-
     
-
 
     @RemoteAction
     public static Contact fetchProjectId(String candidateId){
@@ -589,7 +590,7 @@ public String saveFellowshipDetails(String loginHashCode,Contact[] con,Contact p
     return e.getMessage();
     }
 }
-public String submitProposalIF(Contact con,String saveType,String ProposalId,integer year,integer month,integer day){
+public String submitProposalIF(Contact con,String saveType,String proposalId,integer year,integer month,integer day){
     try{            
     if(saveType=='s'){
        if(year!=0){
@@ -597,7 +598,7 @@ public String submitProposalIF(Contact con,String saveType,String ProposalId,int
             con.Declaration_Sign_Date__c=newDate;
         }
         update con;
-        Application_Proposal__c prop=new Application_Proposal__c(Id=ProposalId);
+        Application_Proposal__c prop=new Application_Proposal__c(Id=proposalId);
         prop.Proposal_Stages__c='Submitted';
         prop.Submitted__c = true;
         update prop;

@@ -8,7 +8,13 @@ angular.module('cp_app').controller('PersonalInformationIF_Ctrl', function($scop
     // var index = $scope.countryIndia.indexOf('Germany');
     // $scope.countryIndia.splice(index);
     $scope.baseURL = window.location.origin;
-
+	
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.getDependentPicklistValues = function(){
       debugger;
       $scope.indianStates = [];

@@ -25,6 +25,57 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
     $scope.PDIF_DOB;
     $scope.PDIF_phddate;
     $scope.PDIF_phddate_onlydate;
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
+    // Method to validate If Yearly call condions added by Rukasar:
+ 
+    $scope.getActiveCampaignData = function() {
+    debugger;
+    ApplicantPortal_Contoller.getActiveCampaignIf('Industrial Fellowships', function(result, event) {
+        console.log('Direct Test Result:', result);
+        console.log('Direct Test Event:', event);
+        
+        if (event.status && result != null && result.length > 0) {
+            $scope.activeCampaign = result;
+            $scope.campaigntype = result[0].Id;
+            $rootScope.campaignId = result[0].Id;
+            
+      
+            if (result[0].Yearly_Call__r) {
+                $scope.PIEF_age_limit = activeCampaign[0].Yearly_Call__r.PIEF_Age_Limit__c;
+                $scope.PDIF_age_limit = activeCampaign[0].Yearly_Call__r.PDIF_Age_Limit__c;
+                $scope.PDIF_phd_limit = activeCampaign[0].Yearly_Call__r.PDIF_PhD_time__c;
+                $scope.PIEF_DOB = activeCampaign[0].Yearly_Call__r.Date_of_Birth_PIEF__c;
+                $scope.PIEF_phddate = activeCampaign[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
+                $scope.PIEF_phddate_onlydate = activeCampaign[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
+                $scope.PDIF_DOB = activeCampaign[0].Yearly_Call__r.Date_of_Birth_PDIF__c;
+                $scope.PDIF_phddate = activeCampaign[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+                $scope.PDIF_phddate_onlydate = activeCampaign[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+                $scope.PIEF_PhD_time = activeCampaign[0].Yearly_Call__r.PIEF_PhD_time__c;
+  
+            } else {
+                console.error('Yearly Call relationship data not found');
+               
+            }
+            console.log('Campaign Data Loaded:', {
+                name: activeCampaign[0].Name,
+                PIEF_Age_Limit: $scope.PIEF_Age_Limit,
+                PDIF_Age_Limit: $scope.PDIF_Age_Limit
+            });
+            delete $scope.activeCampaign[0].Yearly_Call__r;
+            $scope.$apply();
+        } else {
+            console.warn('No active campaign found or error occurred');
+         
+        }
+    });
+}
+    
     $scope.getCampaignEndDate=function(){
       ApplicantPortal_Contoller.getCampaignEndDate('Industrial Fellowships',function (result, event) {
         debugger
@@ -39,6 +90,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
       });
     }
     $scope.getCampaignEndDate();
+    
     $scope.getContactDet=function(){
         ApplicantPortal_Contoller.getContactDetails($rootScope.candidateId, function (result, event) {   // Chanded userId to candidateId
           debugger
@@ -47,17 +99,18 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
                     delete $scope.objContact.Publications_Patents__r;
                     delete $scope.objContact.Education_Details__r;
                 
-                $scope.PIEF_age_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PIEF_Age_Limit__c;
-                $scope.PDIF_age_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PDIF_Age_Limit__c;
-                $scope.PDIF_phd_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PDIF_PhD_time__c;
-                $scope.PIEF_phd_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PIEF_PhD_time__c;
+               // $scope.PIEF_age_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PIEF_Age_Limit__c;
+              //  $scope.PDIF_age_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PDIF_Age_Limit__c;
+             //   $scope.PDIF_phd_limit = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PDIF_PhD_time__c;
+             
                 
-                $scope.PIEF_DOB = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.Date_of_Birth_PIEF__c);
-                $scope.PIEF_phddate = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enrollment_Date_PIEF__c);
-                $scope.PIEF_phddate_onlydate = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
-                $scope.PDIF_DOB = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.Date_of_Birth_PDIF__c);
-                $scope.PDIF_phddate = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c);
-                $scope.PDIF_phddate_onlydate = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+             //   $scope.PIEF_DOB = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.Date_of_Birth_PIEF__c);
+             //   $scope.PIEF_phddate = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enrollment_Date_PIEF__c);
+            //    $scope.PIEF_phddate_onlydate = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
+            //    $scope.PDIF_DOB = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.Date_of_Birth_PDIF__c);
+              //  $scope.PDIF_phddate = new Date($scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c);
+            //    $scope.PDIF_phddate_onlydate = $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r.yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+                
                 //$scope.objContact.Industrial_Fellowship_Type__c='PIEF';
                     if(result.Applicant_Proposal_Associations__r[0].Proposals__r!=undefined && result.Applicant_Proposal_Associations__r[0].Proposals__r!=''){
                       $scope.objProposal=result.Applicant_Proposal_Associations__r[0].Proposals__r;
@@ -89,6 +142,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             { escape: true }
           );
     }
+    
     $scope.getContactDet();
     $scope.validateDate=function(controlId){
       debugger
@@ -146,6 +200,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
           }
         }
     }
+    
     
 
 
@@ -371,7 +426,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
         }
         delete $scope.objContact.Attachments;
     $scope.objProposal.Campaign__c = $rootScope.campaignId;
-    ApplicantPortal_Contoller.updateIndusrianFellowshipBasicDet($rootScope.candidateId,$scope.objContact, // Changed userID to candidateId
+    ApplicantPortal_Contoller.updateIndusrianFellowshipBasicDet($rootScope.campaignId,$rootScope.candidateId,$scope.objContact, 
           birthDay,birthMonth,birthYear,
           phdEnrollYear,phdEnrollMonth,phdEnrollDay,
           phdAwardYear,phdAwardMonth,phdAwardDay,
@@ -381,7 +436,11 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             debugger
             if (event.status) {
                if(result!=null){
-                 $rootScope.proposalId=result;
+             // Saving the ProposalId in Local Storage
+	localStorage.setItem('proposalId', result);
+              
+                   
+                   
              }
               swal({
                 title: "Basic Details",

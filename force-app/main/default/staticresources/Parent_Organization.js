@@ -22,6 +22,13 @@ angular.module('cp_app').controller('POrg_ctrl', function($scope,$rootScope) {
         }
         )  
     }
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.getDependentPicklistValues();
     $scope.readCharacter=function(event,index){
         debugger

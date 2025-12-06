@@ -95,8 +95,8 @@ angular.module('cp_app').controller('meeting_ctrl', function ($scope, $sce, $roo
         // ApplicantPortal_Contoller.getAllUserDoc($rootScope.proposalId, function (result, event) {
         WorkshopController.getAllUserDoc($rootScope.proposalId, function (result, event) {
             debugger
-            console.log('result return onload :: ');
-            console.log(result);
+            // console.log('result return onload :: ');
+            // console.log(result);
             if (event.status) {
                 $scope.allDocs = result;
                 for (var i = 0; i < $scope.allDocs.length; i++) {

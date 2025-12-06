@@ -213,9 +213,9 @@ public static String saveApplicantPortalSingh(String loginHashCode,Contact con,A
         return instanceIFH.deleteEducationLineItem(lineItemId);
     }
     @RemoteAction
-    public static String submitProposalIF(Contact con,String saveType,String ProposalId,integer year,integer month,integer day) {
+    public static String submitProposalIF(Contact con,String saveType,String proposalId,integer year,integer month,integer day) {
         IndustrialFellowshipHelper instanceIFH = new IndustrialFellowshipHelper();
-        return instanceIFH.submitProposalIF(con,saveType,ProposalId,year,month,day);
+        return instanceIFH.submitProposalIF(con,saveType,proposalId,year,month,day);
     }
     @RemoteAction
     public static String UploadAttachments(String attachmentBody, String attachmentName, string cvId, String udId) {
@@ -314,9 +314,9 @@ public static String saveApplicantPortalSingh(String loginHashCode,Contact con,A
         return instanceIFH.UploadDocuments(attachmentBody,attachmentName,cvId,udId,docName,contactId,proposalId,createTask,taskSubject);
     }
     @RemoteAction
-    public static String updateIndusrianFellowshipBasicDet(String ContactId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwardYear,Integer phdAwardMonth,Integer phdAwardDay,Integer phdThesisYear,Integer phdThesisMonth,Integer phdThesisDay,Application_Proposal__c prop){
+    public static String updateIndusrianFellowshipBasicDet(String campaignId, String candidateId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwardYear,Integer phdAwardMonth,Integer phdAwardDay,Integer phdThesisYear,Integer phdThesisMonth,Integer phdThesisDay,Application_Proposal__c prop){
         IndustrialFellowshipHelper instanceIFH=new IndustrialFellowshipHelper();
-        return instanceIFH.updateIndusrianFellowshipBasicDet(ContactId,InstanceCon,birthDay,birthMonth,birthYear,phdEnrollYear,phdEnrollMonth,phdEnrollDay,phdAwardYear,phdAwardMonth,phdAwardDay,phdThesisYear,phdThesisMonth,phdThesisDay,prop);
+        return instanceIFH.updateIndusrianFellowshipBasicDet(campaignId, candidateId,InstanceCon,birthDay,birthMonth,birthYear,phdEnrollYear,phdEnrollMonth,phdEnrollDay,phdAwardYear,phdAwardMonth,phdAwardDay,phdThesisYear,phdThesisMonth,phdThesisDay,prop);
     }
     @RemoteAction
     public static String reviewAppDocGen(string proID){

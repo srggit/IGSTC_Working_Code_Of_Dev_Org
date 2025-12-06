@@ -11,10 +11,16 @@ angular.module('cp_app').controller('ProjectDetailIF_Ctrl', function ($scope, $s
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 500, errorStatus: false });
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 2000, errorStatus: false });
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 400, errorStatus: false });
-
+	
+  // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
   $scope.getProjectdetils = function () {
     debugger;
-    ApplicantPortal_Contoller.getAllUserDocSignature($rootScope.candidateId, function (result, event) {
+    ApplicantPortal_Contoller.getAllUserDocSignatureNEW($rootScope.proposalId, function (result, event) {
       debugger
       console.log('result return onload :: ');
       console.log(result);

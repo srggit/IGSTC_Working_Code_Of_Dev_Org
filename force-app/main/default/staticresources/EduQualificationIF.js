@@ -9,6 +9,13 @@ angular.module('cp_app').controller('EduQualificationIF_Ctrl', function($scope,$
     $rootScope.percentCGPA;
     debugger
     $scope.thesispick=$rootScope.natureOfThesisWork;
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.phdpick=$rootScope.natureOfPhDWork;
     $scope.getEduQualification=function(){
         IndustrialFellowshipController.getEduQualification($rootScope.candidateId, function (result, event) {

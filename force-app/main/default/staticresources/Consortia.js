@@ -587,8 +587,14 @@ $scope.getProjectdetils();
 
       //  .splice(index,1);
         $scope.$apply();
-        if(accountid!='' && accountid!=undefined){ $scope.deleteAccount(index,accountid);}                  
+        if(accountid!='' && accountid!=undefined){ 
+            $scope.deleteAccount(index,accountid); 
+        }else{
+            $scope.allCoordinatorDetails.splice(index,1);
+        }
+        
     } else {
+        
         return;
     }
 });

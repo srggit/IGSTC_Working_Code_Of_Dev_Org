@@ -254,7 +254,7 @@
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
 
                                 <div class="input-group input-group-lg">
-                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="file_{{acceptance.userDocument.Name}}" class="form-control "
+                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{acceptance.userDocument.Name}}" class="form-control "
                                     />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                      <button class="btn btn-success" ng-click="uploadFile(acceptance.userDocument.Name,acceptance.userDocument.Id,'','1048576','1048576')"
@@ -280,7 +280,7 @@
                             <label class="font-if">Recommendation letter from Mentor at parent organisation.</label>
                             <div class="col-md-9 mt-5" style="padding-left: 0px !important; padding-right: 0px !important">
                                 <div class="input-group input-group-lg">
-                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="file_{{recommendation.userDocument.Name}}" class="form-control "
+                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{recommendation.userDocument.Name}}" class="form-control "
                                     />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button class="btn btn-success" ng-click="uploadFile(recommendation.userDocument.Name,recommendation.userDocument.Id,'','1048576','1048576')"
@@ -308,7 +308,7 @@
                             </label>
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
                                 <div class="input-group input-group-lg">
-                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="file_{{permission.userDocument.Name}}" class="form-control "
+                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{permission.userDocument.Name}}" class="form-control "
                                     />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button class="btn btn-success" ng-click="uploadFile(permission.userDocument.Name,permission.userDocument.Id,'','1048576','1048576')"
@@ -329,7 +329,7 @@
                             <label class="font-if mb-2">*** Two (2) letters of reference, if applicant currently not having institutional affiliation.</label>
                             <div class="col-md-9 mt-5" style="padding-left: 0px !important; padding-right: 0px !important">
                                 <div class="input-group input-group-lg">
-                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="file_{{reference.userDocument.Name}}" class="form-control " />
+                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="{{reference.userDocument.Name}}" class="form-control " />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button class="btn btn-success" ng-click="uploadFile(reference.userDocument.Name,reference.userDocument.Id,'','1048576','1048576')"
                                             type="button">Upload</button>
@@ -352,7 +352,7 @@
                             <label class="font-if mb-2">Proof of educational and employment details in a single PDF in reverse chronological order.</label>
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
                                 <div class="input-group input-group-lg">
-                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="file_{{proof.userDocument.Name}}" class="form-control " />
+                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="{{proof.userDocument.Name}}" class="form-control " />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button class="btn btn-success" ng-click="uploadFile(proof.userDocument.Name,proof.userDocument.Id,'','1048576','1048576')"
                                             type="button">Upload</button>
@@ -374,7 +374,7 @@
                             </label>
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
                                 <div class="input-group input-group-lg">
-                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="file_{{currentPassport.userDocument.Name}}" class="form-control "
+                                    <input type="file" ng-disabled="proposalStage" accept=".pdf" id="{{currentPassport.userDocument.Name}}" class="form-control "
                                     />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button class="btn btn-success" ng-click="uploadFile(currentPassport.userDocument.Name,currentPassport.userDocument.Id,'','1048576','1048576')"

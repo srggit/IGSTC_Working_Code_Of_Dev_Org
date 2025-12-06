@@ -258,12 +258,32 @@ public without sharing class ApplicantPortal_Contoller {
         }
     }
     
-    //campaign method added by rukasar:
+    //campaign method for Pecfar added by rukasar:
 @RemoteAction
 public static List<Campaign> getActiveCampaign(string campaign_name) {
     try {
         List<Campaign> campaigns = [SELECT Id, Name,Yearly_Call__r.Pecfar_age_limit__c,Yearly_Call__r.Date_of_Birth_PECFAR__c FROM Campaign WHERE Yearly_Call__c !=null And  IsActive = true and name= :campaign_name                                   
                                  ];
+        
+        if (!campaigns.isEmpty()) {
+            return campaigns;
+        }
+        return null;
+    } catch (Exception e) {
+        System.debug('Error: ' + e.getMessage());
+        return null;
+    }
+}
+    
+    // Campaign method for If added by rukasar:
+    @RemoteAction
+public static List<Campaign> getActiveCampaignIf(string campaign_name) {
+    try {
+        List<Campaign> campaigns = [SELECT Id, Name, Yearly_Call__r.PIEF_Age_Limit__c,Yearly_Call__r.PIEF_PhD_time__c,
+                                    Yearly_Call__r.Date_of_Birth_PIEF__c,Yearly_Call__r.PhD_Enrollment_Date_PIEF__c,
+                                    Yearly_Call__r.PDIF_Age_Limit__c,Yearly_Call__r.PDIF_PhD_time__c,
+                                    Yearly_Call__r.Date_of_Birth_PDIF__c,Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c 
+                                    FROM Campaign WHERE Yearly_Call__c != null AND IsActive = true AND Name = :campaign_name];
         
         if (!campaigns.isEmpty()) {
             return campaigns;
@@ -654,9 +674,9 @@ public static List<Campaign> getActiveCampaign(string campaign_name) {
     }
     //************************************** Industraial Fellowship **********************************************************
     @RemoteAction
-    public static String updateIndusrianFellowshipBasicDet(String ContactId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwardYear,Integer phdAwardMonth,Integer phdAwardDay,Integer phdThesisYear,Integer phdThesisMonth,Integer phdThesisDay,Application_Proposal__c prop){
+    public static String updateIndusrianFellowshipBasicDet(String campaignId,String candidateId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer phdEnrollYear,Integer phdEnrollMonth,Integer phdEnrollDay,Integer phdAwardYear,Integer phdAwardMonth,Integer phdAwardDay,Integer phdThesisYear,Integer phdThesisMonth,Integer phdThesisDay,Application_Proposal__c prop){
         IndustrialFellowshipHelper instanceIFH=new IndustrialFellowshipHelper();
-        return instanceIFH.updateIndusrianFellowshipBasicDet(ContactId,InstanceCon,birthDay,birthMonth,birthYear,phdEnrollYear,phdEnrollMonth,phdEnrollDay,phdAwardYear,phdAwardMonth,phdAwardDay,phdThesisYear,phdThesisMonth,phdThesisDay,prop);
+        return instanceIFH.updateIndusrianFellowshipBasicDet(campaignId,candidateId,InstanceCon,birthDay,birthMonth,birthYear,phdEnrollYear,phdEnrollMonth,phdEnrollDay,phdAwardYear,phdAwardMonth,phdAwardDay,phdThesisYear,phdThesisMonth,phdThesisDay,prop);
     }
     @RemoteAction
     public static String updatePersonalInfoIF(String ContactId,Contact InstanceCon,Integer birthDay,Integer birthMonth,Integer birthYear,Integer pasExYear,Integer pasExMonth,Integer pasExDay){
@@ -1148,6 +1168,11 @@ public static List<Campaign> getActiveCampaign(string campaign_name) {
     @RemoteAction
     public static list<Proposal_Controller.UserDocumentWrapper> getAllUserDocSignature(string parentId) {
         return Proposal_Controller.getAllUserDocSignature(parentId);
+    }
+    
+    @RemoteAction
+    public static list<Proposal_Controller.UserDocumentWrapper> getAllUserDocSignatureNEW(string parentId) {
+        return Proposal_Controller.getAllUserDocSignatureNEW(parentId);
     }
     
     @RemoteAction
@@ -1796,8 +1821,9 @@ userDocc.Id = udId;
     public static Contact getCVDetailsForWiserApplicant(string candidateId){
         return Proposal_Controller.getCVDetailsForWiserApplicant(candidateId);
     }
+ /*   
     @RemoteAction
-    public static WrapperProposalDet getPECFARProposalDetails(string ProposalId){
+    public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
         List<Contact> listContact=[SELECT ID,Name,proposals__r.Tentative_plans_for_networking__c,proposals__r.Basis_for_choosing_the_pairing_fellow__c,proposals__r.Expected_Deliverables__c,
         proposals__r.Tentative_Start_Date__c,proposals__r.Research_Approach_Objectives__c,proposals__r.Tentative_End_Date__c,proposals__r.Availing_any_other_fellowship_currently__c,proposals__r.Paired_Applicant_associated_with_IGSTC__c,
         proposals__r.Availing_Other_Fellowship_Detail__c,proposals__r.Applicant_associated_with_IGSTC_Detail__c,FirstName,LastName,MailingStreet,Profile_Pic_Attachment_Id__c,Gender__c,MobilePhone,Designation__c,Institution_Name__c,Nationality__c,Institution__c,Email,Birthdate,Planned_research_activities_of_the_visit__c,Expected_outcomes__c,Basis_for_choosing_your_paired_member__c,Tentative_Start_Date__c,Tentative_End_Date__c,Availing_Fellowship__c,Associated_with_IGSTC__c,Give_Fellowship_Details__c,Give_Associated_Details__c,Account.Name,Account.BillingStreet,Account.BillingCity,Account.BillingCountry,Account.BillingState,
@@ -1809,15 +1835,85 @@ userDocc.Id = udId;
         for(contact con:listContact){
             listConatctId.add(con.Id);
         }
-        List<Achievement__c> listAchievement=[SELECT id,Awards_Honours__c,List_of_Publications__c,List_of_Patents_filed__c,Book_Chapters__c,Any_other_achievements__c FROM Achievement__c where contact__r.Id IN:listConatctId];
+        
+       List<Achievement__c> listAchievement=[SELECT id,Awards_Honours__c,List_of_Publications__c,List_of_Patents_filed__c,Book_Chapters__c,Any_other_achievements__c FROM Achievement__c where contact__r.Id IN:listConatctId];
         WrapperProposalDet instanceWrapper=new WrapperProposalDet();
         instanceWrapper.Lcon=listContact;
         instanceWrapper.achievements=listAchievement;
         return instanceWrapper;
     }
+    */
+    // New method to bind Proposal on Applicant Proposal Association.. By Rukasar
+    @RemoteAction
+public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
+    // Step 1: Get contact IDs through junction
+    List<Id> contactIds = new List<Id>();
+    for(Applicant_Proposal_Association__c assoc : [
+        SELECT Contact__c 
+        FROM Applicant_Proposal_Association__c 
+        WHERE Proposals__c = :proposalId
+    ]) {
+        if(assoc.Contact__c != null) {
+            contactIds.add(assoc.Contact__c);
+        }
+    }
+    if(contactIds.isEmpty()) {
+        WrapperProposalDet emptyWrapper = new WrapperProposalDet();
+        emptyWrapper.Lcon = new List<Contact>();
+        emptyWrapper.achievements = new List<Achievement__c>();
+        return emptyWrapper;
+    }
+    // Step 2: Query contacts WITHOUT proposals__r fields - only core contact fields + subqueries
+    List<Contact> listContact = [
+        SELECT ID, Name, FirstName, LastName, MailingStreet, Profile_Pic_Attachment_Id__c,
+               Gender__c, MobilePhone, Designation__c, Institution_Name__c,
+               Nationality__c, Institution__c, Email, Birthdate,
+               Planned_research_activities_of_the_visit__c, Expected_outcomes__c,
+               Basis_for_choosing_your_paired_member__c, Tentative_Start_Date__c,
+               Tentative_End_Date__c, Availing_Fellowship__c, Associated_with_IGSTC__c,
+               Give_Fellowship_Details__c, Give_Associated_Details__c,
+               Account.Name, Account.BillingStreet, Account.BillingCity,
+               Account.BillingCountry, Account.BillingState, Account.BillingPostalCode,
+               Account.Email__c, Account.Homepage_URL__c, Account.Organisation_Posrt__c,
+               Uploaded__c,
+               (SELECT name, id FROM Attachments ORDER BY CreatedDate DESC LIMIT 1),
+               (SELECT Name, Start_Year__c, End_Year__c, End_Date__c, Start_Date__c,
+                       Nature_of_PhD_Work__c, Nature_of_Thesis_Work__c,
+                       Institution_Name__c, Area_of_specialization__c,
+                       Percentage__c, Percentage_cgpa__c, Thesis_Supervisor__c,
+                       Thesis_Type__c, Recordtype.Name, RecordTypeId, Title_Thesis__c 
+                FROM Education_Details__r) 
+        FROM Contact 
+        WHERE Id IN :contactIds
+    ];
+    // Step 3: Query Proposal fields through junction for this proposal
+    Application_Proposal__c proposal = [
+        SELECT Tentative_plans_for_networking__c, Basis_for_choosing_the_pairing_fellow__c,
+               Expected_Deliverables__c, Tentative_Start_Date__c, Research_Approach_Objectives__c,
+               Tentative_End_Date__c, Availing_any_other_fellowship_currently__c,
+               Paired_Applicant_associated_with_IGSTC__c, Availing_Other_Fellowship_Detail__c,
+               Applicant_associated_with_IGSTC_Detail__c
+        FROM Application_Proposal__c 
+        WHERE Id = :proposalId
+    ];
+    // Step 4: Get achievements
+    List<Achievement__c> listAchievement = [
+        SELECT id, Awards_Honours__c, List_of_Publications__c,
+               List_of_Patents_filed__c, Book_Chapters__c, Any_other_achievements__c 
+        FROM Achievement__c 
+        WHERE Contact__c IN :contactIds
+    ];
+    WrapperProposalDet instanceWrapper = new WrapperProposalDet();
+    instanceWrapper.Lcon = listContact;
+    instanceWrapper.proposal = proposal;  
+    instanceWrapper.achievements = listAchievement;
+    return instanceWrapper;
+}
+
     public class WrapperProposalDet {
         List<Contact> Lcon;
         List<Achievement__c> achievements;
+        Application_Proposal__c proposal;
     }
     
     @RemoteAction
