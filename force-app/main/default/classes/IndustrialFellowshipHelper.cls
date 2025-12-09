@@ -778,15 +778,17 @@ public String saveAccountBankDetails(Bank_Details__c instanceBankDetails){
     }
 }
 
+ // Modified By Harsh
 public String saveProjectDetailsSing(String loginHashCode,Contact pContact,Application_Proposal__c prop,String AccountId,String recordType){
     try {
         prop.RecordTypeId = Utility.getProposalRecordType('SING');
         upsert prop;
-        pContact.Proposals__c = prop.Id;
-        update pContact;
-        Account accountUpdate=[SELECT ID,Name FROM Account WHERE Id=:AccountId limit 1];
-        accountUpdate.Proposals__c=prop.Id;
-        update accountUpdate;
+        // Modified By Harsh
+        // pContact.Proposals__c = prop.Id;
+        // update pContact;
+        // Account accountUpdate=[SELECT ID,Name FROM Account WHERE Id=:AccountId limit 1];
+        // accountUpdate.Proposals__c=prop.Id;
+        // update accountUpdate;
         return prop.Id;
     } catch (DmlException e) {
         //system.debug('exception: '+e.getMessage()+' line no. '+e.getLineNumber()+'');

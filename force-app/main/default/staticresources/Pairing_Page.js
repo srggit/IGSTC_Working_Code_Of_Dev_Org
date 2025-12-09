@@ -13,6 +13,7 @@ angular.module('cp_app').controller('pairing_ctrl', function($scope,$rootScope){
     $scope.Pecfar_age_limit;
     $scope.Pecfar_DOB;
     $scope.activeCampaign = null;
+    $scope.yearlyCall;
     // $scope.birthday;
     
     
@@ -79,6 +80,7 @@ angular.module('cp_app').controller('pairing_ctrl', function($scope,$rootScope){
                 $scope.activeCampaign = result;
                 $scope.campaigntype = result[0].Id;
                 $rootScope.campaignId = result[0].Id;
+                $scope.yearlyCall=result[0].Yearly_Call__r.Id;
                 $scope.Pecfar_age_limit = result[0].Yearly_Call__r.Pecfar_age_limit__c;
                 $scope.Pecfar_DOB = result[0].Yearly_Call__r.Date_of_Birth_PECFAR__c;
                 
@@ -526,7 +528,7 @@ angular.module('cp_app').controller('pairing_ctrl', function($scope,$rootScope){
         // }
 
         ApplicantPortal_Contoller.insertPairingDetails
-        ($scope.conList,$rootScope.campaignId, function(result, event){
+        ($scope.conList,$rootScope.campaignId,$scope.yearlyCall, function(result, event){
             if(event.status){
              debugger;
                 // Saving the ProposalId in Local Storage

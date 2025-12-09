@@ -1,4 +1,5 @@
 angular.module('cp_app').controller('home_ctrl', function($scope,$rootScope,$window) {
+    debugger;
     console.log($rootScope);
     $rootScope.activeTab = 0;
     $rootScope.userDetails;
@@ -10,10 +11,14 @@ angular.module('cp_app').controller('home_ctrl', function($scope,$rootScope,$win
     $scope.showSing=false;
     $scope.dealLinedate;
     $scope.currentCampaignName="INDUSTRIAL FELLOWSHIPS";
-    //     var siteURL2=window.location.href
-    // var sitecampaign=siteURL2.split('&campaign=')[1];
-    // sitecampaign=sitecampaign.split('#/')[0];
-    // $scope.CampainURL=sitecampaign;
+    var siteURL2=window.location.href
+    console.log('siteURL2 : ', siteURL2);
+    var sitecampaign=siteURL2.split('&campaign=')[1];
+    sitecampaign=sitecampaign.split('#/')[0];
+    
+    
+    $scope.CampainURL=sitecampaign;
+    $rootScope.CampainURL = sitecampaign;
     switch($rootScope.CampainURL.toUpperCase()){
         case 'IF':
             $scope.showIf=true;
@@ -65,6 +70,7 @@ angular.module('cp_app').controller('home_ctrl', function($scope,$rootScope,$win
             }
         });
     }
+    /*
     $scope.getCampaignTheme=function(){
         ApplicantPortal_Contoller.fetchCampaignsPrograms(function(result, event){
             debugger;
@@ -90,6 +96,7 @@ angular.module('cp_app').controller('home_ctrl', function($scope,$rootScope,$win
                                                         );
     }
     $scope.getCampaignTheme();
+    */
     $scope.getFAQLinks();
     $scope.redirectPageURL=function(URL){
         // swal({

@@ -45,6 +45,9 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             $scope.campaigntype = result[0].Id;
             $rootScope.campaignId = result[0].Id;
             
+            //Set Campaign ID;
+            localStorage.setItem('campaignId', result[0].Id);
+            
       
             if (result[0].Yearly_Call__r) {
                 $scope.PIEF_age_limit = activeCampaign[0].Yearly_Call__r.PIEF_Age_Limit__c;
@@ -425,6 +428,12 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             $scope.objProposal.Stage__c = '2nd Stage';
         }
         delete $scope.objContact.Attachments;
+     // Fetching the campaignId from Local Storage
+    if (localStorage.getItem('campaignId')) {
+        $rootScope.campaignId = localStorage.getItem('campaignId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.campaignId);
+    }
+        
     $scope.objProposal.Campaign__c = $rootScope.campaignId;
     ApplicantPortal_Contoller.updateIndusrianFellowshipBasicDet($rootScope.campaignId,$rootScope.candidateId,$scope.objContact, 
           birthDay,birthMonth,birthYear,
@@ -437,7 +446,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             if (event.status) {
                if(result!=null){
              // Saving the ProposalId in Local Storage
-	localStorage.setItem('proposalId', result);
+				localStorage.setItem('proposalId', result);
               
                    
                    

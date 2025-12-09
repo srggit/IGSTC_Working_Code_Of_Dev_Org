@@ -20,7 +20,7 @@ angular.module('cp_app').controller('ConsortiaContacts_Ctrl', function($scope,$r
                 //     }
                 //   }else{
                 var indianStatesArray = result.India;
-                $scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
+                //$scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
                 // $scope.indianStates = result.India;
                 $scope.germanStates = result.Germany;
                 debugger;
@@ -263,15 +263,15 @@ $scope.deleteEducationRow = function(eduId){
             $("#position").addClass('border-theme');
                 return;
         }
-        if($scope.allDetailList.MailingCity == undefined || $scope.allDetailList.MailingCity == ""){
-            swal("Contact Details", "Please Enter Your City.");
-            $("#city").addClass('border-theme');
-                return;
-        }
         if($scope.allDetailList.MailingStreet == undefined || $scope.allDetailList.MailingStreet == ""){
             swal("Contact Details", "Please Enter Your Street Name.");
             $("#street").addClass('border-theme');
                 return;
+        }
+        if($scope.allDetailList.MailingCity == undefined || $scope.allDetailList.MailingCity == ""){
+            swal("Contact Details", "Please Enter Your City.");
+            $("#city").addClass('border-theme');
+            return;
         }
         if($scope.allDetailList.MailingCountry == undefined || $scope.allDetailList.MailingCountry == ""){
             swal("Contact Details", "Please Enter Country.");

@@ -6,6 +6,15 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
     $scope.allDocs = {};
     $scope.doc = {};
     $scope.allSixDoc = {};
+    // local state variables (avoid implicit globals)
+    var maxFileSize = 0,
+        fileName = '',
+        lengthOfType = 0,
+        attachmentName = '',
+        attachment = '',
+        positionIndex = 0,
+        fileSize = 0,
+        doneUploading = false;
     debugger
     $scope.redirectPageURL = function (URL) {
         var link = document.createElement("a");
@@ -32,7 +41,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
 
         var myModal = new bootstrap.Modal(document.getElementById('filePreview'))
         myModal.show('slow');
-        $scope.$apply();
+        if (!$scope.$$phase) $scope.$apply();
 
         //.ContentDistribution.DistributionPublicUrl
     }
@@ -41,12 +50,24 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
         debugger;
 
         $scope.selectedFile = '';
-        $('#file_frame').attr('src', '');
+        // $('#file_frame').attr('src', '');
         ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId,$rootScope.proposalId,function (result, event) {
             debugger
             console.log('result return onload :: ');
             console.log(result);
+            // Defensive: verify result shape — expected an array of userDocument wrappers
             if (event.status) {
+                var looksLikeApplicantData = result && result.campaignList !== undefined;
+                if (looksLikeApplicantData) {
+                    // This response appears to be for getApplicantData — log and ignore
+                    console.warn('Received applicantData in getContactUserDoc callback — ignoring.');
+                    console.warn(result);
+                    return;
+                }
+                if (!Array.isArray(result)) {
+                    console.warn('getContactUserDoc returned unexpected payload:', result);
+                    return;
+                }
                 $scope.allDocs = result;
                 var uploadCount = 0;
                 for (var i = 0; i < $scope.allDocs.length; i++) {
@@ -65,7 +86,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                     if (uploadCount == 2)
                         $scope.disableSubmit = false;
                 }
-                $scope.$apply();
+                if (!$scope.$$phase) $scope.$apply();
             }
         }, {
             escape: true
@@ -75,18 +96,22 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
         IndustrialFellowshipController.getContactSingh($rootScope.candidateId, function (result, event) {
             debugger
             console.log(result);
+            $scope.getProjectdetils();
             console.log(event);
             if (event.status) {
                 if (result.Declaration_Sign_Date__c != undefined && $rootScope.proposalStage) {
                     $scope.SignDate = new Date(result.Declaration_Sign_Date__c);
                 }
                 $scope.objContact = result;
+
                 $scope.$apply();
             }
         });
+
+        //  $scope.getProjectdetils();
     }
     $scope.getOnload();
-    $scope.getProjectdetils();
+    // $scope.getProjectdetils();
     $scope.submitProposalIF = function (saveType) {
         // $scope.redirectPageURL('Home');
         debugger
@@ -154,11 +179,9 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                 swal('', 'Document generation fail, please try again or contact to support.', 'error');
                 return;
             }
-            let baseUrl = window.location.origin;
-            $scope.fileUrl = $sce.trustAsResourceUrl(baseUrl + '/servlet/servlet.FileDownload?file=' + result[0].Id + '#view=FitH');
             var myModal = new bootstrap.Modal(document.getElementById('filePreview2'))
             myModal.show('slow');
-            $scope.$apply();
+            if (!$scope.$$phase) $scope.$apply();
         });
     }
     $scope.submitApplicationDetail = function (saveType, year, month, day) {

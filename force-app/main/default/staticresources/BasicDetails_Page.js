@@ -4,7 +4,7 @@ angular.module('cp_app').controller('basicDetails_ctrl', function ($scope, $root
     // Fetching the proposalId from Local Storage
     if (localStorage.getItem('proposalId')) {
         $rootScope.proposalId = localStorage.getItem('proposalId');
-        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId); 
     }
 
     $rootScope.proposalId;

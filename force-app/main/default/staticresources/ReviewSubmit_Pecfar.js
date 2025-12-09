@@ -11,7 +11,7 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
      // Fetching the proposalId from Local Storage
     if (localStorage.getItem('proposalId')) {
         $rootScope.proposalId = localStorage.getItem('proposalId');
-        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId +'--'+$rootScope.proposalDetails +'--'+$scope.proposalDetails);
     }
     
     
@@ -40,12 +40,13 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
             if(event.status){
                 $scope.projectData=result.Lcon;
                 $scope.objAchievments=result.achievements;
-                for(var i=0;i<$scope.projectData.length;i++){
+                $scope.proposalDetails=result.proposal;
+                /*for(var i=0;i<$scope.projectData.length;i++){
                     if(i==0)
                     $scope.getProjectdetils($scope.projectData[i].Id,'a');
                     else
                     $scope.getProjectdetils($scope.projectData[i].Id,'b');
-                }
+                } */
             }
         });
     }
@@ -317,7 +318,7 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
     }
     $scope.getProjectdetils = function (contactId,sFlag) {
         debugger;
-        ApplicantPortal_Contoller.getContactUserDoc(contactId, function (result, event) {
+        ApplicantPortal_Contoller.getContactUserDoc(contactId, $rootScope.proposalId, function (result, event) {
             debugger
             console.log('result return onload :: ');
             console.log(result);

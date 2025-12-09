@@ -1,5 +1,18 @@
 angular.module('cp_app').controller('Consortia_Ctrl', function($scope,$rootScope) {
-    debugger
+    debugger;
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
+    // Disable the Fields if the User already entered the data.
+    /*
+    if($rootScope.proposalId){
+        $scope.disableProjectPartnerDetailsOnConsortiaPage = true;
+    }
+    */
     $scope.basicDetails=true;
     $scope.companyDetails=false;
     $scope.countrytype = countrytype;
@@ -63,7 +76,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function($scope,$rootScope
             if(event.status && result != null){
                 debugger;
                 var indianStatesArray = result.India;
-                $scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
+                //$scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
                 // $scope.indianStates = result.India;
                 $scope.germanStates = result.Germany;
                 // $scope.allStates = result.India.concat(result.Germany);
@@ -1191,7 +1204,7 @@ $scope.submitDetails = function(flag){
     }
     // }
     $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
-    ApplicantPortal_Contoller.insertCoordinatorsInformation($rootScope.projectId,$scope.allPartners,$scope.contactList, function(result, event){
+    ApplicantPortal_Contoller.insertCoordinatorsInformation($rootScope.proposalId,$scope.allPartners,$scope.contactList, function(result, event){
         $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
         $scope.successmessage="Co-Ordinators and Partner details have been saved successfully.";
         if(isCoordinator=='false'){

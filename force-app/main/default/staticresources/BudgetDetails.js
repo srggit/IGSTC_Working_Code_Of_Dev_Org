@@ -9,7 +9,7 @@ angular.module('cp_app').controller('budget_ctrl', function($scope, $rootScope){
 
     $scope.getContact = function(){
         debugger;
-        ApplicantPortal_Contoller.getConSing($rootScope.candidateId,function(result,event){
+        ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){
             debugger;
             if(event.status && result){
                 $scope.conRecord = result;

@@ -1,6 +1,12 @@
 angular.module('cp_app').controller('declarationplus2_ctrl', function($scope,$sce,$rootScope) {
     debugger;
     
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.siteURL = siteURL;  
     $scope.decDetails = {};
     $scope.SignDate=new Date($rootScope.signDate);
@@ -29,7 +35,8 @@ angular.module('cp_app').controller('declarationplus2_ctrl', function($scope,$sc
 
     $scope.getProjectdetils = function () {
         debugger;
-        ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId,$rootScope.projectId, function (result, event) {
+        //ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId,$rootScope.projectId, function (result, event) {
+		ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId,$rootScope.proposalId, function (result, event) {
             debugger
             console.log('result return onload :: ');
             console.log(result);
@@ -269,7 +276,8 @@ $scope.SubmitApplication=function(){
           })
           .then((willDelete) => {
             if (willDelete) {                    
-                ApplicantPortal_Contoller.submit2plus2($scope.decDetails,year,month,day,$rootScope.projectId, function(result,event){
+                // ApplicantPortal_Contoller.submit2plus2($scope.decDetails,year,month,day,$rootScope.projectId, function(result,event){
+                ApplicantPortal_Contoller.submit2plus2($scope.decDetails,year,month,day,$rootScope.proposalId, function(result,event){
                     if(event.status){
                         debugger;
                         if(result=="Success"){
@@ -289,7 +297,8 @@ $scope.SubmitApplication=function(){
                             );
                         }
                         
-                        $scope.redirectPageURL('Home');                
+                        $scope.redirectPageURL('Home');    
+						// $scope.redirectPageURL('Home&campaign=2plus2');    
                     }
                 },
                {escape: true}

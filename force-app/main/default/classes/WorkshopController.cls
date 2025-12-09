@@ -1154,10 +1154,11 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
         return Proposal_Controller.saveAsDraftPecfar(proposalDetails);
     }
     
-    @RemoteAction
+  /*  @RemoteAction
     public static string finalSubmitPecfar(Application_Proposal__c proposalDetails){
         return Proposal_Controller.finalSubmitPecfar(proposalDetails);
     }
+*/
     
     @RemoteAction
     public static String reviewAppDocGen(string proID){

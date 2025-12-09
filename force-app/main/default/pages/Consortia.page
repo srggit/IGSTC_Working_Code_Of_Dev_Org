@@ -303,7 +303,8 @@
                                             <div class="row ms-3" ng-show="isCoordinator=='true'">
                                                 <div class="col-md-12 mt-5 float-end">
                                                     <!-- <div class="col-md-8"> -->
-                                                        <button type="button" ng-cloak="true" class="btn btn-danger float-end" ng-click="removeAccount($index,account.Id)" ng-disabled="proposalStage">
+                                                        <!-- <button type="button" ng-cloak="true" class="btn btn-danger float-end" ng-click="removeAccount($index,account.Id)" ng-disabled="proposalStage"> -->
+                                                        <button type="button" ng-cloak="true" class="btn btn-danger float-end" ng-click="removeAccount($index,account.Id)" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage">
                                                             <i class="fa-solid fa-circle-xmark me-2"></i>Delete</button>
                                                     <!-- </div> -->
                                                 </div>
@@ -333,7 +334,15 @@
                                             <div class="row mt-5 ms-3">
                                                 <div class="col-md-2">
                                                     <label class="font-if">Salutation<span class="ms-2 text-danger">*</span></label>
+                                                    <!-- 
                                                     <select class="form-control" id="ddTitle" ng-focus="removeClass('txtFirstName')" ng-model='account.Contacts[0].Title' ng-disabled="proposalStage">
+                                                        <option value="Prof." ng-selected="Mr">Prof.</option>
+                                                        <option value="Dr.">Dr.</option>
+                                                        <option value="Mr.">Mr.</option>
+                                                        <option value="Ms.">Ms.</option>
+                                                    </select>
+													-->
+                                                    <select class="form-control" id="ddTitle" ng-focus="removeClass('txtFirstName')" ng-model='account.Contacts[0].Title' ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage">
                                                         <option value="Prof." ng-selected="Mr">Prof.</option>
                                                         <option value="Dr.">Dr.</option>
                                                         <option value="Mr.">Mr.</option>
@@ -342,15 +351,18 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="font-if">Project Partner (First Name)<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].FirstName" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].FirstName" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].FirstName" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="font-if">Project Partner (Last Name)<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].LastName" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].LastName" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('head',$index)" id="head{{$index}}" ng-model="account.Contacts[0].LastName" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div> 
                                                 <div class="col-md-4">                                                
                                                     <label class="font-if">Current Position/Designation<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Designation__c" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Designation__c" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Designation__c" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                                                         
                                             </div>
@@ -359,6 +371,7 @@
                                                 <div class="col-md-4">
                                                     <label class="font-if">Institution/Industry<span class="ms-2 text-danger">*</span></label>
                                                     <br/>
+                                                    <!-- 
                                                     <div class="form-check form-check-inline mt-5">
                                                         <input class="form-check-input" ng-click="industryAcademia('academia',$index)" type="radio" ng-checked="account.Academia__c"
                                                             name="inlineRadioOptions{{$index}}" ng-disabled="proposalStage" />
@@ -369,14 +382,27 @@
                                                             ng-checked="account.Industry__c" ng-disabled="proposalStage" />
                                                         <label class="form-check-label" for="inlineRadio1">Industry</label>
                                                     </div>
+													-->
+                                                    <div class="form-check form-check-inline mt-5">
+                                                        <input class="form-check-input" ng-click="industryAcademia('academia',$index)" type="radio" ng-checked="account.Academia__c"
+                                                            name="inlineRadioOptions{{$index}}" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
+                                                        <label class="pb-3 color-theme px-3" for="inlineRadio2">Academia</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline mt-5">
+                                                        <input class="pb-3 color-theme px-3" ng-click="industryAcademia('industry',$index)" type="radio" name="inlineRadioOptions{{$index}}"
+                                                            ng-checked="account.Industry__c" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage"/>
+                                                        <label class="form-check-label" for="inlineRadio1">Industry</label>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="font-if">Institution/Organization Name<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('inst',$index)" id="inst{{$index}}" ng-model="account.Name" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('inst',$index)" id="inst{{$index}}" ng-model="account.Name" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('inst',$index)" id="inst{{$index}}" ng-model="account.Name" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="font-if">Department/Division<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Department" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Department" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('dept',$index)" id="dept{{$index}}" ng-model="account.Contacts[0].Department" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>  
                                                 
                                             </div>
@@ -384,27 +410,40 @@
                                             <div class="row mb-5 ms-3">
                                                 <div class="col-md-3">
                                                     <label class="font-if">HomePage URL<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="text" ng-focus="removeClass('home',$index)" id="home{{$index}}" ng-model="account.Website" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="text" ng-focus="removeClass('home',$index)" id="home{{$index}}" ng-model="account.Website" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="text" ng-focus="removeClass('home',$index)" id="home{{$index}}" ng-model="account.Website" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="font-if">Email<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="email" ng-focus="removeClass('email',$index)" id="email{{$index}}" ng-model="account.Contacts[0].Email" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="email" ng-focus="removeClass('email',$index)" id="email{{$index}}" ng-model="account.Contacts[0].Email" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="email" ng-focus="removeClass('email',$index)" id="email{{$index}}" ng-model="account.Contacts[0].Email" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="font-if">Phone<span class="ms-2 text-danger">*</span></label>
-                                                    <input type="tel" pattern="[0-9\+\-\*\#\(\)\/\.\,\s]+" ng-focus="removeClass('phone',$index)" id="phone{{$index}}" ng-model="account.Contacts[0].Phone" class="form-control" ng-disabled="proposalStage" />
+                                                    <!-- <input type="tel" pattern="[0-9\+\-\*\#\(\)\/\.\,\s]+" ng-focus="removeClass('phone',$index)" id="phone{{$index}}" ng-model="account.Contacts[0].Phone" class="form-control" ng-disabled="proposalStage" /> -->
+                                                    <input type="tel" pattern="[0-9\+\-\*\#\(\)\/\.\,\s]+" ng-focus="removeClass('phone',$index)" id="phone{{$index}}" ng-model="account.Contacts[0].Phone" class="form-control" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage" />
                                                 </div>
                                                 
                                                 <div class="col-md-3">
                                                     <div  ng-show="isCoordinator=='true'">
                                                     <label class="font-if">Country<span class="ms-2 text-danger">*</span></label>
+                                                    <!--
                                                     <select class="form-control" aria-label="Default select example" ng-focus="removeClass('country',$index)" id="country{{$index}}" ng-model="account.BillingCountry" required="true" ng-disabled="proposalStage">
+                                                        <option ng-repeat="staff in countrytype">{{staff}}</option>
+                                                    </select>
+													-->
+                                                    <select class="form-control" aria-label="Default select example" ng-focus="removeClass('country',$index)" id="country{{$index}}" ng-model="account.BillingCountry" required="true" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage">
                                                         <option ng-repeat="staff in countrytype">{{staff}}</option>
                                                     </select>
                                                 </div>
                                                     <div  ng-show="isCoordinator=='false'">
                                                     <label class="font-if">Country<span class="ms-2 text-danger">*</span></label>
+                                                    <!-- 
                                                     <select class="form-control" aria-label="Default select example" ng-focus="removeClass('country',$index)" id="country{{$index}}" ng-model="account.BillingCountry" required="true" ng-disabled="true">
+                                                        <option ng-repeat="staff in countrytype">{{staff}}</option>
+                                                    </select>
+													-->
+                                                    <select class="form-control" aria-label="Default select example" ng-focus="removeClass('country',$index)" id="country{{$index}}" ng-model="account.BillingCountry" required="true" ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage">
                                                         <option ng-repeat="staff in countrytype">{{staff}}</option>
                                                     </select>
                                                 </div>

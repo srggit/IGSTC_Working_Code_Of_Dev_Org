@@ -311,6 +311,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     $scope.getContactName();
 
     $scope.getApplicantData = function () {
+        debugger;
         $scope.isLoading = true;
         ApplicantPortal_Contoller.getApplicantData($scope.candidateId, function (result, event) {
             debugger;
@@ -337,7 +338,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                         category: 'applied'
                     }
                 }) : [];
-                
+
                 if (!$scope.appliedPrograms || !$scope.appliedPrograms.length) {
                     // If no applied programs → keep all campaigns
                     $scope.allPrograms = $scope.allCamapigns.map(item => ({

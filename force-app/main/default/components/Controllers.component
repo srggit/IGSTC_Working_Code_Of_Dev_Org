@@ -205,7 +205,8 @@
 
         angular.module('cp_app', ['ngRoute', 'ui.bootstrap', 'ui.bootstrap.datetimepicker', 'textAngular', 'ng.ckeditor', 'dropdown-multiselect', 'ngSanitize', 'number', 'ngMaterial', 'ngMessages', 'material.svgAssetsCache', 'text', 'textarea', 'decimal', 'specialChar']); 
     </script>
-    <script src="{!$Resource.Home}" />
+    
+    <script src="{!$Resource.Home}" /> 
     <script src="{!$Resource.Campaign}" />
     <script src="{!$Resource.TestJs}" />
     <script src="{!$Resource.Test2}" />

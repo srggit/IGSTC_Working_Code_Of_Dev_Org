@@ -1,7 +1,19 @@
 angular.module('cp_app').controller('address_ctrl', function($scope,$sce,$rootScope) {
-
+	
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
+    // Disable the Fields if the Proposal already exists.
+    /*
+    if($rootScope.proposalId){
+        $scope.disableConsortiaAddressFields = true;
+    }
+   	*/
+    
     $scope.siteURL = siteURL;
-
     $scope.selectedFile;
     $scope.proposalStage = $scope.proposalStage ? true : ($scope.secondstage ? true : false);
 
@@ -28,7 +40,7 @@ $scope.getProjectdetils = function () {
     debugger;
     $scope.selectedFile = '';
     $('#file_frame').attr('src', '');
-    ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId, $rootScope.projectId, function (result, event) {
+    ApplicantPortal_Contoller.getContactUserDoc($rootScope.contactId, $rootScope.proposalId, function (result, event) {
         debugger
         console.log('result return onload :: ');
         console.log(result);
@@ -253,6 +265,16 @@ $scope.uploadAttachment = function (type, userDocId, fileId) {
             $("#ddTitle").addClass('border-theme');
                 return;
         }
+        if($scope.addressDetails.Contacts[0].Designation__c == undefined || $scope.addressDetails.Contacts[0].Designation__c == ""){
+            swal("Address Details", "Please Enter Designation.");
+            $("#IState").addClass('border-theme');
+                return;
+        }
+        if($scope.addressDetails.Website == undefined || $scope.addressDetails.Website == ""){
+            swal("Address Details", "Please Enter HomePage URL.");
+            $("#IState").addClass('border-theme');
+                return;
+        }
         if($scope.addressDetails.Contacts[0].Name == undefined || $scope.addressDetails.Contacts[0].Name == ""){
             swal("Address Details", "Please Enter Head of Project.");
             $("#head").addClass('border-theme');
@@ -294,6 +316,7 @@ $scope.uploadAttachment = function (type, userDocId, fileId) {
             $("#IPcode").addClass('border-theme');
                 return;
         }
+		
 
         if($scope.addressDetails.Industry__c == true){
             if($scope.addressDetails.Year_Of_Establishment__c == undefined || $scope.addressDetails.Year_Of_Establishment__c == ""){
@@ -350,6 +373,7 @@ $scope.uploadAttachment = function (type, userDocId, fileId) {
             $("#btnSubmit").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
             if(event.status){
                 debugger;
+
                 swal({
                     title: "Success",
                     text: "Consortium Details have been saved successfully.",

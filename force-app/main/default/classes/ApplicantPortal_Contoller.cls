@@ -891,8 +891,8 @@ public static List<Campaign> getActiveCampaignIf(string campaign_name) {
     }
     
     @RemoteAction
-    public static String insertPairingDetails(List<Proposal_Controller.wrapperPairing> contactList,String campaignId){
-        return Proposal_Controller.insertPairingDetails(contactList,campaignId);
+    public static String insertPairingDetails(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall){
+        return Proposal_Controller.insertPairingDetails(contactList,campaignId,yearlyCall);
     }
     
     @RemoteAction
@@ -1182,8 +1182,17 @@ public static List<Campaign> getActiveCampaignIf(string campaign_name) {
     
     @RemoteAction
     public static string finalSubmitPecfar(Application_Proposal__c proposalDetails){
-        return Proposal_Controller.finalSubmitPecfar(proposalDetails);
+        try{
+            proposalDetails.Stage__c = '1st Stage';
+            proposalDetails.Proposal_Stages__c = 'Submitted';
+            proposalDetails.Submitted__c = true;
+            upsert proposalDetails;
+            return 'success';
+        }catch(Exception e){
+            return e.getMessage();
+        }
     }
+    
     
     @RemoteAction
     public static String reviewAppDocGen(string proID){
@@ -2235,7 +2244,7 @@ public static Account getHostSing(String projectId){
         try{
            // Contact conRec = [SELECT Id,Name,MailingCountry,Login_Hash_Code__c, Proposals__c  FROM Contact WHERE Login_Hash_Code__c =: hxashCode];
 
-            Contact conRec = [SELECT Id,Name,MailingCountry,Login_Hash_Code__c, (SELECT ID, Name,Proposals__r.Name FROM Applicant_Proposal_Associations__r WHERE  Proposals__r.RecordType_Name__c='SING')   FROM Contact WHERE Login_Hash_Code__c =: hashCode];
+            Contact conRec = [SELECT Id,Name,MailingCountry,Login_Hash_Code__c, (SELECT ID, Name,Proposals__r.Name, Proposals__c FROM Applicant_Proposal_Associations__r WHERE  Proposals__r.Record_Type_Name__c='SING')   FROM Contact WHERE Login_Hash_Code__c =: hashCode];
 
             return conRec;
         }catch(Exception e){

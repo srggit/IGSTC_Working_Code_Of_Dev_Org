@@ -1,5 +1,12 @@
 angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $rootScope) {
-    debugger
+    debugger;
+    
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+    
     $scope.config = {};
     $scope.config.toolbarGroups = [
         { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
@@ -96,7 +103,8 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         debugger;
         $scope.selectedFile = '';
         $('#file_frame').attr('src', '');
-        ApplicantPortal_Contoller.getAllProposalDoc($rootScope.projectId, function (result, event) {
+        // ApplicantPortal_Contoller.getAllProposalDoc($rootScope.projectId, function (result, event) {
+        ApplicantPortal_Contoller.getAllProposalDoc($rootScope.proposalId, function (result, event) {
             debugger
             console.log('onload doc:: ');
             console.log(result);
