@@ -28,7 +28,7 @@ angular.module('cp_app').controller('declaration_ctrl', function($scope,$sce,$ro
             }
         },
                                                   {escape: true}
-                                                 )
+       )
     }
     $scope.getDeclarationfields();
 

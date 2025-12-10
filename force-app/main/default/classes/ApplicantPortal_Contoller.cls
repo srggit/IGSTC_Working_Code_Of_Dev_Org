@@ -198,7 +198,8 @@ public without sharing class ApplicantPortal_Contoller {
             return null;
         }
     }
-
+    
+    
     @RemoteAction
     public static String getContactName(String hashcode){
 
@@ -213,7 +214,8 @@ public without sharing class ApplicantPortal_Contoller {
         ];
         return con.Name;
     }
-
+	
+    
     public class UserWrap {
         String firstName;
         String lastName;
@@ -283,11 +285,13 @@ public static List<Campaign> getActiveCampaignIf(string campaign_name) {
                                     Yearly_Call__r.Date_of_Birth_PIEF__c,Yearly_Call__r.PhD_Enrollment_Date_PIEF__c,
                                     Yearly_Call__r.PDIF_Age_Limit__c,Yearly_Call__r.PDIF_PhD_time__c,
                                     Yearly_Call__r.Date_of_Birth_PDIF__c,Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c 
-                                    FROM Campaign WHERE Yearly_Call__c != null AND IsActive = true AND Name = :campaign_name];
-        
+                                    FROM Campaign WHERE Yearly_Call__c != null AND Name = :campaign_name];
+        							//I need to Add 'IsActive = true' in this query after activating the campaign.
+   									     
         if (!campaigns.isEmpty()) {
             return campaigns;
         }
+        
         return null;
     } catch (Exception e) {
         System.debug('Error: ' + e.getMessage());
@@ -1119,8 +1123,10 @@ public static List<Campaign> getActiveCampaignIf(string campaign_name) {
     
     @RemoteAction
     public static list<Proposal_Controller.UserDocumentWrapper> getContactUserDoc(id parentId, Id proposalId){
-        return Proposal_Controller.getContactUserDoc(parentId, proposalId);
-    }
+        Proposal_Controller proposalCon = New Proposal_Controller();
+        
+        return proposalCon.getContactUserDoc(parentId, proposalId);
+    } 
     @RemoteAction
     public static list<Proposal_Controller.ProposalDocumentWrapper> getAllProposalDoc(id parentId){
         return Proposal_Controller.getAllProposalDoc(parentId);

@@ -4,12 +4,14 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
     
     $rootScope.proposalId;
     
+    $scope.yearlyCallId;
     $scope.eduQualification=false;
     $scope.achievements=false;
     $scope.employmentDetails=false;
     $scope.fellowshipDetails=false;
     $scope.myDate=new Date();
     $scope.DivPDIF=false;
+    $scope.activeCampaign={};
     $scope.objContact={};
     $scope.objProposal={};
     $scope.objContact.Industrial_Fellowship_Type__c='PIEF';
@@ -32,6 +34,12 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
         console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
     }
     
+    // Fetching the campaignId from Local Storage
+            if (localStorage.getItem('campaignId')) {
+                $rootScope.campaignId = localStorage.getItem('campaignId');
+                console.log('Loaded campaignId from localStorage:', $rootScope.campaignId);
+            }
+    
     // Method to validate If Yearly call condions added by Rukasar:
  
     $scope.getActiveCampaignData = function() {
@@ -45,32 +53,40 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             $scope.campaigntype = result[0].Id;
             $rootScope.campaignId = result[0].Id;
             
-            //Set Campaign ID;
-            localStorage.setItem('campaignId', result[0].Id);
+            $scope.yearlyCallId=result[0].Yearly_Call__c;
+            
+           
+            
+             // Fetching the campaignId from Local Storage
+            if (localStorage.getItem('campaignId')) {
+                $rootScope.campaignId = localStorage.getItem('campaignId');
+                console.log('Loaded campaignId from localStorage:', $rootScope.campaignId);
+            }
             
       
             if (result[0].Yearly_Call__r) {
-                $scope.PIEF_age_limit = activeCampaign[0].Yearly_Call__r.PIEF_Age_Limit__c;
-                $scope.PDIF_age_limit = activeCampaign[0].Yearly_Call__r.PDIF_Age_Limit__c;
-                $scope.PDIF_phd_limit = activeCampaign[0].Yearly_Call__r.PDIF_PhD_time__c;
-                $scope.PIEF_DOB = activeCampaign[0].Yearly_Call__r.Date_of_Birth_PIEF__c;
-                $scope.PIEF_phddate = activeCampaign[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
-                $scope.PIEF_phddate_onlydate = activeCampaign[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
-                $scope.PDIF_DOB = activeCampaign[0].Yearly_Call__r.Date_of_Birth_PDIF__c;
-                $scope.PDIF_phddate = activeCampaign[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
-                $scope.PDIF_phddate_onlydate = activeCampaign[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
-                $scope.PIEF_PhD_time = activeCampaign[0].Yearly_Call__r.PIEF_PhD_time__c;
+                $scope.PIEF_age_limit = result[0].Yearly_Call__r.PIEF_Age_Limit__c;
+                $scope.PDIF_age_limit = result[0].Yearly_Call__r.PDIF_Age_Limit__c;
+                $scope.PDIF_phd_limit = result[0].Yearly_Call__r.PDIF_PhD_time__c;
+                $scope.PIEF_DOB = result[0].Yearly_Call__r.Date_of_Birth_PIEF__c;
+                $scope.PIEF_phddate = result[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
+                $scope.PIEF_phddate_onlydate = result[0].Yearly_Call__r.PhD_Enrollment_Date_PIEF__c;
+                $scope.PDIF_DOB = result[0].Yearly_Call__r.Date_of_Birth_PDIF__c;
+                $scope.PDIF_phddate = result[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+                $scope.PDIF_phddate_onlydate = result[0].Yearly_Call__r.PhD_Enroll_ment_Date_PDIF__c;
+                $scope.PIEF_PhD_time = result[0].Yearly_Call__r.PIEF_PhD_time__c;
   
             } else {
                 console.error('Yearly Call relationship data not found');
                
             }
             console.log('Campaign Data Loaded:', {
-                name: activeCampaign[0].Name,
+                name: result[0].Name,
                 PIEF_Age_Limit: $scope.PIEF_Age_Limit,
                 PDIF_Age_Limit: $scope.PDIF_Age_Limit
             });
-            delete $scope.activeCampaign[0].Yearly_Call__r;
+            //delete $scope.result.Yearly_Call__r;
+          delete  $scope.activeCampaign[0].Yearly_Call__r;
             $scope.$apply();
         } else {
             console.warn('No active campaign found or error occurred');
@@ -78,6 +94,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
         }
     });
 }
+$scope.getActiveCampaignData(); 
     
     $scope.getCampaignEndDate=function(){
       ApplicantPortal_Contoller.getCampaignEndDate('Industrial Fellowships',function (result, event) {
@@ -86,8 +103,12 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
           console.log(result);
         if(event.status){
           $scope.objCampaign=result;
+            
+             //Set Campaign ID;
+            localStorage.setItem('campaignId', result.Id);
+            
           $scope.endDate=new Date(result.EndDate);
-          $scope.getContactDet();
+          $scope.getContactDet();          
           $scope.$apply();          
         }
       });
@@ -139,6 +160,7 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
                       $scope.changeAward();                      
                     }
                     delete $scope.objContact.Applicant_Proposal_Associations__r[0].Proposals__r;
+                
                     $scope.$apply();
             }
           },
@@ -428,13 +450,10 @@ angular.module('cp_app').controller('Dashboard_iF_Ctlr', function($scope,$sce,$r
             $scope.objProposal.Stage__c = '2nd Stage';
         }
         delete $scope.objContact.Attachments;
-     // Fetching the campaignId from Local Storage
-    if (localStorage.getItem('campaignId')) {
-        $rootScope.campaignId = localStorage.getItem('campaignId');
-        console.log('Loaded proposalId from localStorage:', $rootScope.campaignId);
-    }
+    
         
     $scope.objProposal.Campaign__c = $rootScope.campaignId;
+    $scope.objProposal.yearly_Call__c = $scope.yearlyCallId;
     ApplicantPortal_Contoller.updateIndusrianFellowshipBasicDet($rootScope.campaignId,$rootScope.candidateId,$scope.objContact, 
           birthDay,birthMonth,birthYear,
           phdEnrollYear,phdEnrollMonth,phdEnrollDay,

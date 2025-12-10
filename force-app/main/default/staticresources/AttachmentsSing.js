@@ -4,7 +4,7 @@ angular.module('cp_app').controller('Attachments_Ctrl', function($scope,$sce,$ro
     $scope.doc  = { userDocument: { Id: null }, attachmentId: null };
     $scope.doc2 = { userDocument: { Id: null }, attachmentId: null };
     $scope.doc3 = { userDocument: { Id: null }, attachmentId: null };
-
+	    $rootScope.proposalId;
     $scope.disableSubmit = true;
     $scope.previousProjectDetSingh=function(){
         var link=document.createElement("a");
@@ -15,15 +15,25 @@ angular.module('cp_app').controller('Attachments_Ctrl', function($scope,$sce,$ro
 
     $scope.getContact = function(){
         debugger;
-        ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){
-            debugger;
-            if(event.status && result){
-                $scope.conRecord = result;
-                $rootScope.projectId = result.Applicant_Proposal_Associations__r[0].Proposals__c;
-            }
-            $scope.$apply();
+        
+        // Fetching the proposalId from Local Storage
+        if (localStorage.getItem('proposalId')) {
+            $rootScope.proposalId = localStorage.getItem('proposalId');
+            console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+            $rootScope.projectId = $rootScope.proposalId;
+        }
+        
+        
+        
+        //ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){
+            //debugger;
+            //if(event.status && result){
+            //    $scope.conRecord = result;
+            //    $rootScope.projectId = result.Applicant_Proposal_Associations__r[0].Proposals__c;
+            //}
+            //$scope.$apply();
             // $scope.getExpenseRecords();
-        })
+        //})
     }
     $scope.getContact();
 
@@ -368,8 +378,8 @@ $scope.uploadAttachment = function (inputId, userDocId, fileId) {
 //         // $('#file_frame').attr('src', $scope.selectedFile.ContentDistribution.DistributionPublicUrl);
 //         $('#file_frame').attr('src', $scope.filesrec);
     
-//         var myModal = new bootstrap.Modal(document.getElementById('filePreview'))Â  Â  Â  Â  
-//         myModal.show('slow')Â ;
+//         var myModal = new bootstrap.Modal(document.getElementById('filePreview'))        
+//         myModal.show('slow') ;
 //         $scope.$apply();
     
 //         //.ContentDistribution.DistributionPublicUrl

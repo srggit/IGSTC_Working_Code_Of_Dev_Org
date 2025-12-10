@@ -20,7 +20,7 @@ angular.module('cp_app').controller('ConsortiaContacts_Ctrl', function($scope,$r
                 //     }
                 //   }else{
                 var indianStatesArray = result.India;
-                //$scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
+                $scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
                 // $scope.indianStates = result.India;
                 $scope.germanStates = result.Germany;
                 debugger;

@@ -76,8 +76,8 @@ angular.module('cp_app').controller('Consortia_Ctrl', function($scope,$rootScope
             if(event.status && result != null){
                 debugger;
                 var indianStatesArray = result.India;
-                //$scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
-                // $scope.indianStates = result.India;
+                $scope.indianStates = indianStatesArray.map(item => item =="Union Territory of J&amp;K" ? "Union Territory of J&K":item);
+                //$scope.indianStates = result.India;
                 $scope.germanStates = result.Germany;
                 // $scope.allStates = result.India.concat(result.Germany);
                 $scope.$apply();
@@ -1214,6 +1214,7 @@ $scope.submitDetails = function(flag){
             debugger;
             if(flag=='c'){
                 swal('Success',$scope.successmessage,'success');
+                
                 location.reload();
                 return;
             }             

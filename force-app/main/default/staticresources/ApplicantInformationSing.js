@@ -1,7 +1,16 @@
 angular.module('cp_app').controller('ApplicantInformationSing_Ctrl', function($scope,$rootScope) {
 $scope.objContact={};
 $scope.ddStatus={};
+$rootScope.proposalId;
 $scope.baseURL = window.location.origin;
+
+// Fetching the proposalId from Local Storage
+    //if (localStorage.getItem('proposalId')) {
+        //$rootScope.proposalId = localStorage.getItem('proposalId');
+      //  console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    //}
+
+
 $scope.getDependentPicklistValues = function(){
   debugger;
   $scope.indianStates = [];
@@ -434,7 +443,12 @@ debugger
       });
       
     IndustrialFellowshipController.saveApplicantPortalSingh($rootScope.candidateId,$scope.objContact,$scope.accountDet,birthYear,birthMonth,birthDay,$rootScope.contactId, 'SING', '701e10000011XxTAAU',  function (result, event) {
-        debugger
+        debugger;
+        	// Saving the ProposalId in Local Storage
+            localStorage.setItem('proposalId', result);
+            $rootScope.proposalId = result; // Receiving the Proposal Id from the controller
+        
+        
             console.log(result);
             console.log(event);
             swal.close();

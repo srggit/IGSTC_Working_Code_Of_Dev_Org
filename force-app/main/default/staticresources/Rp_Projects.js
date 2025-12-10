@@ -523,49 +523,61 @@ angular.module('rp_app').controller('projects_ctrl', function ($scope, $sce, $ro
         $scope.allProgrammes.forEach(p => (p.selected = false));
     };
     //for button download all reviews---------------------------------------------------------------------------------------------------------------------------------------------------------------
-        $scope.downloadDocument = function () {
-        debugger;
+  $scope.downloadDocument = function () {
 
-        var proposalId = 'a04e1000000FuzZAAS';
+    // Take proposals that are visible on the page
+    const visibleProposals = $scope.draftList.filter($scope.programmeFilterFn);
 
-        ReviewerPortal_Controller.updateReviewerReport([proposalId], function(result, event) {
+    const proposalIds = visibleProposals
+        .map(r => r.Proposals__r.Id[0])        // extract proposal id
+        .filter(id => id);                 // remove null/undefined
+        console.log('Downloading reviews for proposals:', proposalIds);
+    if (!proposalIds || proposalIds.length === 0) {
+        console.error("No proposals available on page!");
+        return;
+    }
 
-            if (!event.status) {
-                console.error("Error updating reviewer report:", event.message);
-                return;
+    $scope.isLoading = true;
+
+    ReviewerPortal_Controller.updateReviewerReport(proposalIds, function (result, event) {
+
+        $scope.isLoading = false;
+        $scope.$apply();
+
+        if (!event.status) {
+            console.error("Error:", event.message);
+            return;
+        }
+
+        try {
+            const parsed = JSON.parse(result);
+            const base64Pdf = parsed.base64Pdf;
+            const attachmentId = parsed.attachmentId;
+
+            const fileContent = atob(base64Pdf);
+            const byteArray = [];
+            for (let i = 0; i < fileContent.length; i++) {
+                byteArray.push(fileContent.charCodeAt(i));
             }
 
-            try {
-                var base64Pdf = result;
+            const blob = new Blob([new Uint8Array(byteArray)], { type: "application/pdf" });
 
-                if (!base64Pdf) {
-                    console.error("No PDF data returned");
-                    return;
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "ReviewerReports.pdf";
+            link.click();
+
+            ReviewerPortal_Controller.deleteAttachment(attachmentId, function (delRes, delEvt) {
+                if (!delEvt.status) {
+                    console.error("Attachment delete failed:", delEvt.message);
                 }
+            });
 
-                var fileContent = atob(base64Pdf);
-                var array = [];
-
-                for (var i = 0; i < fileContent.length; i++) {
-                    array.push(fileContent.charCodeAt(i));
-                }
-
-                var blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = 'ReviewerReport.pdf';
-                link.click();
-
-            } catch (e) {
-                console.error("Error in PDF generation:", e);
-            }
-
-        });
-    };
-
-
-
-
+        } catch (e) {
+            console.error("PDF Download Error:", e);
+        }
+    });
+};
 
 
 

@@ -416,12 +416,35 @@ $scope.SubmitApplication=function(){
         
     }
                 
-    $scope.redirectPageURL = function(pageName){
-        debugger;
-        var link=document.createElement("a");
-        link.id = 'someLink'; //give it an ID!
-        link.href="#/"+pageName;
+    $scope.redirectPageURL = function(pageName) {
+    debugger;
+    var link = document.createElement("a");
+    // Get current base URL dynamically (no hard coding)
+    let baseUrl = link.baseURI;
+    // Remove hash part ( #/something )
+    if (baseUrl.includes('#/')) {
+        baseUrl = baseUrl.split('#/')[0];
+    }
+    if (pageName === 'Home') {
+        // Get id and campaign from current URL dynamically
+        let urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get("id") || "";
+        let campaign ='2plus2';
+        // Build final HOME URL format dynamically
+        let finalUrl = baseUrl;
+        if (campaign) {
+            finalUrl += "&campaign=" + campaign;
+        }
+        finalUrl += "#/Home";
+        link.href = finalUrl;
+        link.click();
+
+    } else {
+        // For other pages → keep same base + hash routing
+        link.href = baseUrl + "#/" + pageName;
         link.click();
     }
+};
+
                 
     });

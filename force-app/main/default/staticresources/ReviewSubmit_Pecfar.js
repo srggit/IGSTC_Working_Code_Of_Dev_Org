@@ -405,7 +405,8 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
             }
         } 
       }
-      
+
+   /*   
     $scope.redirectPageURL = function(pageName){
         debugger;
         var link=document.createElement("a");
@@ -413,5 +414,35 @@ angular.module('cp_app').controller('revSubmit_ctrl', function($scope,$sce,$root
         link.href="#/"+pageName;
         link.click();
     }
+*/
 
+$scope.redirectPageURL = function(pageName) {
+    debugger;
+    var link = document.createElement("a");
+
+    let baseUrl = link.baseURI;
+    // Remove hash part ( #/something )
+    if (baseUrl.includes('#/')) {
+        baseUrl = baseUrl.split('#/')[0];
+    }
+    if (pageName === 'Home') {
+        // Get id and campaign from current URL dynamically
+        let urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get("id") || "";
+        let campaign ='PECFAR';
+        // Build final HOME URL format dynamically
+        let finalUrl = baseUrl;
+        if (campaign) {
+            finalUrl += "&campaign=" + campaign;
+        }
+        finalUrl += "#/Home";
+        link.href = finalUrl;
+        link.click();
+ 
+    } else {
+        // For other pages → keep same base + hash routing
+        link.href = baseUrl + "#/" + pageName;
+        link.click();
+    }
+}; 
 });

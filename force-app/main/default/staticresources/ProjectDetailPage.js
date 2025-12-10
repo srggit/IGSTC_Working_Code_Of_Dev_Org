@@ -29,8 +29,8 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
     $scope.getApplicantDetail = function(){
         console.log('Inside getApplicantDetail=======================> ');
         console.log('$rootScope.userId====================>'+$rootScope.userId);
-		console.log('thematicAreaList value:', $scope.thematicAreaList);
-    console.log('thematicAreaList length:', $scope.thematicAreaList ? $scope.thematicAreaList.length : 0);
+        console.log('thematicAreaList value:', $scope.thematicAreaList);
+        console.log('thematicAreaList length:', $scope.thematicAreaList ? $scope.thematicAreaList.length : 0);
         debugger;
         ApplicantPortal_Contoller.getApplicantDetails($rootScope.candidateId, function(result, event){
             console.log('Apex called===============>');
@@ -46,12 +46,12 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                           thematicAreaId.push($scope.thematicAreaList[i].Id);
                           $scope.thematicAreaToDisplay.push({"Id":$scope.thematicAreaList[i].Id,"Name":$scope.thematicAreaList[i].Name,"checked":false});
                       } */
-                     // $scope.tentitiveStartDate = result.Tentative_Start_Date__c;
-                     if(result.Tentative_Start_Date__c!=null){
+                    // $scope.tentitiveStartDate = result.Tentative_Start_Date__c;
+                    if(result.Tentative_Start_Date__c!=null){
                         $scope.startDate = true;
-                      $scope.tentitiveStartDate = new Date(result.Tentative_Start_Date__c);
-                     }
-                     if(result.Summary__c != undefined || result.Summary__c != ""){
+                        $scope.tentitiveStartDate = new Date(result.Tentative_Start_Date__c);
+                    }
+                    if(result.Summary__c != undefined || result.Summary__c != ""){
                         result.Summary__c = result.Summary__c ? result.Summary__c.replace(/&amp;/g,'&').replaceAll('&amp;amp;','&').replace(/&#39;/g,'\'').replaceAll('&amp;gt;','>').replaceAll('&lt;','<').replaceAll('lt;','<').replaceAll('&gt;','>').replaceAll('gt;','>').replaceAll('&amp;','&').replaceAll('amp;','&').replaceAll('&quot;','\'') : result.Summary__c;
                     }
                     if(result.Acronym__c != undefined || result.Acronym__c != ""){
@@ -66,13 +66,13 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                     if(result.KeyWords__c != undefined || result.KeyWords__c != ""){
                         result.KeyWords__c = result.KeyWords__c ? result.KeyWords__c.replace(/&amp;/g,'&').replaceAll('&amp;amp;','&').replace(/&#39;/g,'\'').replaceAll('&amp;gt;','>').replaceAll('&lt;','<').replaceAll('lt;','<').replaceAll('&gt;','>').replaceAll('gt;','>').replaceAll('&amp;','&').replaceAll('amp;','&').replaceAll('&quot;','\'') : result.KeyWords__c;
                     }
-                      $scope.applicantDetails = result;
-                        //$scope.applicantDetails.Duration_In_Months_Max_36__c = Math.round($scope.applicantDetails.Duration_In_Months_Max_36__c);
-                      if($scope.applicantDetails.Application_Thematic_Area__r != undefined){
-                          $scope.thematicAreaToDisplay = [];
-                          for(var i=0;i<$scope.applicantDetails.Application_Thematic_Area__r.length;i++){
-                                              thematicAreaId.push($scope.applicantDetails.Application_Thematic_Area__r[i].Thematic_Area_Name__c);
-      
+                    $scope.applicantDetails = result;
+                    //$scope.applicantDetails.Duration_In_Months_Max_36__c = Math.round($scope.applicantDetails.Duration_In_Months_Max_36__c);
+                    if($scope.applicantDetails.Application_Thematic_Area__r != undefined){
+                        $scope.thematicAreaToDisplay = [];
+                        for(var i=0;i<$scope.applicantDetails.Application_Thematic_Area__r.length;i++){
+                            thematicAreaId.push($scope.applicantDetails.Application_Thematic_Area__r[i].Thematic_Area_Name__c);
+                            
                             /*  if(thematicAreaId.includes($scope.applicantDetails.Application_Thematic_Area__r[i].Id)){
                                   $scope.thematicAreaToDisplay.push({"Id":$scope.applicantDetails.Application_Thematic_Area__r[i].Id,"Name":$scope.applicantDetails.Application_Thematic_Area__r[i].Thematic_Area_Name__c	,"checked":true});
                               }else{
@@ -87,10 +87,10 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                               }
                           }
                       }else{
-      
+                          
                           for(var i=0;i<$scope.thematicAreaList.length;i++){
                               $scope.thematicAreaToDisplay.push({"Id":$scope.thematicAreaList[i].Id,"Name":$scope.thematicAreaList[i].Name,"checked":false});
-      
+                              
                           }
                       } 
                 }else{
@@ -102,17 +102,17 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                     var keyword=$scope.applicantDetails.KeyWords__c.split(';');
                     $scope.objKeyword.splice(0,1);
                     for(var k=0;k<keyword.length;k++){
-                      $scope.objKeyword.push({"keyword":keyword[k]});
+                        $scope.objKeyword.push({"keyword":keyword[k]});
                     }
-                  } 
-                  else{
+                } 
+                else{
                     $scope.objKeyword.push({"keyword":""});
-                  }
-                  $scope.$apply();
+                }
+                $scope.$apply();
             }
         },
-          {escape: true}
-      )
+                                                      {escape: true}
+                                                     )
     }
     
     $scope.addKeyword=function(){
@@ -121,35 +121,35 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
             $scope.objKeyword.push({keyword:""});
             $scope.$apply();
         }
-      }
-      $scope.removeKeyword=function(index){
+    }
+    $scope.removeKeyword=function(index){
         if($scope.objKeyword.length>1){
-        $scope.objKeyword.splice(index, 1);
+            $scope.objKeyword.splice(index, 1);
         }  
-      }
-      
-      $scope.readCharacter=function(event,index){
+    }
+    
+    $scope.readCharacter=function(event,index){
         debugger
-           try{
-           var rtfString=event.toString().replace(/<[^>]*>|\s/g, '').replace(/\s+/g,'').replace(/&ndash;/g,'-').replace(/&euro;/g,'1').replace(/&amp;/g,'1').replace(/&#39;/g,'1').replace(/&quot;/g,'1').replace(/&nbsp;/g,'').replace(/&mdash;/g,'-').replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&bull;/g,'');
+        try{
+            var rtfString=event.toString().replace(/<[^>]*>|\s/g, '').replace(/\s+/g,'').replace(/&ndash;/g,'-').replace(/&euro;/g,'1').replace(/&amp;/g,'1').replace(/&#39;/g,'1').replace(/&quot;/g,'1').replace(/&nbsp;/g,'').replace(/&mdash;/g,'-').replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&bull;/g,'');
             charLength=rtfString.length;
             if(charLength>0){
-             $scope.objRtf[index].charCount=charLength;
-             if(charLength>$scope.objRtf[index].maxCharLimit){
-                  $scope.objRtf[index].errorStatus=true;
-             }else
-             {
-              $scope.objRtf[index].errorStatus=false;
-             }
+                $scope.objRtf[index].charCount=charLength;
+                if(charLength>$scope.objRtf[index].maxCharLimit){
+                    $scope.objRtf[index].errorStatus=true;
+                }else
+                {
+                    $scope.objRtf[index].errorStatus=false;
+                }
             }
             else{
-                  $scope.objRtf[index].charCount=0;
-                  $scope.objRtf[index].errorStatus=false;
+                $scope.objRtf[index].charCount=0;
+                $scope.objRtf[index].errorStatus=false;
             }
-           }catch(e){}
-       }
+        }catch(e){}
+    }
     $scope.getApplicantDetail();
-       
+    
     $scope.restrictDecimalVal = function(myVar){
         // myVar = Math.round($scope.applicantDetails.Duration_In_Months_Max_36__c);
         if(myVar>36){
@@ -181,37 +181,37 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
     $scope.saveApplication = function(){
         $scope.applicantDetails.Campaign__c = $rootScope.tagCampaignId;
         debugger;
-
-             if($scope.applicantDetails.Acronym__c == undefined || $scope.applicantDetails.Acronym__c == ""){
+        
+        if($scope.applicantDetails.Acronym__c == undefined || $scope.applicantDetails.Acronym__c == ""){
             swal("info", "Please Enter Project Acronym.","info");
             $("#Acronym").addClass('border-theme');
-              return;
+            return;
         }
-
+        
         if($scope.applicantDetails.Title_Of__c == undefined || $scope.applicantDetails.Title_Of__c == ""){
             swal("info", "Please Enter Title of Proposal.","info");
             $("#title").addClass('border-theme');
-              return;
+            return;
         }
-
+        
         if($scope.applicantDetails.Title_In_German__c == undefined || $scope.applicantDetails.Title_In_German__c == ""){
             swal("info", "Please Enter Title des Antrages(In German).","info");
             $("#titleG").addClass('border-theme');
-              return;
+            return;
         }
-
+        
         if ($scope.applicantDetails.Duration_In_Months_Max_36__c == undefined || $scope.applicantDetails.Duration_In_Months_Max_36__c == ""){
             swal("info", "Please Enter Project Duration.","info");
             $("#txtDuration").addClass('border-theme');
-              return;
+            return;
         }
-
+        
         if ($scope.applicantDetails.Duration_In_Months_Max_36__c < 24 || $scope.applicantDetails.Duration_In_Months_Max_36__c > 36){
             swal("info", "Duration must be between 24 to 36 months.","info");
             $("#proposedDate").addClass('border-theme');
-              return;
+            return;
         }
-
+        
         debugger;
         $scope.selectedTheme = [];
         for(var i=0;i<$scope.thematicAreaToDisplay.length;i++){
@@ -223,28 +223,28 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
             swal("info", "Please select at least one project theme.","info");
             return;
         }
-
+        
         var keyword="";
         for(var i=0;i<$scope.objKeyword.length;i++){
             if($scope.objKeyword[i].keyword!='' && $scope.objKeyword[i].keyword!=undefined){
                 if(i==0)
-                keyword=$scope.objKeyword[i].keyword;
+                    keyword=$scope.objKeyword[i].keyword;
                 else
-                keyword=keyword+';'+$scope.objKeyword[i].keyword;
+                    keyword=keyword+';'+$scope.objKeyword[i].keyword;
             }
         }
         $scope.applicantDetails.KeyWords__c=keyword;
         delete($scope.applicantDetails.Application_Thematic_Area__r);
-
+        
         if($scope.applicantDetails.KeyWords__c == undefined || $scope.applicantDetails.KeyWords__c == ""){
             swal("info", "Please Enter Keyword.","info");
             $("#key").addClass('border-theme');
-              return;
+            return;
         }
         
         if($scope.applicantDetails.Summary__c == undefined || $scope.applicantDetails.Summary__c == ""){
             swal("info", "Please Enter Proposal Summary.","info");
-              return;
+            return;
         }
         if($scope.applicantDetails.Summary__c != undefined || $scope.applicantDetails.Summary__c != ""){
             if($scope.objRtf[0].errorStatus){
@@ -252,38 +252,41 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                 return;
             }
         }
-
-                    var year = 0;
-                    var month = 0;
-                    var day = 0;
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth() + 1; //January is 0!
-                    var yyyy = today.getFullYear();
-
+        
+        var year = 0;
+        var month = 0;
+        var day = 0;
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        
         if(($scope.tentitiveStartDate == undefined || $scope.tentitiveStartDate == '') && $rootScope.secondstage == true){
             swal("info", "Please Enter Tentative Date.","info");
             $("#TSD").addClass('border-theme');
-                return;
+            return;
         }else if(($scope.tentitiveStartDate != undefined || $scope.tentitiveStartDate != "") && $rootScope.secondstage == true){
             year = $scope.tentitiveStartDate.getUTCFullYear();
             month = $scope.startDate?$scope.tentitiveStartDate.getUTCMonth()+1:$scope.tentitiveStartDate.getUTCMonth()+2;
             day = $scope.tentitiveStartDate.getDate();
         }
-
+        
         if(($scope.tentitiveStartDate != undefined || $scope.tentitiveStartDate != "") && $rootScope.secondstage == true){
             if(($scope.tentitiveStartDate.getDate() < dd && $scope.tentitiveStartDate.getUTCMonth()+1 <= mm && $scope.tentitiveStartDate.getUTCFullYear() <= yyyy) && $rootScope.secondstage == true){
                 swal("info", "Tentative Start Date should not be previous date.");
                 $("#TSD").addClass('border-theme');
-                        return;
+                return;
             }
         }
         $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
         debugger;
-    ApplicantPortal_Contoller.insertApplication($scope.applicantDetails,$scope.selectedTheme,day,month,year,$rootScope.contactId,'Two Plus Two', function (result, event){
-        debugger;   
-        $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
-        if(event.status && result != null) {
+        ApplicantPortal_Contoller.insertApplication($scope.applicantDetails,$scope.selectedTheme,day,month,year,$rootScope.contactId,'Two Plus Two', function (result, event){
+            debugger;   
+            // Saving the ProposalId in Local Storage
+            localStorage.setItem('proposalId', result);
+            
+            $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+            if(event.status && result != null) {
                 debugger;
                 swal({
                     title: "Success",
@@ -293,13 +296,13 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                     dangerMode: false,
                 }).then((willDelete) => {
                     if (willDelete) {                    
-                        $rootScope.projectId = result;
-                        $scope.$apply();
-                        $scope.redirectPageURL('Consortia');
-                    } else {
-                     return;
-                    }
-                  });
+                    $rootScope.projectId = result;
+                    $scope.$apply();
+                    $scope.redirectPageURL('Consortia');
+                } else {
+                        return;
+                        }
+                        });
                 // Swal.fire(
                 //     'Proposal Detail',
                 //     'Basic Details have been saved successfully.',
@@ -308,15 +311,15 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                 // $scope.redirectPageURL('Consortia');
                 // $rootScope.projectId = result;
                 // $scope.$apply();
-        }
+            }
         },
-        {escape: true}
-        )
+                                                    {escape: true}
+                                                   )
     }
-     $scope.redirectToApplicantPortal = function() {
-    // Redirect to Applicant Portal page with candidate ID
-    window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=' + $rootScope.candidateId;
-};
+    $scope.redirectToApplicantPortal = function() {
+        // Redirect to Applicant Portal page with candidate ID
+        window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=' + $rootScope.candidateId;
+    };
     
     $scope.redirectPageURL = function(pageName){
         debugger;
@@ -328,7 +331,7 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
         link.href="#/"+pageName;
         link.click();
     }
-   
+    
     
     
     $scope.thematicArea = function(theme,index){
@@ -341,13 +344,13 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
             $scope.thematicAreaToDisplay[index].checked=true;
         }
         // if($scope.selectedTheme.includes(theme)){
-            
+        
         //     $scope.selectedTheme.splice($scope.selectedTheme.indexOf(theme),1);
         // }else{
         //     $scope.selectedTheme.push(theme);
         // }
     }
-
+    
     // $scope.unChecked = function () {
     //     debugger;
     //     if ($scope.selectedTheme.length > 1){
@@ -357,7 +360,7 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
     //         $scope.selectedTheme.splice();
     //     }
     // }
-
+    
     // $scope.deleteThematicArea = function(){
     //     ApplicantPortal_Contoller.deleteThematicArea($scope.themeId, function (result, event) {
     //         if (event.status) {
@@ -373,7 +376,7 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
     //         {escape: true}
     //         )
     // }
-
+    
     $scope.getDetails = function(){
         debugger;
         $scope.camDetails = result;
@@ -389,13 +392,13 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
             Month = $scope.tentitiveStartDate.getUTCMonth();
             Month=Month+1;
             Day = $scope.tentitiveStartDate.getDate();
-          }
-          var dayDiff = moment().diff(''+Year+'-'+Month+'-'+Day+'', 'days');
-          if(dayDiff>0){
+        }
+        var dayDiff = moment().diff(''+Year+'-'+Month+'-'+Day+'', 'days');
+        if(dayDiff>0){
             swal('info','Tentative date can not be less than today date. ','info')
             $scope.tentitiveStartDate='';
             $scope.$apply();
-          }
+        }
     }
     $scope.validateMaxLength=function(val){
         alert(val);
@@ -411,12 +414,12 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function($scope,$rootSc
                 return false;
             }
         });       
-      });
-
-      $scope.removeClass2=function(controlid){
+    });
+    
+    $scope.removeClass2=function(controlid){
         $("#"+controlid+"").removeClass('border-theme');
-      }
-
+    }
+    
     //   $(document).ready(function() {
     //     if($rootScope.proposalStage != "Draft"){
     //         CKEDITOR.config.readOnly = true;

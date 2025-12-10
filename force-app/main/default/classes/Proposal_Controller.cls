@@ -1,6 +1,7 @@
 public withOut sharing class Proposal_Controller {
     
-    /* public string thematicAreaList {get;set;}
+
+/* public string thematicAreaList {get;set;}
 public string duration  {get;set;}
 public String ApplicantPortalSiteURL {get;set;}
 public String candidateId {get;set;}
@@ -4515,7 +4516,7 @@ return null;
 }
 }*/
     
-    public static list<UserDocumentWrapper> getContactUserDoc(id parentId, Id proposalId) {
+    public list<UserDocumentWrapper> getContactUserDoc(id parentId, Id proposalId) {
         try{
             //   proposalId = 'a04e10000007iE1AAI';
             System.debug('parentId--'+parentId + '---proposalId--'+proposalId);
@@ -5642,9 +5643,11 @@ return null;
     
     public static Map<String, List<String>> getFieldDependencies(String objectName, String controllingField, String dependentField)
     {
+        System.debug(' ============================ getFieldDependencies ==================================');
         Map<String, List<String>> controllingInfo = new Map<String, List<String>>();
         
         Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+        System.debug(' objType : ' + objType);
         
         Schema.DescribeSObjectResult describeResult = objType.getDescribe();
         Schema.DescribeFieldResult controllingFieldInfo = describeResult.fields.getMap().get(controllingField).getDescribe();

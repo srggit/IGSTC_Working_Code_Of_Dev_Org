@@ -70,7 +70,10 @@ $scope.getProjectdetils = function () {
 $scope.getProjectdetils();
 
 $scope.uploadFile = function (type, userDocId, fileId,maxSize,minFileSize) {
+    
     debugger;
+    var maxStringSize = 6000000;
+    
     $scope.showSpinnereditProf = true;
     var file;
 
@@ -131,6 +134,7 @@ $scope.uploadFile = function (type, userDocId, fileId,maxSize,minFileSize) {
 
 $scope.uploadAttachment = function (type, userDocId, fileId) {
     debugger;
+    var chunkSize = 750000;
     var attachmentBody = "";
     // if (fileId == undefined) {
     //     fileId = " ";

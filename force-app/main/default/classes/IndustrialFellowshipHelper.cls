@@ -745,8 +745,8 @@ public String saveFellowshipProposal(String loginHashCode,Application_Proposal__
                 System.debug('Created new Proposal and Association');
             }
             
-            return 'Applicant Information has been saved successfully.';
-            
+            //return 'Applicant Information has been saved successfully.';
+            return proposal.Id;
         } catch (DmlException e) {
             Database.rollback(sp);
             System.debug('DML Exception: ' + e.getMessage() + ' at line ' + e.getLineNumber());
@@ -1080,14 +1080,37 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             return 'Error Occured';
             }
        }
-       public String submitSingApp(String projectId, Integer year, Integer month, Integer day){
+
+    //    Commented By Harsh 
+    //    public String submitSingApp(String projectId, Integer year, Integer month, Integer day){
+    //     try{
+    //         Contact conRec = [Select Id,Name,Declaration_Sign_Date__c,Proposals__c FROM Contact WHERE Proposals__c =:projectId AND Is_Primary__c = true];
+    //         if(year!=0){
+    //             Date newDate=Date.newInstance(year,month,day);
+    //             conRec.Declaration_Sign_Date__c=newDate;
+    //         }
+    //         update conRec;
+    //         Application_Proposal__c updateProposal=new Application_Proposal__c(Id=projectId);
+    //         updateProposal.Proposal_Stages__c='Submitted';
+    //         updateProposal.Submitted__c = true;
+    //         update updateProposal;
+    //         return 'success';
+    //     }catch(Exception e){
+    //         system.debug('The Error :: '+e.getMessage()+' AND Line No :: '+e.getLineNumber()+'');
+    //         return 'Error Occured';
+    //         }
+    //    }
+
+
+    //  ****************ADDED By Harsh**************
+    public String submitSingApp(String projectId, Integer year, Integer month, Integer day){
         try{
-            Contact conRec = [Select Id,Name,Declaration_Sign_Date__c,Proposals__c FROM Contact WHERE Proposals__c =:projectId AND Is_Primary__c = true];
+            Applicant_Proposal_Association__c apaRec = [Select Id,Name, Contact__r.Declaration_Sign_Date__c, Proposals__c FROM Applicant_Proposal_Association__c Where Proposals__c =:projectId AND Contact__r.Is_Primary__c = true];
             if(year!=0){
                 Date newDate=Date.newInstance(year,month,day);
-                conRec.Declaration_Sign_Date__c=newDate;
+                apaRec.Contact__r.Declaration_Sign_Date__c=newDate;
             }
-            update conRec;
+            update apaRec;
             Application_Proposal__c updateProposal=new Application_Proposal__c(Id=projectId);
             updateProposal.Proposal_Stages__c='Submitted';
             updateProposal.Submitted__c = true;
@@ -1098,6 +1121,9 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             return 'Error Occured';
             }
        }
+
+
+
        public String UploadAttachments(String attachmentBody, String attachmentName, string cvId, String udId) {
         system.debug('attachmentBody---'+attachmentName+'---attachmentId---'+cvId+'---cvId---'+udId);
         system.debug('cvId---'+cvId+'---udId---'+udId);

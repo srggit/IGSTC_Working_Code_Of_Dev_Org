@@ -17,26 +17,51 @@ public withOut sharing class ReviewerPortal_Controller {
     public String candidateId {get;set;}
 
       //************************************** Getting Custom Setting Data ***********************************************
-    @RemoteAction
-    public static String updateReviewerReport(List<String> proposalIds) {
-        system.debug('proposalIds--'+proposalIds);
-        List<Application_Proposal__c> submitted = [ SELECT Id, ReviewerReport_Submitted__c FROM Application_Proposal__c WHERE ReviewerReport_Submitted__c = true ];
+@RemoteAction
+public static String updateReviewerReport(List<String> proposalIds) {
 
-        for (Application_Proposal__c ap : submitted) {
-            ap.ReviewerReport_Submitted__c = false;
-        }
-        update submitted;
-
-
-    List<Application_Proposal__c> target = [ SELECT Id, Review_Completed__c FROM Application_Proposal__c WHERE Id IN :proposalIds ];
-
-        for (Application_Proposal__c ap : target) {
-            ap.ReviewerReport_Submitted__c = true;
-        }
-        update target;
-        String pdfData = CongaHelperToolLightning1.generateReport1(proposalIds[0]);
-        return pdfData;
+    if(proposalIds == null || proposalIds.isEmpty()){
+        throw new AuraHandledException('No proposals selected.');
     }
+
+    List<Application_Proposal__c> submitted = [
+        SELECT Id, ReviewerReport_Submitted__c 
+        FROM Application_Proposal__c 
+        WHERE ReviewerReport_Submitted__c = true
+        AND Id NOT IN :proposalIds
+    ];
+
+    for(Application_Proposal__c ap : submitted){
+        ap.ReviewerReport_Submitted__c = false;
+    }
+    update submitted;
+
+    List<Application_Proposal__c> target = [
+        SELECT Id, ReviewerReport_Submitted__c 
+        FROM Application_Proposal__c 
+        WHERE Id IN :proposalIds
+    ];
+
+    for(Application_Proposal__c ap : target){
+        ap.ReviewerReport_Submitted__c = true;
+    }
+    update target;
+
+    String pdfData = CongaHelperToolLightning1.generateReport1(proposalIds);
+
+    Attachment att = new Attachment(
+        Name = 'ReviewerReport.pdf',
+        Body = EncodingUtil.base64Decode(pdfData),
+        ParentId = proposalIds[0] 
+    );
+    insert att;
+
+    Map<String, String> result = new Map<String, String>();
+    result.put('base64Pdf', pdfData);
+    result.put('attachmentId', att.Id);
+
+    return JSON.serialize(result);
+}
 
 
     public ReviewerPortal_Controller() {

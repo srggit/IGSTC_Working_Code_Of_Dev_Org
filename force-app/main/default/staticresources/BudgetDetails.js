@@ -2,24 +2,44 @@ angular.module('cp_app').controller('budget_ctrl', function($scope, $rootScope){
     console.log('Intiated::');
     $scope.siteURL = siteURL;
     $rootScope.projectId;
+    $rootScope.proposalId;
     $scope.expenseDetails = false;
     $scope.accList = [];
     $scope.expenseList = [];
     $scope.accId = '';
 
-    $scope.getContact = function(){
-        debugger;
-        ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){
-            debugger;
-            if(event.status && result){
-                $scope.conRecord = result;
-                $rootScope.projectId = result.Proposals__c;
-            }
-            $scope.$apply();
-            $scope.getExpenseRecords();
-        })
+
+    // Fetching the proposalId from Local Storage
+
+    if (localStorage.getItem('proposalId')) {
+
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+
+        $rootScope.projectId = $rootScope.proposalId;
+        $scope.getExpenseRecords();
     }
-    $scope.getContact();
+
+
+
+
+
+
+
+    // $scope.getContact = function(){
+    //     debugger;
+    //     ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){
+    //         debugger;
+    //         if(event.status && result){
+    //             $scope.conRecord = result;
+    //             $rootScope.projectId = result.Applicant_Proposal_Associations__r[0].Proposals__c;
+    //         }
+    //         $scope.$apply();
+    //         $scope.getExpenseRecords();
+    //     })
+    // }
+    // $scope.getContact();
 
 
     $scope.getExpenseRecords = function(){

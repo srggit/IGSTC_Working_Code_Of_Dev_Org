@@ -33,10 +33,22 @@ public class IndustrialFellowshipModel {
     }
    //**********************************************************************************/
 //    @RemoteAction
+
+
+
+
+    // commented Method
     public  Contact getContactSingh(String loginHashCode){
         return [SELECT id,FirstName,LastName,Signature_Place__c,Account.Name, Industrial_Fellowship_Type__c,Uploaded__c,Declaration_Sign_Date__c,MailingCity,MailingState,MailingCountry,MailingPostalCode,MailingStreet,Nationality__c,Institute_Name__c,Department,Designation__c,Phone,Email,Homepage_URL__c,Birthdate,Profile_Pic_Attachment_Id__c,Institution_Name__c,(select name,id from Attachments Order By CreatedDate DESC limit 1)
                 From Contact WHERE Login_Hash_Code__c=: loginHashCode Limit 1];
     }
+
+    // public  Applicant_Proposal_Association__c getContactSingh(String loginHashCode){
+    //     return [SELECT Id, Contact__r.FirstName, Contact__r.LastName, Contact__r.Signature_Place__c,  Contact__r.Industrial_Fellowship_Type__c, Contact__r.Uploaded__c, Contact__r.Declaration_Sign_Date__c, Contact__r.MailingCity, Contact__r.MailingState, Contact__r.MailingCountry, Contact__r.MailingPostalCode, Contact__r.MailingStreet, Contact__r.Nationality__c, Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Phone, Contact__r.Email, Contact__r.Homepage_URL__c, Contact__r.Birthdate, Contact__r.Profile_Pic_Attachment_Id__c, Contact__r.Institution_Name__c, (SELECT Id From User_Documents__r Order By CreatedDate DESC limit 1) 
+    //             FROM Applicant_Proposal_Association__c WHERE Contact__r.Login_Hash_Code__c=: loginHashCode Limit 1];
+    // }
+
+
     // Old Method
     // public Contact getProposalDet(String loginHashCode){
     //     return [SELECT Id,Name,Proposals__r.Duration_In_Months_Max_36__c,Proposals__r.Id,Proposals__r.Purpose_for_Applying_Other__c,Proposals__r.Brief_Statement_of_Purpose__c,Proposals__r.Title_Of__c,Proposals__r.Proposed_area__c,Proposals__r.Purpose_for_applying__c,Proposals__r.KeyWords__c,Proposals__r.Summary__c,Proposals__r.Research_Approach_Objectives__c,Proposals__r.Abstract_of_proposed__c

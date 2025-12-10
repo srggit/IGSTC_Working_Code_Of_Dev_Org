@@ -1,5 +1,12 @@
 angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $rootScope) {
     debugger;
+
+    // Fetching the proposalId from Local Storage
+    if (localStorage.getItem('proposalId')) {
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+    }
+
     console.log('Intiated::');
     $scope.siteURL = siteURL;
     $rootScope.projectId;
@@ -180,140 +187,140 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
                 //     }
                 // }
                 // if ($scope.expenseList[i].Expense_Category__r.Account__c == index) {
-                    if ($scope.expenseList[i].Expense_Category__r.Name === "Manpower") {
-                        $scope.manPower.Total_Year1_Expense__c = Number((($scope.manPower.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.manPower.Total_Year2_Expense__c = Number((($scope.manPower.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.manPower.Total_Year3_Expense__c = Number((($scope.manPower.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.manPower.Overall_Expense = Number(($scope.manPower.Total_Year1_Expense__c + $scope.manPower.Total_Year2_Expense__c + $scope.manPower.Total_Year3_Expense__c).toFixed(2));
-                        $scope.manPowerRecords.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Consumables/Materials") {
-                        $scope.consumableTotal.Total_Year1_Expense__c = Number((($scope.consumableTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.consumableTotal.Total_Year2_Expense__c = Number((($scope.consumableTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.consumableTotal.Total_Year3_Expense__c = Number((($scope.consumableTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.consumableTotal.Overall_Expense = Number(($scope.consumableTotal.Total_Year1_Expense__c + $scope.consumableTotal.Total_Year2_Expense__c + $scope.consumableTotal.Total_Year3_Expense__c).toFixed(2));
-                        $scope.consumables.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Equipment & Accessories") {
-                        $scope.equipmentTotals.Total_Year1_Expense__c = Number((($scope.equipmentTotals.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.equipmentTotals.Total_Year2_Expense__c = Number((($scope.equipmentTotals.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.equipmentTotals.Total_Year3_Expense__c = Number((($scope.equipmentTotals.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.equipmentTotals.Overall_Expense = Number(($scope.equipmentTotals.Total_Year1_Expense__c + $scope.equipmentTotals.Total_Year2_Expense__c + $scope.equipmentTotals.Total_Year3_Expense__c).toFixed(2));
-                        $scope.Equipment.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Travel & Networking") {
-                        $scope.travelTotal.Total_Year1_Expense__c = Number((($scope.travelTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.travelTotal.Total_Year2_Expense__c = Number((($scope.travelTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.travelTotal.Total_Year3_Expense__c = Number((($scope.travelTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.travelTotal.Overall_Expense = Number(($scope.travelTotal.Total_Year1_Expense__c + $scope.travelTotal.Total_Year2_Expense__c + $scope.travelTotal.Total_Year3_Expense__c).toFixed(2));
-                        $scope.travel.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Overhead" || $scope.expenseList[i].Expense_Category__r.Name === "Projektpauschale") {
-                        $scope.overheadCharges.Total_Year1_Expense__c = Number((($scope.overheadCharges.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.overheadCharges.Total_Year2_Expense__c = Number((($scope.overheadCharges.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.overheadCharges.Total_Year3_Expense__c = Number((($scope.overheadCharges.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.overheadCharges.Overall_Expense = Number(($scope.overheadCharges.Total_Year1_Expense__c + $scope.overheadCharges.Total_Year2_Expense__c + $scope.overheadCharges.Total_Year3_Expense__c).toFixed(2));
-                        $scope.overhead.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Contingency") {
-                        $scope.contingencyTotal.Total_Year1_Expense__c = Number((($scope.contingencyTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.contingencyTotal.Total_Year2_Expense__c = Number((($scope.contingencyTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.contingencyTotal.Total_Year3_Expense__c = Number((($scope.contingencyTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.contingencyTotal.Overall_Expense = Number(($scope.contingencyTotal.Total_Year1_Expense__c + $scope.contingencyTotal.Total_Year2_Expense__c + $scope.contingencyTotal.Total_Year3_Expense__c).toFixed(2));
-                        $scope.contingency.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    else if ($scope.expenseList[i].Expense_Category__r.Name === "Subcontract/Outsourcing") {
-                        $scope.outsourcingTotal.Total_Year1_Expense__c = Number((($scope.outsourcingTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
-                        $scope.outsourcingTotal.Total_Year2_Expense__c = Number((($scope.outsourcingTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
-                        $scope.outsourcingTotal.Total_Year3_Expense__c = Number((($scope.outsourcingTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
-                        $scope.outsourcingTotal.Overall_Expense = Number(($scope.outsourcingTotal.Total_Year1_Expense__c + $scope.outsourcingTotal.Total_Year2_Expense__c + $scope.outsourcingTotal.Total_Year3_Expense__c).toFixed(2));
-                        $scope.outsourcing.push({
-                            Id: $scope.expenseList[i].Id,
-                            Description__c: $scope.expenseList[i].Description__c,
-                            Number__c: $scope.expenseList[i].Number__c,
-                            Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
-                            Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
-                            Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
-                            Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
-                            Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
-                            Position__c: $scope.expenseList[i].Position__c,
-                            Person_Month__c: $scope.expenseList[i].Person_Month__c,
-                            Salary_Month__c: $scope.expenseList[i].Salary_Month__c
-                        });
-                    }
-                    $scope.updateTotals();
+                if ($scope.expenseList[i].Expense_Category__r.Name === "Manpower") {
+                    $scope.manPower.Total_Year1_Expense__c = Number((($scope.manPower.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.manPower.Total_Year2_Expense__c = Number((($scope.manPower.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.manPower.Total_Year3_Expense__c = Number((($scope.manPower.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.manPower.Overall_Expense = Number(($scope.manPower.Total_Year1_Expense__c + $scope.manPower.Total_Year2_Expense__c + $scope.manPower.Total_Year3_Expense__c).toFixed(2));
+                    $scope.manPowerRecords.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Consumables/Materials") {
+                    $scope.consumableTotal.Total_Year1_Expense__c = Number((($scope.consumableTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.consumableTotal.Total_Year2_Expense__c = Number((($scope.consumableTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.consumableTotal.Total_Year3_Expense__c = Number((($scope.consumableTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.consumableTotal.Overall_Expense = Number(($scope.consumableTotal.Total_Year1_Expense__c + $scope.consumableTotal.Total_Year2_Expense__c + $scope.consumableTotal.Total_Year3_Expense__c).toFixed(2));
+                    $scope.consumables.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Equipment & Accessories") {
+                    $scope.equipmentTotals.Total_Year1_Expense__c = Number((($scope.equipmentTotals.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.equipmentTotals.Total_Year2_Expense__c = Number((($scope.equipmentTotals.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.equipmentTotals.Total_Year3_Expense__c = Number((($scope.equipmentTotals.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.equipmentTotals.Overall_Expense = Number(($scope.equipmentTotals.Total_Year1_Expense__c + $scope.equipmentTotals.Total_Year2_Expense__c + $scope.equipmentTotals.Total_Year3_Expense__c).toFixed(2));
+                    $scope.Equipment.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Travel & Networking") {
+                    $scope.travelTotal.Total_Year1_Expense__c = Number((($scope.travelTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.travelTotal.Total_Year2_Expense__c = Number((($scope.travelTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.travelTotal.Total_Year3_Expense__c = Number((($scope.travelTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.travelTotal.Overall_Expense = Number(($scope.travelTotal.Total_Year1_Expense__c + $scope.travelTotal.Total_Year2_Expense__c + $scope.travelTotal.Total_Year3_Expense__c).toFixed(2));
+                    $scope.travel.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Overhead" || $scope.expenseList[i].Expense_Category__r.Name === "Projektpauschale") {
+                    $scope.overheadCharges.Total_Year1_Expense__c = Number((($scope.overheadCharges.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.overheadCharges.Total_Year2_Expense__c = Number((($scope.overheadCharges.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.overheadCharges.Total_Year3_Expense__c = Number((($scope.overheadCharges.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.overheadCharges.Overall_Expense = Number(($scope.overheadCharges.Total_Year1_Expense__c + $scope.overheadCharges.Total_Year2_Expense__c + $scope.overheadCharges.Total_Year3_Expense__c).toFixed(2));
+                    $scope.overhead.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Contingency") {
+                    $scope.contingencyTotal.Total_Year1_Expense__c = Number((($scope.contingencyTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.contingencyTotal.Total_Year2_Expense__c = Number((($scope.contingencyTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.contingencyTotal.Total_Year3_Expense__c = Number((($scope.contingencyTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.contingencyTotal.Overall_Expense = Number(($scope.contingencyTotal.Total_Year1_Expense__c + $scope.contingencyTotal.Total_Year2_Expense__c + $scope.contingencyTotal.Total_Year3_Expense__c).toFixed(2));
+                    $scope.contingency.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                else if ($scope.expenseList[i].Expense_Category__r.Name === "Subcontract/Outsourcing") {
+                    $scope.outsourcingTotal.Total_Year1_Expense__c = Number((($scope.outsourcingTotal.Total_Year1_Expense__c || 0) + ($scope.expenseList[i].Year1_Expense__c || 0)).toFixed(2));
+                    $scope.outsourcingTotal.Total_Year2_Expense__c = Number((($scope.outsourcingTotal.Total_Year2_Expense__c || 0) + ($scope.expenseList[i].Year2_Expense__c || 0)).toFixed(2));
+                    $scope.outsourcingTotal.Total_Year3_Expense__c = Number((($scope.outsourcingTotal.Total_Year3_Expense__c || 0) + ($scope.expenseList[i].Year3_Expense__c || 0)).toFixed(2));
+                    $scope.outsourcingTotal.Overall_Expense = Number(($scope.outsourcingTotal.Total_Year1_Expense__c + $scope.outsourcingTotal.Total_Year2_Expense__c + $scope.outsourcingTotal.Total_Year3_Expense__c).toFixed(2));
+                    $scope.outsourcing.push({
+                        Id: $scope.expenseList[i].Id,
+                        Description__c: $scope.expenseList[i].Description__c,
+                        Number__c: $scope.expenseList[i].Number__c,
+                        Unit_Price__c: $scope.expenseList[i].Unit_Price__c,
+                        Year1_Expense__c: $scope.expenseList[i].Year1_Expense__c,
+                        Year2_Expense__c: $scope.expenseList[i].Year2_Expense__c,
+                        Year3_Expense__c: $scope.expenseList[i].Year3_Expense__c,
+                        Total_Expense__c: $scope.expenseList[i].Total_Expense__c,
+                        Position__c: $scope.expenseList[i].Position__c,
+                        Person_Month__c: $scope.expenseList[i].Person_Month__c,
+                        Salary_Month__c: $scope.expenseList[i].Salary_Month__c
+                    });
+                }
+                $scope.updateTotals();
                 // }
             }
         }
@@ -739,7 +746,7 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
         }
         if ($scope.accList.Industry__c) {
             if ($scope.totals && $scope.igstcFunding && $scope.igstcFunding.Total_Expense__c && $scope.totals.Overall_Expense && ($scope.igstcFunding.Total_Expense__c > $scope.totals.Overall_Expense)) {
-                
+
                 return {
                     isValid: false,
                     message: "IGSTC Funding cannot be greater than the Total expenses mentioned in the above table !"
@@ -749,7 +756,7 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
                 ((($scope.igstcFunding.Year1_Expense__c ? $scope.igstcFunding.Year1_Expense__c : 0)
                     + ($scope.industryContr.Year1_Expense__c ? $scope.industryContr.Year1_Expense__c : 0))
                     != $scope.totals.Total_Year1_Expense__c)) {
-                
+
                 return {
                     isValid: false,
                     message: "Your total expenses of year 1 have not been correctly divided into igstc funding and industry contribution as both of them don't add up to match the totals!"
@@ -759,7 +766,7 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
                 ((($scope.igstcFunding.Year2_Expense__c ? $scope.igstcFunding.Year2_Expense__c : 0)
                     + ($scope.industryContr.Year2_Expense__c ? $scope.industryContr.Year2_Expense__c : 0))
                     != $scope.totals.Total_Year2_Expense__c)) {
-                
+
                 return {
                     isValid: false,
                     message: "Your total expenses of year 2 have not been correctly divided into igstc funding and industry contribution as both of them don't add up to match the totals!"
@@ -769,7 +776,7 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
                 ((($scope.igstcFunding.Year3_Expense__c ? $scope.igstcFunding.Year3_Expense__c : 0)
                     + ($scope.industryContr.Year3_Expense__c ? $scope.industryContr.Year3_Expense__c : 0))
                     != $scope.totals.Total_Year3_Expense__c)) {
-                
+
                 return {
                     isValid: false,
                     message: "Your total expenses of year 3 have not been correctly divided into igstc funding and industry contribution as both of them don't add up to match the totals!"
@@ -1207,32 +1214,32 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
 
         if (exType === 'man') {
             calcTotals($scope.manPowerRecords, $scope.manPower);
-        } 
+        }
         else if (exType === 'cons') {
             calcTotals($scope.consumables, $scope.consumableTotal);
-        } 
+        }
         else if (exType === 'equi') {
             calcTotals($scope.Equipment, $scope.equipmentTotals);
-        } 
+        }
         else if (exType === 'travel') {
             calcTotals($scope.travel, $scope.travelTotal);
-        } 
+        }
         else if (exType === 'outsourcing') {
             calcTotals($scope.outsourcing, $scope.outsourcingTotal);
-        } 
+        }
         else if (exType === 'contingency') {
             calcTotals($scope.contingency, $scope.contingencyTotal);
-        } 
+        }
         else if (exType === 'overhead') {
             calcTotals($scope.overhead, $scope.overheadCharges);
-        } 
+        }
         else if (exType === 'igstc') {
             $scope.igstcFunding.Total_Expense__c = round2(
                 toNum($scope.igstcFunding.Year1_Expense__c) +
                 toNum($scope.igstcFunding.Year2_Expense__c) +
                 toNum($scope.igstcFunding.Year3_Expense__c)
             );
-        } 
+        }
         else if (exType === 'ic') {
             $scope.industryContr.Total_Expense__c = round2(
                 toNum($scope.industryContr.Year1_Expense__c) +

@@ -1,11 +1,23 @@
 angular.module('cp_app').controller('ProjectDetailsSing_Ctrl', function($scope,$rootScope) {
     $scope.objContact={};
     $scope.objProposal={};
+    $rootScope.proposalId;
     $scope.objKeyword=[];
     $scope.config.height=400;
     $scope.objKeyword.push({keyword:""});
     $scope.objRtf=[{charCount:0,maxCharLimit:2500,errorStatus:false}];
     $scope.objRtf.push({charCount:1,maxCharLimit:1000,errorStatus:false});
+    
+    // Fetching the proposalId from Local Storage
+
+    if (localStorage.getItem('proposalId')) {
+
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+
+    }
+ 
     $scope.getProposalDet=function(){
         IndustrialFellowshipController.getProposalDet($rootScope.candidateId, function (result, event) {
           debugger

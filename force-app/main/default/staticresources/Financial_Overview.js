@@ -27,6 +27,7 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
     $scope.TotalContriGermanIndustry = 0;
     $scope.TotalContriGermanAcademia = 0;
     $rootScope.isPrimaryContact;
+    $scope.disableBtn = false;
     $scope.hodeTableAskedFunding = false;
     if ($rootScope.isPrimaryContact == "true") {
         $scope.hodeTableAskedFunding = true;
@@ -200,6 +201,8 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
         $scope.input[index].Financial_Contribution__r[0].Asked_From_IGSTC__c = (Number($scope.input[index].Financial_Contribution__r[0].IGSTC_Contribution__c) / (Number($scope.input[index].Financial_Contribution__r[0].IGSTC_Contribution__c) + Number($scope.input[index].Financial_Contribution__r[0].Own_Contribution__c))) * 100;
     }
     $scope.validateFinacialDet = function (index) {
+        debugger
+        $scope.disableBtn = false;
         var FisrtAccountCountry = $scope.input[index].Contact__r.Account.BillingCountry;
         var FirstAccountAcademia = $scope.input[index].Contact__r.Account.Academia__c;
         var FirstAccountIndustry = $scope.input[index].Contact__r.Account.Industry__c;
@@ -231,27 +234,30 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
         for (var i = 0; i < SecondAccountIGSTCContr.length; i++) {
             TotalContri = parseInt(TotalContri) + parseInt(SecondAccountIGSTCContr[i]);
         }
-        if (FisrtAccountCountry == 'Germany' && TotalContri > 500000) {
-            swal('info', 'For German partners max. limit for IGSTC funding is euro 500000', 'info');
+        if (FisrtAccountCountry == 'Germany' && TotalContri > 50000) {
+            swal('info', 'For German partners max. limit for IGSTC funding is €50,000', 'info');
             //$("#total"+i+"").addClass('border-theme');
             return false;
         }
         else {
             if (FirstAccountAcademia) {
                 if (TotalContri > 35000000) {
-                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35000000', 'info');
+                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35,000,000', 'info');
                     //$("#total"+i+"").addClass('border-theme');
+                    $scope.disableBtn = true;
                     return false;
                 }
             } else {
                 if (FisrtAccountIGSTContri > 15000000) {
-                    swal('info', 'For Indian indusry max. limit for IGSTC funding is Rs. 15000000', 'info');
+                    swal('info', 'For Indian industry max. limit for IGSTC funding is Rs. 15,000,000', 'info');
                     //$("#total"+i+"").addClass('border-theme');
+                     $scope.disableBtn = true;
                     return false;
                 }
                 if (TotalContri > 35000000) {
-                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35000000', 'info');
+                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35,000,000', 'info');
                     //$("#total"+i+"").addClass('border-theme');
+                     $scope.disableBtn = true;
                     return false;
                 }
             }
@@ -262,6 +268,7 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
     $scope.submitFinancialDetails = function () {
         debugger;
         var financialList = [];
+        $scope.disableBtn = false;
         financialList = $scope.input;
 
         for (let i = 0; i < financialList.length; i++) {
@@ -304,13 +311,13 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
-                    if (financialList[i].Contact__r.Account.BillingCountry == 'India' && financialList[i].Contact__r.Account.Academia__c == true && (financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 35000000 - indianIndustryContri || financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 35000000)) {
-                        swal("Financial Details", "For Indian Academia, IGSTC Contribution should be not greater than 3.5cr - Indian Industry IGSTC contribution.");
+                    if (financialList[i].Contact__r.Account.BillingCountry == 'India' && financialList[i].Contact__r.Account.Academia__c == true && (financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 20000000 - indianIndustryContri || financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 20000000)) {
+                        swal("Financial Details", "For Indian Academia, IGSTC Contribution should not be greater than Rs. 20,000,000 minus Indian Industry IGSTC contribution.");
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
-                    if (financialList[i].Contact__r.Account.BillingCountry == 'India' && financialList[i].Contact__r.Account.Academia__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 35000000) {
-                        swal("Financial Details", "IGSTC Contribution should be not greater than 3.5cr.");
+                    if (financialList[i].Contact__r.Account.BillingCountry == 'India' && financialList[i].Contact__r.Account.Academia__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 20000000) {
+                        swal("Financial Details", "IGSTC Contribution should not be greater than Rs. 20,000,000.");
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
@@ -324,13 +331,13 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
-                    if (financialList[i].Contact__r.Account.BillingCountry == 'Germany' && financialList[i].Contact__r.Account.Academia__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 450000) {
-                        swal("Financial Details", "For German Academia, IGSTC Contribution should be not greater than 4,50,000 â‚¬.");
+                    if (financialList[i].Contact__r.Account.BillingCountry == 'Germany' && financialList[i].Contact__r.Account.Academia__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 50000) {
+                        swal("Financial Details", "For German Academia, IGSTC Contribution should not be greater than €50,000.");
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
-                    if (financialList[i].Contact__r.Account.BillingCountry == 'Germany' && financialList[i].Contact__r.Account.Industry__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 450000) {
-                        swal("Financial Details", "For German Industry, IGSTC Contribution should be not greater than 4,50,000 â‚¬.");
+                    if (financialList[i].Contact__r.Account.BillingCountry == 'Germany' && financialList[i].Contact__r.Account.Industry__c == true && financialList[i].Financial_Contribution__r[j].IGSTC_Contribution__c > 50000) {
+                        swal("Financial Details", "For German Industry, IGSTC Contribution should not be greater than €50,000.");
                         $("#igstc" + j + "").addClass('border-theme');
                         return;
                     }
@@ -385,23 +392,27 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
                             TotalContri = parseInt(TotalContri) + parseInt(SecondAccountIGSTCContr[m]);
                             // TotalContri=TotalContri+SecondAccountIGSTCContr[m];
                         }
-                        if (FisrtAccountCountry == 'Germany' && TotalContri > 500000) {
-                            swal('info', 'For German partners max. limit for IGSTC funding is euro 500000', 'info');
+                        if (FisrtAccountCountry == 'Germany' && TotalContri > 50000) {
+                            swal('info', 'For German partners max. limit for IGSTC funding is €50,000', 'info');
+                            $scope.disableBtn = true;
                             return;
                         }
                         else {
                             if (FirstAccountAcademia) {
                                 if (TotalContri > 35000000) {
-                                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35000000', 'info');
+                                    swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35,000,000', 'info');
+                                    $scope.disableBtn = true;
                                     return;
                                 }
                             } else {
                                 if (FisrtAccountIGSTContri > 15000000) {
-                                    swal('info', 'For Indian indusry max. limit for IGSTC funding is Rs. 15000000', 'info');
+                                    swal('info', 'For Indian industry max. limit for IGSTC funding is Rs. 15,000,000', 'info');
+                                    $scope.disableBtn = true;
                                     return false;
                                 }
                                 if (TotalContri > 35000000) {
                                     swal('info', 'For Indian partners max. limit for IGSTC funding is Rs. 35000000', 'info');
+                                    $scope.disableBtn = true;
                                     return;
                                 }
                             }
