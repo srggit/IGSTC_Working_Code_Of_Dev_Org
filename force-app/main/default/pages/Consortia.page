@@ -531,11 +531,11 @@
                                                 <input type="text" id="home{{$index}}" ng-model="account.Website"
                                                     class="form-control" ng-focus="removeClass('home',$index)"
                                                     ng-disabled="proposalStage || disableProjectPartnerDetailsOnConsortiaPage"
-                                                    ng-change="checkCharLimit(account, 'Website', 12)" />
+                                                    ng-change="checkCharLimit(account, 'Website', 255)" />
 
                                                 <small class="text-danger"
                                                     ng-if="account._charLimitMap && account._charLimitMap.Website">
-                                                    Maximum 13 characters allowed
+                                                    Maximum 255 characters allowed
                                                 </small>
                                             </div>
 

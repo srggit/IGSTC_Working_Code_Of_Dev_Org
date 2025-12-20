@@ -71,7 +71,7 @@ public without sharing class ApplicantPortal_Contoller {
         financialConDetails = JSON.serialize([SELECT German_Academia__c,German_Institute__c,Indian__c,Indian_Institute__c FROM Financial_Overview_Conditions__c limit 1]);
 
         // Fetch Year__c records (year object)//Added By karthik
-        List<Year__c> yearRecs = [SELECT Id, Name,Is_Active__c,Is_Current_Year__c FROM Year__c ORDER BY Name DESC];
+        List<Year__c> yearRecs = [SELECT Id, Name,Is_Active__c,Is_Current_Year__c FROM Year__c WHERE Is_Active__c= true ORDER BY Name DESC];
         yearList = JSON.serialize(yearRecs);
 
 
@@ -327,7 +327,8 @@ public without sharing class ApplicantPortal_Contoller {
                 con.Birthdate = Date.valueOf(newUser.birthdate);
             }
             insert con;
-            return 'Successfully created new user!';
+            // return 'Successfully created new user!';
+            return 'You have successfully registered on IGSTC Portal, Please check your E-mail!';
         }catch(Exception e) {
             System.debug('Error while craeting new contact and account ==> ' + e.getMessage() + ' at Line ===> ' + e.getLineNumber() + ' Stack Trace ===> ' + e.getStackTraceString());
             return 'Error creating new user: ' + e.getMessage();

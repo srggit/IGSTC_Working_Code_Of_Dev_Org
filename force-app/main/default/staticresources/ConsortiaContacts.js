@@ -449,20 +449,39 @@ angular.module('cp_app').controller('ConsortiaContacts_Ctrl', function ($scope, 
             $("#btnSubmit").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
             if (event.status) {
                 debugger;
+                // swal({
+                //     title: "Success",
+                //     text: "Your CV Details has been Saved successfully.",
+                //     icon: "success",
+                //     buttons: true,
+                //     dangerMode: false,
+                // }).then((willDelete) => {
+                //     if (willDelete) {
+                //         $scope.redirectPageURL('Financial_Overview');
+                //         $scope.$apply();
+                //     } else {
+                //         return;
+                //     }
+                // });
+
                 swal({
                     title: "Success",
-                    text: "Your CV Details has been Saved successfully.",
+                    text:
+                        "Your CV details have been saved successfully.\n\n" +
+                        "Next Step:\n" +
+                        "Please fill in the information about the following:\n" +
+                        "• Financial Contribution (Own)\n" +
+                        "• Financial Contribution (IGSTC)",
                     icon: "success",
                     buttons: true,
-                    dangerMode: false,
+                    dangerMode: false
                 }).then((willDelete) => {
                     if (willDelete) {
                         $scope.redirectPageURL('Financial_Overview');
                         $scope.$apply();
-                    } else {
-                        return;
                     }
                 });
+
 
                 //     Swal.fire(
                 //         'Success',

@@ -278,8 +278,7 @@
                             <i class="fa-solid fa-circle text-success me-3"></i>Only the coordinator can upload the filled project details pdf. </li>
                         <li class="ps-4">
                             <i class="fa-solid fa-circle text-success me-3"></i>The project details must be in format. The template can be downloaded from
-                            <a href="https://www.igstc.org/home/scheme_forms"
-                                target="_blank">here.</a>
+                            <a href="https://www.igstc.org/home/scheme_forms" target="_blank">here.</a>
                         </li>
                         <!--<div ng-show="sampleDoc.Category_Template__r.Document_Public_Link__c!=''">
                             <li class="ps-4"><i class="fa-solid fa-circle text-success me-3"></i>Download the Sample Document <a href="{{sampleDoc.Category_Template__r.Document_Public_Link__c}}" target="_blank">here.</a></li>
@@ -497,22 +496,28 @@
                     <div class="row mt-5">
                         <div class="col-md-6">
                             <div class="input-group ms-4">
-                                <label class="font-if">Upload Project Proposal<span class="ms-2 text-danger">*</span></label>
-                                <input type="file" accept=".pdf" class="form-control" ng-disabled="uploadDisable || isUploading || doc.userDocument.Status__c=='Uploaded'" id="fileSignature" />
+                                <label class="font-if">Upload Project Proposal
+                                    <span class="ms-2 text-danger">*</span>
+                                </label>
+                                <input type="file" accept=".pdf" class="form-control" ng-disabled="uploadDisable || isUploading || doc.userDocument.Status__c=='Uploaded'"
+                                    id="fileSignature" />
+                                <!-- <input type="file" accept=".pdf" class="form-control" ng-disabled="isUploading || doc.userDocument.Status__c=='Uploaded'" -->
+                                id="fileSignature" />
                                 <span class="input-group-btn pt-3" ng-hide="uploadDisable">
                                     <!-- <button class="btn btn-success mt-4 py-3" ng-click="uploadFile(doc.userDocument.Name,doc.userDocument.Id,'','1048576','1048576')"
 type="button" ng-disabled="isUploading"> -->
-                                    <button class="btn btn-success mt-4 py-3" 
-                                            ng-click="uploadFile(doc.userDocument.Name, doc.userDocument.Id, '')"
-                                            type="button" ng-disabled="isUploading || doc.userDocument.Status__c=='Uploaded'">
+                                    <button class="btn btn-success mt-4 py-3" ng-click="uploadFile(doc.userDocument.Name, doc.userDocument.Id, '')" type="button"
+                                        ng-disabled="isUploading || doc.userDocument.Status__c=='Uploaded'">
                                         <span ng-if="!isUploading">Upload</span>
                                         <span ng-if="isUploading">
                                             <i class="fa fa-spinner fa-spin"></i> Uploading...
-                                        </span></button>
+                                        </span>
+                                    </button>
                                 </span>
                             </div>
                             <div class="progress ms-4 mt-2" ng-show="showProgressBar" style="height: 20px;">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{uploadProgress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{ 'width': uploadProgress + '%' }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{uploadProgress}}" aria-valuemin="0"
+                                    aria-valuemax="100" ng-style="{ 'width': uploadProgress + '%' }">
                                     <span style="font-size:14px; font-weight:bold;">{{uploadProgress}}%</span>
                                 </div>
                             </div>

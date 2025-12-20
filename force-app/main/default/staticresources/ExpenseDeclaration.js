@@ -1002,7 +1002,15 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
                         );
                         return;
                     }
-                    swal("Expense Details", "Your Expense Detail has been saved Successfully");
+                    // swal("Expense Details", "Your Expense Detail has been saved Successfully");
+
+                    swal(
+                        "Expense Details",
+                        "Your Expense details have been saved successfully.\n\n" +
+                        "Next Step:\n" +
+                        "Complete the Declaration details on the next page."
+                    );
+
                     $scope.redirectPageURL('Declartion_2plus2');
                     //$scope.enableExpenseModule();
                     //$scope.$apply();

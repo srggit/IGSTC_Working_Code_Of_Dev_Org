@@ -1367,7 +1367,13 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
         $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
         ApplicantPortal_Contoller.insertCoordinatorsInformation($rootScope.proposalId, $scope.cleanedPartnerList, $scope.contactList, function (result, event) {
             $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
-            $scope.successmessage = "Co-Ordinators and Partner details have been saved successfully.";
+            // $scope.successmessage = "Co-Ordinators and Partner details have been saved successfully.";
+
+            $scope.successmessage =
+                "Coordinators and Partner details have been saved successfully.\n\n" +
+                "Next Step:\n" +
+                "Please complete the Coordinator’s Personal and Address details on the next page.";
+
             if (isCoordinator == 'false') {
                 $scope.successmessage = "Partner details have been saved successfully.";
             }

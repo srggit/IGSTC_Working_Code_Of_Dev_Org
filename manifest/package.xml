@@ -28,7 +28,7 @@
         <members>*</members>
         <name>LightningComponentBundle</name>
     </types>
-    <types>
+    <types>xxZ
         <members>*</members>
         <name>StaticResource</name>
     </types>

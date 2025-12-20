@@ -422,10 +422,10 @@
                                                 <th class="pb-3 color-theme">Specialization (Max. char 255)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th class="pb-3 color-theme">Start Year (Max. char 255)
+                                                <th class="pb-3 color-theme">Start Year (Max. char 4)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th class="pb-3 color-theme">End Year (Max. char 255)
+                                                <th class="pb-3 color-theme">End Year (Max. char 4)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th ng-hide="proposalStage" class="text-center">
@@ -533,10 +533,10 @@
                                                 <th class="pb-3 color-theme">Position (Max. char 255)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th class="pb-3 color-theme">Start Year (Max. char 4) -
+                                                <th class="pb-3 color-theme">Start Year (Max. char 4)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th class="pb-3 color-theme">End Year (Max. char 4) -
+                                                <th class="pb-3 color-theme">End Year (Max. char 4)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th ng-hide="proposalStage" class="text-center">

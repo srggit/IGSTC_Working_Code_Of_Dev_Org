@@ -565,7 +565,7 @@
                 <i class="fa-solid fa-home"></i> Dashboard
             </div>
             <div class="nav-item" ng-class="{active: selectedMenu === 'Programs'}" ng-click="showSection('Programs')">
-                <i class="fa-solid fa-list"></i> Programs
+                <i class="fa-solid fa-list"></i> Programmes
             </div>
             <div class="nav-item" ng-class="{active: selectedMenu === 'Help'}" ng-click="showSection('Help')">
                 <i class="fa-solid fa-circle-question"></i> Get Help
@@ -636,7 +636,7 @@
                         </div>
                         <div class="program-title">{{p.name}}</div>
                         <!-- <div class="program-title">{{p.yearlyCallId}}</div> -->
-                        <div class="program-title">{{p.yearlyCall}}</div>
+                        <!-- <div class="program-title">{{p.yearlyCall}}</div> -->
                         <div class="program-deadline">Application Deadline: {{p.deadline}}</div>
                         <div class="program-desc">{{p.desc}}</div>
                         <!-- <div class="btn-container">

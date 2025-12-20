@@ -585,20 +585,60 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     //************************************************************************************************** */
     $scope.redirectToForm = function (val) {
         debugger;
-        if (val.category == 'applied' && (val.proposalId != undefined || val.proposalId != '')) {
+        var redirectPage = val.redirectUrl;
+        var isSecondStage = false;
+        
+        if (val.category == 'applied' && (val.proposalId != undefined && val.proposalId != '')) {
             localStorage.setItem('proposalId', val.proposalId);
             localStorage.setItem('yearlyCallId', val.yearlyCallId);
             localStorage.setItem('apaId', val.apaId);
             const proposalData = $scope.proposalWrapperList.find(item => item.Id == val.proposalId);
+            
+            if (!proposalData) {
+                console.error('Proposal data not found for ID:', val.proposalId);
+                $rootScope.campaignId = val.campaignId;
+                $location.path('/' + redirectPage);
+                return;
+            }
+            
             $rootScope.proposalId = proposalData.Id;
+            
+            // Determine if it's second stage
             if (proposalData.stage == "1st Stage") {
                 $rootScope.secondStage = false;
-            } else {
+                isSecondStage = false;
+            } else if (proposalData.stage == "2nd Stage" || proposalData.stage == "2nd stage" || proposalData.stage == "2ndStage") {
                 $rootScope.secondStage = true;
+                isSecondStage = true;
+            } else {
+                $rootScope.secondStage = false;
+                isSecondStage = false;
             }
+            
             if (proposalData.stage == '' || proposalData.stage == undefined) {
                 $rootScope.secondStage = false;
+                isSecondStage = false;
             }
+            
+            // When in 2nd Stage, prevent redirecting to declaration pages
+            // Declaration pages should only be reached through the normal application flow
+            if (isSecondStage) {
+                var declarationPages = ['Declartion_2plus2', 'ExpenseDeclaration', 'Declaration'];
+                if (declarationPages.indexOf(redirectPage) !== -1) {
+                    // If redirectUrl is a declaration page, we need to find the actual starting page
+                    // Check if we can get the campaign's actual starting page from allPrograms
+                    var campaignData = $scope.allPrograms.find(p => p.campaignId == val.campaignId);
+                    if (campaignData && campaignData.redirectUrl && declarationPages.indexOf(campaignData.redirectUrl) === -1) {
+                        redirectPage = campaignData.redirectUrl;
+                    } else {
+                        // Fallback: For 2+2 Call, default to ProjectDetailPage; for others, use Dashboard_IF or similar
+                        // This is a safety measure - ideally the Campaign's RedirectPage__c should be the starting page
+                        console.warn('2nd Stage proposal redirecting to declaration page. Campaign RedirectPage__c may be incorrectly configured.');
+                        // Keep the original redirectUrl but log a warning
+                    }
+                }
+            }
+            
             if (proposalData.proposalStage != "Draft" || (proposalData.proposalStage == "Draft" && partnerSubmission == "true")) {
                 // if(proposalStage != "Draft"){
                 $rootScope.proposalStage = true;
@@ -615,7 +655,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
             localStorage.setItem('yearlyCallId', val.yearlyCallId);
         }
         $rootScope.campaignId = val.campaignId;
-        $location.path('/' + val.redirectUrl);
+        $location.path('/' + redirectPage);
     }
 
     $scope.showSection = function (menu) {
@@ -670,3 +710,6 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
 
 
 });
+
+
+

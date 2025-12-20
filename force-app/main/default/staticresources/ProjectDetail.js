@@ -1,12 +1,12 @@
 angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $rootScope) {
     debugger;
-    
+
     // Fetching the proposalId from Local Storage
     if (localStorage.getItem('proposalId')) {
         $rootScope.proposalId = localStorage.getItem('proposalId');
         console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
     }
-    
+
     $scope.config = {};
     $scope.config.toolbarGroups = [
         { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
@@ -29,12 +29,12 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     $scope.siteURL = siteURL;
     $scope.proposalDetails = {};
     $scope.disable = false;
-    $scope.uploadDisable = proposalStage == "Draft" && isCoordinator == "true" ? true : false;  //need to check 
+    $scope.uploadDisable = proposalStage == "Draft" && isCoordinator == "true" ? false : true;  //need to check 
 
 
-	$scope.uploadProgress = 0;
+    $scope.uploadProgress = 0;
     $scope.showProgressBar = false;
-    
+
     $scope.previewFileLink = '';
 
     // if(proposalStage=="Draft" && isCoordinator == "true"){
@@ -42,8 +42,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     // }else{
     //     $scope.uploadDisable = true;
     // }
-    $rootScope.secondstage;
-    console.log('second stage=>' + $rootScope.secondstage);
+    $rootScope.secondStage;
+    $scope.secondStage;
+    console.log('second stage=>' + $rootScope.secondStage);
+    console.log(' scope second stage=>' + $scope.secondStage);
     $scope.objRtf = [{ charCount: 0, maxCharLimit: 0, errorStatus: false }];
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
@@ -57,7 +59,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
 
     $scope.getProjectdetils = function () {
         debugger;
-        ApplicantPortal_Contoller.getProjectdetils($rootScope.candidateId, function (result, event) {
+        ApplicantPortal_Contoller.getProjectdetils($rootScope.proposalId, function (result, event) {
             debugger;
             if (event.status && result) {
                 debugger;
@@ -127,7 +129,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                 }
                 $scope.$applyAsync();
             }
-                            
+
         }, {
             escape: true
         })
@@ -139,11 +141,11 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         $scope.selectedFile = fileContent;
 
         console.log('selectedFile---', $scope.selectedFile);
-        var jhj=$scope.selectedFile.userDocument.Attachments[0].Id;
-        console.log(jhj);             
-        $scope.filesrec = $sce.trustAsResourceUrl(window.location.origin +'/ApplicantDashboard/servlet/servlet.FileDownload?file='+$scope.selectedFile.userDocument.Attachments[0].Id);
-        console.log('filesrec : ',$scope.filesrec);
-        
+        var jhj = $scope.selectedFile.userDocument.Attachments[0].Id;
+        console.log(jhj);
+        $scope.filesrec = $sce.trustAsResourceUrl(window.location.origin + '/ApplicantDashboard/servlet/servlet.FileDownload?file=' + $scope.selectedFile.userDocument.Attachments[0].Id);
+        console.log('filesrec : ', $scope.filesrec);
+
         $('#file_frame').attr('src', $scope.filesrec);
 
         var myModal = new bootstrap.Modal(document.getElementById('filePreview'))
@@ -154,21 +156,21 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     }
     $scope.uploadFile = function (type, userDocId, fileId) {
         debugger;
-        if($scope.doc && $scope.doc.userDocument && $scope.doc.userDocument.Status__c && $scope.doc.userDocument.Status__c=='Uploaded'){
+        if ($scope.doc && $scope.doc.userDocument && $scope.doc.userDocument.Status__c && $scope.doc.userDocument.Status__c == 'Uploaded') {
             // console.log('File already uploaded !!');
             swal({
                 title: "Error",
                 text: "A file has already been uploaded. You cannot upload another file.",
                 icon: "error",
                 button: "OK",
-              });
+            });
             return;
         }
-        
+
         $scope.uploadProgress = 0;
         $scope.showProgressBar = true;
         $scope.isUploading = true;
-        
+
         $scope.showSpinnereditProf = true;
         var file;
         maxFileSize = 5191680;
@@ -210,8 +212,8 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                     console.log("Total Attachment Length: " + fileSize);
                     doneUploading = false;
                     debugger;
-                   // if (fileSize < maxStringSize) {
-                   if (true) {
+                    // if (fileSize < maxStringSize) {
+                    if (true) {
                         // Add the info or warning message here after uploading
                         swal({
                             title: "Warning",
@@ -237,7 +239,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                         $scope.isUploading = false;
                         $scope.showSpinnereditProf = false;
                         // swal("info", "Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".", "info");
-                        swal("info", "File size should be lesser than 4 MB.", "info");                        return;
+                        swal("info", "File size should be lesser than 4 MB.", "info"); return;
                         // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                     }
 
@@ -289,7 +291,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
             $scope.showSpinnereditProf = false;
         }
     };
-    
+
 
     $scope.uploadAttachment = function (type, userDocId, fileId) {
         debugger;
@@ -297,11 +299,11 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         // if (fileId == undefined) {
         //     fileId = "";
         // }
-        
-        $scope.$applyAsync(function() {
+
+        $scope.$applyAsync(function () {
             $scope.uploadProgress = Math.round((positionIndex / fileSize) * 100);
         });
-        
+
         //if (fileSize <= positionIndex + chunkSize) {
         if (true) {
             debugger;
@@ -317,10 +319,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         var stringAttachmentName = String(attachmentName);
         var stringFileId = fileId ? String(fileId) : '';
         var stringUserDocId = (userDocId && userDocId !== 'undefined') ? String(userDocId) : '';
-        
+
         ApplicantPortal_Contoller.doCUploadAttachmentProjectDet(
             //attachmentBody, attachmentName, fileId, userDocId,
-            stringAttachmentBody,stringAttachmentName,stringFileId,stringUserDocId,
+            stringAttachmentBody, stringAttachmentName, stringFileId, stringUserDocId,
             function (result, event) {
                 console.log(result);
                 if (event.type === 'exception') {
@@ -332,7 +334,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                     if (doneUploading == true) {
                         $scope.isUploading = false;
                         $scope.showSpinnereditProf = false;
-                        $scope.$applyAsync(function() {
+                        $scope.$applyAsync(function () {
                             $scope.uploadProgress = 100;
                         });
                         swal(
@@ -340,12 +342,12 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                             'Uploaded Successfully!',
                             'success'
                         )
-                        
-                        setTimeout(function() {
+
+                        setTimeout(function () {
                             $scope.isUploading = false; // Allow button to be clickable again
                             $scope.showProgressBar = false;
                             $scope.getDocsDet(); // Refresh doc list to get the new file link
-                             if (!$scope.$$phase) $scope.$apply();
+                            if (!$scope.$$phase) $scope.$apply();
                         }, 1500);
 
                         $scope.getProjectdetils();
@@ -359,8 +361,8 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                     }
                     $scope.showUplaodUserDoc = false;
                     // $scope.getCandidateDetails();
-                } 
-                    
+                }
+
             },
 
 
@@ -492,17 +494,17 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     $scope.saveDetails = function () {
         debugger;
 
-        if($scope.doc.userDocument.Status__c !=='Uploaded'){
+        if ($scope.doc.userDocument.Status__c !== 'Uploaded') {
             // console.log('File already uploaded !!');
             swal({
                 title: "Info",
                 text: "A file must be uploaded before saving.",
                 icon: "info",
                 button: "OK",
-              });
+            });
             return;
         }
-        
+
         // if($scope.proposalDetails.Research_Approach_Objectives__c == undefined || $scope.proposalDetails.Research_Approach_Objectives__c == ""){
         //     Swal.fire(
         //         '',
@@ -552,7 +554,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         //       return;
         // }
 
-        // if(($scope.proposalDetails.Criteria_For_Abandoning_The_Project__c == undefined || $scope.proposalDetails.Criteria_For_Abandoning_The_Project__c == "") && $rootScope.secondstage == true)
+        // if(($scope.proposalDetails.Criteria_For_Abandoning_The_Project__c == undefined || $scope.proposalDetails.Criteria_For_Abandoning_The_Project__c == "") && $rootScope.secondStage == true)
         //             {
         //                 Swal.fire(
         //                   '',
@@ -562,7 +564,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         //                     return;
         //             }
 
-        // if(($scope.proposalDetails.Necessity_Of_Funding__c == undefined || $scope.proposalDetails.Necessity_Of_Funding__c == "") && $rootScope.secondstage == true)
+        // if(($scope.proposalDetails.Necessity_Of_Funding__c == undefined || $scope.proposalDetails.Necessity_Of_Funding__c == "") && $rootScope.secondStage == true)
         // {
         //     Swal.fire(
         //         '',
@@ -576,15 +578,45 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
             $("#btnSubmit").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
             if (event.status) {
                 debugger;
+                // swal({
+                //     title: "Success",
+                //     text: "Project Details have been saved successfully.",
+                //     icon: "success",
+                //     buttons: true,
+                //     dangerMode: false,
+                // }).then((willDelete) => {
+                //     if (willDelete) {
+                //         if ($rootScope.secondStage) {
+                //             $scope.redirectPageURL('ExpenseDeclaration');
+                //         } else {
+                //             $scope.redirectPageURL('Declartion_2plus2');
+                //         }
+                //     } else {
+                //         return;
+                //     }
+                // });
+
+                let messageText;
+
+                messageText = $rootScope.secondStage
+                    ? `Project Details have been saved successfully.
+
+                    Next Step:
+                    Please fill in the Expense Declaration Info.`
+                    : `Project Details have been saved successfully.
+
+                    Next Step:
+                    Please fill in the Declaration Info.`;
+
                 swal({
                     title: "Success",
-                    text: "Project Details have been saved successfully.",
+                    text: messageText,
                     icon: "success",
                     buttons: true,
                     dangerMode: false,
                 }).then((willDelete) => {
                     if (willDelete) {
-                        if ($rootScope.secondstage) {
+                        if ($rootScope.secondStage) {
                             $scope.redirectPageURL('ExpenseDeclaration');
                         } else {
                             $scope.redirectPageURL('Declartion_2plus2');

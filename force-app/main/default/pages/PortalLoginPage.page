@@ -836,10 +836,16 @@
             if(event.status) {
                 // Check if email is not verified - THIS SHOULD BE FIRST
                 if(result.emailVerified === false) {
-                    alert('Please verify your email before logging in. Check your inbox for verification instructions.');
+                    Swal.fire({
+                        title: 'Email Verification Required',
+                        text: 'Please verify your email before logging in. Check your inbox for verification instructions.',
+                        icon: 'info',
+                        confirmButtonColor: '#4b0082',
+                        confirmButtonText: 'OK'
+                    });
                     $scope.user.captcha = '';
                     $scope.refreshCaptcha();
-                    $scope.clearLoading();
+                    $scope.clearLoading(); 
                     return;
                 }
                 
@@ -880,17 +886,19 @@
                 $scope.validatePassword = function(password) {
                     if (!password) return false;
                     
-                    var lowerCaseLetters = /[a-z]/g;
-                    var upperCaseLetters = /[A-Z]/g;
-                    var numbers = /[0-9]/g;
-                    var specialChars = /[!@#$%^&*~=+'",.-_|{}]/g;
+                    var lowerCaseLetters = /[a-z]/;
+                    var upperCaseLetters = /[A-Z]/;
+                    var numbers = /[0-9]/;
+                    // Special characters: !@#$%^&*~=+'",._|{}-
+                    var specialChars = /[!@#$%^&*~=+'",._|{}\-]/;
                     
-                    return password.match(lowerCaseLetters) && 
-                           password.match(upperCaseLetters) && 
-                           password.match(numbers) && 
-                           password.match(specialChars) && 
-                           password.length >= 8 && 
-                           password.length <= 15;
+                    var hasLower = lowerCaseLetters.test(password);
+                    var hasUpper = upperCaseLetters.test(password);
+                    var hasNumber = numbers.test(password);
+                    var hasSpecial = specialChars.test(password);
+                    var validLength = password.length >= 8 && password.length <= 15;
+                    
+                    return hasLower && hasUpper && hasNumber && hasSpecial && validLength;
                 };
                 
                 // Password hint - UPDATED to match the correct criteria
@@ -912,7 +920,7 @@
         capital: /[A-Z]/.test(password),
         letter: /[a-z]/.test(password),
         number: /[0-9]/.test(password),
-        special: /[!@#$%^&*~=+'",.-_|{}]/.test(password),
+        special: /[!@#$%^&*~=+'",._|{}\-]/.test(password),
         length: password.length >= 8,
         maxLength: password.length <= 15
     };
@@ -955,11 +963,12 @@
                     if(!$scope.newUser.password) {
                         $scope.errors.password = "Please Enter your password";
                     } else {
-                       	var lowerCaseLetters = /[a-z]/g;
-  						  var upperCaseLetters = /[A-Z]/g;
-                        var numbers = /[0-9]/g;
-                        var specialChars = /[!@#$%^&*~=+'",.-_|{}]/g;
                         var password = $scope.newUser.password;
+                        var lowerCaseLetters = /[a-z]/;
+                        var upperCaseLetters = /[A-Z]/;
+                        var numbers = /[0-9]/;
+                        // Special characters: !@#$%^&*~=+'",._|{}-
+                        var specialChars = /[!@#$%^&*~=+'",._|{}\-]/;
                         var errorMessages = [];
                         
                         // Check all conditions and collect errors
@@ -969,17 +978,17 @@
                         if(password.length > 15) {
                             errorMessages.push("maximum 15 characters");
                         }
-                        if(!password.match(lowerCaseLetters)) {
+                        if(!lowerCaseLetters.test(password)) {
                             errorMessages.push("one lowercase letter");
                         }
-                        if(!password.match(upperCaseLetters)) {
+                        if(!upperCaseLetters.test(password)) {
                             errorMessages.push("one uppercase letter");
                         }
-                        if(!password.match(numbers)) {
+                        if(!numbers.test(password)) {
                             errorMessages.push("one number");
                         }
-                        if(!password.match(specialChars)) {
-                            errorMessages.push("one special character (!@#$%^&*~=+'\",.-_|{})");
+                        if(!specialChars.test(password)) {
+                            errorMessages.push("one special character (!@#$%^&*~=+'\",._|{}-)");
                         }
                         
                         // Set error message if any validation failed
@@ -1017,7 +1026,7 @@
                     ApplicantPortal_Contoller.insertNewUser($scope.newUser, function(result, event) {
                         try {
                             if(event.status) {
-                                if(result.includes('Success')) {
+                                if(result.includes('success')) {
                                     Swal.fire({
                                         title: 'Success',
                                         text: result,

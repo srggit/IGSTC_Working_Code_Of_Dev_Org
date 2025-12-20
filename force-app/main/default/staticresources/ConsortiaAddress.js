@@ -13,7 +13,7 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
     }
           */
 
-    $scope.siteURL = siteURL; 
+    $scope.siteURL = siteURL;
     $scope.selectedFile;
     $scope.proposalStage = $scope.proposalStage ? true : ($scope.secondstage ? true : false);
 
@@ -404,19 +404,39 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             if (event.status) {
                 debugger;
 
+                // swal({
+                //     title: "Success",
+                //     text: "Consortium Details have been saved successfully.",
+                //     icon: "success",
+                //     buttons: true,
+                //     dangerMode: false,
+                // }).then((willDelete) => {
+                //     if (willDelete) {
+                //         $scope.disableSubmit = true;
+                //         $scope.redirectPageURL('ConsortiaContacts');
+                //         $scope.$apply();
+                //     } else {
+                //         return;
+                //     }
+                // });
+
                 swal({
                     title: "Success",
-                    text: "Consortium Details have been saved successfully.",
+                    text:
+                        "Consortium Details have been saved successfully.\n\n" +
+                        "Next Step:\n" +
+                        "On the next page, please complete the following details:\n" +
+                        "• Education Details\n" +
+                        "• Employment Details\n" +
+                        "• Patent / Publication Details",
                     icon: "success",
                     buttons: true,
-                    dangerMode: false,
+                    dangerMode: false
                 }).then((willDelete) => {
                     if (willDelete) {
                         $scope.disableSubmit = true;
                         $scope.redirectPageURL('ConsortiaContacts');
                         $scope.$apply();
-                    } else {
-                        return;
                     }
                 });
 

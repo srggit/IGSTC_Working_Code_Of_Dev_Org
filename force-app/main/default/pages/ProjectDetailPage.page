@@ -296,10 +296,31 @@
                             Duration In Months (Min 24 Max 36)
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input name="duration" placeholder="Min -24 months and Maximum – 36 months." class="form-control" type="text" number="applicantDetails.Duration_In_Months_Max_36__c" ng-model="applicantDetails.Duration_In_Months_Max_36__c"
+                        <!-- <input name="duration" placeholder="Min -24 months and Maximum – 36 months." class="form-control" type="text" number="applicantDetails.Duration_In_Months_Max_36__c" ng-model="applicantDetails.Duration_In_Months_Max_36__c"
                                 ng-disabled="proposalStage" ng-minlength="2" ng-maxlength="2" min="24" max="36" id="txtDuration" ng-focus="removeClass2('txtDuration')"
-                                ng-keyup="restrictDecimalVal(applicantDetails.Duration_In_Months_Max_36__c)" />
-                                <span ng-if="!formPrjDet.duration.$valid" class="text-danger">duration must be between 24 and 36 Months</span>
+                                ng-change="restrictDecimalVal(applicantDetails.Duration_In_Months_Max_36__c)" />
+                                <span ng-if="!formPrjDet.duration.$valid" class="text-danger">duration must be between 24 and 36 Months</span> -->
+                        
+                            <form name="formPrjDet">
+                            <input name="duration"
+                                type="number"
+                                class="form-control"
+                                placeholder="Min 24 months and Max 36 months"
+                                ng-model="applicantDetails.Duration_In_Months_Max_36__c"
+                                ng-disabled="proposalStage"
+                                min="24"
+                                max="36"
+                                id="txtDuration"
+                                ng-focus="removeClass2('txtDuration')" 
+                                ng-change="restrictDecimalVal()"
+                                />
+
+                            <span class="text-danger"
+                                ng-show="formPrjDet.duration.$error.min || formPrjDet.duration.$error.max">
+                                Duration must be between 24 and 36 months
+                            </span>
+                        </form>
+
                     </div>
 
                     <div class="col-md-12 mt-5">    
@@ -329,7 +350,7 @@
                     <div class="row mt-5">
                         <div class="col-md-4">
                             <label class="ps-3 pt-1 color-theme">
-                                <b>Keywords<span class="required-asterisk" style="color:red;">*</span>  <i>(To add click plus sign)</i></b>                                
+                                <b>Keywords<span class="required-asterisk" style="color:red;">*</span> (Max. 6) <i>(To add click plus sign)</i></b>                                
                             </label>
                         </div>
                         <div class="col-md-1">

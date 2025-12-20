@@ -156,15 +156,26 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function ($scope, $root
     }
     $scope.getApplicantDetail();
 
-    $scope.restrictDecimalVal = function (myVar) {
-        // myVar = Math.round($scope.applicantDetails.Duration_In_Months_Max_36__c);
-        if (myVar > 36) {
-            return false;
+    // $scope.restrictDecimalVal = function (myVar) {
+    //     // myVar = Math.round($scope.applicantDetails.Duration_In_Months_Max_36__c);
+    //     if (myVar > 36) {
+    //         return false;
+    //     }
+    //     else {
+    //         return true;
+    //     }
+    // }
+
+    $scope.restrictDecimalVal = function () {
+        let val = $scope.applicantDetails.Duration_In_Months_Max_36__c;
+
+        if (val > 36) {
+            $scope.applicantDetails.Duration_In_Months_Max_36__c = 36;
         }
-        else {
-            return true;
+        if (val < 24) {
+            $scope.applicantDetails.Duration_In_Months_Max_36__c = 24;
         }
-    }
+    };
     // CKEDITOR.instances["config"].on('keyup', function() {
     //     alert("I ma live!");
     // });
@@ -319,6 +330,7 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function ($scope, $root
                 // $scope.$apply();
             }
             */
+            /*
             if (event.status && result != null) {
                 swal({
                     title: "Success",
@@ -328,6 +340,32 @@ angular.module('cp_app').controller('ProjectDetailCtrl', function ($scope, $root
                         cancel: "Cancel",
                         confirm: "Submit"
                     }
+                }).then((isConfirmed) => {
+                    if (isConfirmed) {
+                        // ✔ User clicked SUBMIT
+                        $rootScope.projectId = result;
+                        $scope.$apply();
+                        $scope.redirectPageURL('Consortia');
+                    } else {
+                        // ✔ User clicked CANCEL → do nothing
+                        // Data remains as it is
+                    }
+                });
+            }
+            */
+            if (event.status && result != null) {
+                swal({
+                    title: "Success",
+                    text: "Basic Details have been saved successfully.\n\n" +
+                        "Next Step:\n" +
+                        "• Please add Coordinator details\n" +
+                        "• Submit once all Project Partners are added",
+                    icon: "success",
+                    button: "OK"
+                    // buttons: {
+                    //     // cancel: "Cancel",
+                    //     confirm: "OK"
+                    // }
                 }).then((isConfirmed) => {
                     if (isConfirmed) {
                         // ✔ User clicked SUBMIT

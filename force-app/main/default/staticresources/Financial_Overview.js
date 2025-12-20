@@ -627,19 +627,36 @@ angular.module('cp_app').controller('financialCtrl', function ($scope, $rootScop
             $("#btnSubmit").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
             if (event.status) {
                 debugger;
+                // swal({
+                //     title: "Success",
+                //     text: "Your Financial detail has been saved successfully.",
+                //     icon: "success",
+                //     buttons: true,
+                //     dangerMode: false,
+                // }).then((willDelete) => {
+                //     if (willDelete) {
+                //         $scope.redirectPageURL('ProjectDetail');
+                //         $scope.finance = result;
+                //         $scope.$apply();
+                //     } else {
+                //         return;
+                //     }
+                // });
+
                 swal({
                     title: "Success",
-                    text: "Your Financial detail has been saved successfully.",
+                    text:
+                        "Your Financial details have been saved successfully.\n\n" +
+                        "Next Step:\n" +
+                        "Please upload the Project Proposal information.",
                     icon: "success",
                     buttons: true,
-                    dangerMode: false,
+                    dangerMode: false
                 }).then((willDelete) => {
                     if (willDelete) {
                         $scope.redirectPageURL('ProjectDetail');
                         $scope.finance = result;
                         $scope.$apply();
-                    } else {
-                        return;
                     }
                 });
             }

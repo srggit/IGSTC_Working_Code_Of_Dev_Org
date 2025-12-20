@@ -1089,7 +1089,7 @@ return proposalRecord;
             Availing_Other_Fellowship_Detail__c,Paired_Applicant_associated_with_IGSTC__c,Applicant_associated_with_IGSTC_Detail__c
             FROM Application_Proposal__c 
             WHERE Id = :proposalId
-            AND RecordTypeId = :workshopRecordTypeId
+            // AND RecordTypeId = :workshopRecordTypeId
         ];
         System.debug('proposalRecord : ' + proposalRecord);
         
