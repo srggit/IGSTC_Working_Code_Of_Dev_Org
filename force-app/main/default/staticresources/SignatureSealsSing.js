@@ -22,6 +22,8 @@ angular.module('cp_app').controller('SignatureSealsSing_Ctrl', function($scope,$
             console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
             // $rootScope.projectId = $rootScope.proposalId;
         }
+
+        console.log('proposalStage in SignatureSealsSing.js', $rootScope.proposalStage);
         
         
         //ApplicantPortal_Contoller.getConSing222($rootScope.candidateId,function(result,event){

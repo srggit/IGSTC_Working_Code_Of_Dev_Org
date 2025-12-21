@@ -69,6 +69,8 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/textAngular/1.1.2/textAngular.min.js'></script>
         <script src="{!$Resource.datetimepicker}"></script>
         <c:Controllers />
+        <!-- Load ApplicantPortal.js after Angular is loaded via Controllers component -->
+        <apex:includeScript value="{!$Resource.ApplicantPortal}" />
         <style> 
         
 /* body {

@@ -50,9 +50,29 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     $scope.config = {};
     debugger;
     $scope.isLoading = false;
+    
+    // Helper function to check if current route is the dashboard route
+    // Only dashboard routes should load getContactName() and getApplicantData()
+    var isDashboardRoute = function() {
+        var path = $location.path();
+        // Dashboard routes: empty path, root path, or /Home
+        return path === '' || path === '/' || path === '/Home';
+    };
+    
+    // Helper function to check if current route should skip dashboard functions
+    // Returns true if NOT on dashboard route (i.e., on any child/routed page)
+    var shouldSkipDashboardFunctions = function() {
+        return !isDashboardRoute();
+    };
+    console.log('shiva----',$rootScope.proposalStage)
+    // Initialize isRoutedView immediately based on current path
+    $rootScope.isRoutedView = $location.path() !== '' && $location.path() !== '/';
+    
     $scope.$on('$locationChangeSuccess', function () {
         $scope.$evalAsync(function () {
             $rootScope.isRoutedView = $location.path() !== '' && $location.path() !== '/';
+            // Re-initialize secondStage when route changes (in case proposalId changes)
+            $scope.initializeSecondStageFromStorage();
         });
     });
     $scope.load = function () {
@@ -205,6 +225,55 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                 });
             return obj;
         });
+    
+    // Function to set secondStage from localStorage proposalId on page load/refresh
+    // This ensures secondStage is set even when redirectToForm doesn't run (e.g., on page refresh)
+    $scope.initializeSecondStageFromStorage = function() {
+        var proposalIdFromStorage = localStorage.getItem('proposalId');
+        if (proposalIdFromStorage && $scope.proposalWrapperList && $scope.proposalWrapperList.length > 0) {
+            const proposalData = $scope.proposalWrapperList.find(item => item.Id == proposalIdFromStorage);
+            if (proposalData) {
+                // Set proposalId in rootScope if not already set
+                if (!$rootScope.proposalId) {
+                    $rootScope.proposalId = proposalData.Id;
+                }
+                
+                // Determine if it's second stage
+                if (proposalData.stage == "1st Stage") {
+                    $rootScope.secondStage = false;
+                } else if (proposalData.stage == "2nd Stage" || proposalData.stage == "2nd stage" || proposalData.stage == "2ndStage") {
+                    $rootScope.secondStage = true;
+                } else {
+                    $rootScope.secondStage = false;
+                }
+                
+                if (proposalData.stage == '' || proposalData.stage == undefined) {
+                    $rootScope.secondStage = false;
+                }
+                
+                // Set proposalStage as well
+                if (proposalData.proposalStage != "Draft" || (proposalData.proposalStage == "Draft" && partnerSubmission == "true")) {
+                    $rootScope.proposalStage = true;
+                    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.config) {
+                        CKEDITOR.config.readOnly = true;
+                    }
+                } else {
+                    $rootScope.proposalStage = false;
+                }
+                if (proposalData.proposalStage == undefined || proposalData.proposalStage == '') {
+                    $rootScope.proposalStage = false;
+                    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.config) {
+                        CKEDITOR.config.readOnly = false;
+                    }
+                }
+                
+                console.log('Initialized secondStage from localStorage:', $rootScope.secondStage, 'for proposal:', proposalIdFromStorage);
+            }
+        }
+    };
+    
+    // Call this function on controller initialization to set secondStage on page load/refresh
+    $scope.initializeSecondStageFromStorage();
 
     // if(secondstage == "1st Stage"){
     //     $rootScope.secondStage = false;
@@ -361,7 +430,12 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     // }
 
     $scope.getContactName = function () {
+        // Skip if on a routed view that should not load dashboard functions
+        if (shouldSkipDashboardFunctions()) {
+            return;
+        }
         debugger;
+        console.log($rootScope.proposalStage + 'proposalStage');
 
         //$scope.isLoading = true;
         ApplicantPortal_Contoller.getContactName($scope.candidateId, function (result, event) {
@@ -473,8 +547,8 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
 
 
     $scope.getApplicantData = function (yearIdParam) {
-        // Skip if on a routed view (child page)
-        if ($rootScope.isRoutedView) {
+        // Skip if on a routed view that should not load dashboard functions
+        if (shouldSkipDashboardFunctions()) {
             return;
         }
 

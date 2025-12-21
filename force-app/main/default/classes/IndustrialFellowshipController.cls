@@ -54,6 +54,15 @@ public withOut sharing class IndustrialFellowshipController {
         IndustrialFellowshipModel instanceIFM=new IndustrialFellowshipModel();
         return instanceIFM.getContactSingh(loginHashCode);
     }
+
+// ********************Added by Harsh 21/12/2025 12:45**************************
+    @RemoteAction
+public static Application_Proposal__c getProposalData(String proposalId) {
+    return [SELECT Id, Name, Proposal_Stages__c 
+            FROM Application_Proposal__c 
+            WHERE Id = :proposalId 
+            LIMIT 1];
+}
     // @RemoteAction
     // public static String saveApplicantPortalSingh(String loginHashCode,Contact con,Account acc,Integer year,Integer month,Integer day, String contactId, String recordTypeName){
     //     IndustrialFellowshipHelper instanceIFH=new IndustrialFellowshipHelper();

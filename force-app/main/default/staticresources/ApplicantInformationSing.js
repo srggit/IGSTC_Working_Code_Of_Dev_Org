@@ -3,7 +3,9 @@ $scope.objContact={};
 $scope.ddStatus={};
 $rootScope.proposalId;
 $scope.baseURL = window.location.origin;
-
+$rootScope.proposalStage;
+// $scope.proposalStage = true;
+// $rootScope.proposalStage = true;
 
 
 // Fetching the proposalId from Local Storage
@@ -19,6 +21,34 @@ $scope.baseURL = window.location.origin;
         console.log('Loaded proposalId from localStorage:', $rootScope.yearlyCallId);
     }
 
+
+    // Check proposal stage from server
+$scope.checkProposalStageFromServer = function() {
+    if($rootScope.proposalId) {
+        // Assuming you have a method to get proposal data
+        IndustrialFellowshipController.getProposalData($rootScope.proposalId, function(result, event) {
+            if(event.status && result != null) {
+                if(result.proposalStage != "Draft") {
+                    $scope.proposalStage = true;
+                    $rootScope.proposalStage = true;
+                    // localStorage.setItem('proposalStage', 'true');
+                } else {
+                    $scope.proposalStage = false;
+                    $rootScope.proposalStage = false;
+                    // localStorage.setItem('proposalStage', 'false');
+                }
+                $scope.$apply();
+            }
+        });
+    }
+};
+$scope.checkProposalStageFromServer();
+
+// Call on page load if proposalId exists in localStorage
+// if(localStorage.getItem('proposalId')) {
+//     $rootScope.proposalId = localStorage.getItem('proposalId');
+//     $scope.checkProposalStageFromServer();
+// }
 
 
 $scope.getDependentPicklistValues = function(){

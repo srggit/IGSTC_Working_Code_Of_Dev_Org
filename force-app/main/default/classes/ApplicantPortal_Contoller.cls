@@ -15,7 +15,7 @@ public without sharing class ApplicantPortal_Contoller {
     public string currencyType2  {get;set;}
     public string stage  {get;set;}
     public String ApplicantPortalSiteURL {get;set;}
-    public string secondstage  {get;set;}
+    public string secondStage  {get;set;}
     public string emailVerified  {get;set;}
     public string proposalStage  {get;set;}
     public String candidateId {get;set;}
@@ -108,7 +108,7 @@ public without sharing class ApplicantPortal_Contoller {
                     proposalWrap wrap = new proposalWrap();
                     wrap.Id = apa.Proposals__r.Id;
                     wrap.proposalStage = apa.Proposals__r.Proposal_Stages__c;
-                    secondStage = apa.Proposals__r.Stage__c;
+                    secondStage = apa.Proposals__r.Stage__c=='2nd Stage' ?'true':'false';
                     proposalStage= apa.Proposals__r.Proposal_Stages__c;
                     wrap.stage = apa.Proposals__r.Stage__c;
                     proposalWrapperList.add(wrap);
