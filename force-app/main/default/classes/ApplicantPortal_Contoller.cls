@@ -13,7 +13,7 @@ public without sharing class ApplicantPortal_Contoller {
     
     public string presentingWorkshop  {get;set;}
     public string currencyType2  {get;set;}
-    public string stage  {get;set;}
+    public string stage  {get;set;} 
     public String ApplicantPortalSiteURL {get;set;}
     public string secondStage  {get;set;}
     public string emailVerified  {get;set;}
@@ -44,6 +44,8 @@ public without sharing class ApplicantPortal_Contoller {
     public string currencyPickList  {get;set;}
     public Boolean partnerSubmission {get;set;}
     public List<proposalWrap> proposalWrapperList {get;set;}
+    public String proposalWrapperListJSON { get; set; }
+
 
    public String yearList { get; set; } //Added by Karthik for year dropdown
 
@@ -106,14 +108,19 @@ public without sharing class ApplicantPortal_Contoller {
             if(!applicantDetails[0].Applicant_Proposal_Associations__r.isEmpty()){
                 for(Applicant_Proposal_Association__c apa : applicantDetails[0].Applicant_Proposal_Associations__r) {
                     proposalWrap wrap = new proposalWrap();
+                    wrap.apaId = apa.Id;
                     wrap.Id = apa.Proposals__r.Id;
                     wrap.proposalStage = apa.Proposals__r.Proposal_Stages__c;
                     secondStage = apa.Proposals__r.Stage__c=='2nd Stage' ?'true':'false';
                     proposalStage= apa.Proposals__r.Proposal_Stages__c;
+                    System.debug('************** proposalStage = ' + apa.Proposals__r.Proposal_Stages__c);
+                    wrap.secondStage = (apa.Proposals__r.Stage__c == '2nd Stage');
                     wrap.stage = apa.Proposals__r.Stage__c;
                     proposalWrapperList.add(wrap);
                 }
             }
+            proposalWrapperListJSON = JSON.serialize(proposalWrapperList);
+            System.debug('proposalWrapperListJSON : ' + proposalWrapperListJSON);
             
             if(applicantDetails.size() >0){
                 contactId = applicantDetails[0].Id;
@@ -139,6 +146,8 @@ public without sharing class ApplicantPortal_Contoller {
         public String Id {get; set;}
         public String stage {get; set;}
         public String proposalStage {get; set;}
+        public String apaId {get; set;}
+        public Boolean secondStage {get;set;}
     }
     
     public static String generateRandomString(){
@@ -151,6 +160,34 @@ public without sharing class ApplicantPortal_Contoller {
         return  randomNew;
     }
     
+    public class ProposalData{
+        public String proposalStage {get; set;}
+        public Boolean isCoordinator {get; set;}
+        public String stage {get; set;}
+    }
+
+    @RemoteAction
+    public static ProposalData getProposalStageUsingProposalId(String proposalId, String apaId){
+
+        Applicant_Proposal_Association__c apaDetails = [
+            SELECT Id, Contact__c, Is_Coordinator__c, Proposals__c, Proposals__r.Id, Proposals__r.Name, Proposals__r.Proposal_Stages__c, Proposals__r.Stage__c
+            FROM Applicant_Proposal_Association__c 
+            WHERE Id =: apaId 
+            AND Proposals__c =: proposalId
+            LIMIT 1
+        ];
+
+        ProposalData pData = new ProposalData();
+        pData.proposalStage = apaDetails.Proposals__r.Proposal_Stages__c;
+        pData.isCoordinator = apaDetails.Is_Coordinator__c;
+        pData.stage = apaDetails.Proposals__r.Stage__c;
+
+        return pData;
+        // Application_Proposal__c ap = [SELECT Id, Stage__c, Proposal_Stages__c FROM Application_Proposal__c WHERE Id =: proposalId];
+
+        // return ap.Proposal_Stages__c;
+   
+    }
     
     @InvocableMethod(label='Update password' description='Updating null password for Contacts.' category='Contact')
     public static void updatePassword(List<string> ids) {
@@ -931,12 +968,12 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     
     //************************************** Project Details in Wiser **********************************************************
     @RemoteAction
-    public static Application_Proposal__c getApplicantDetailsWiser(String applicantHashCode){
-        return Proposal_Controller.getApplicantDetailsWiser(applicantHashCode);
+    public static Application_Proposal__c getApplicantDetailsWiser(String applicantHashCode,String proposalId){
+        return Proposal_Controller.getApplicantDetailsWiser(applicantHashCode, proposalId);
     }
     
     @RemoteAction
-    public static String insertApplicationWiser(Application_Proposal__c applicantDetails,  String conId, String recordType){
+    public static Proposal_Controller.insertApplicationWrapper insertApplicationWiser(Application_Proposal__c applicantDetails,  String conId, String recordType){
         return Proposal_Controller.insertApplicationWiser(applicantDetails, conId, recordType);
     }
     @RemoteAction
@@ -969,16 +1006,16 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     }
     
     // NEW CODE - RETURNING CUSTOM TYPE
-    // @RemoteAction
-    // public static Proposal_Controller.ProposalWithContactsDTO getConsentCheckbox(string proposalId){
-    //     return Proposal_Controller.getConsentCheckbox(proposalId);
-    // }
-
-    // OLD CODE - RETURNING Application_Proposal__c
     @RemoteAction
-    public static Application_Proposal__c getConsentCheckbox(string proposalId){
+    public static Proposal_Controller.ProposalWithContactsDTO getConsentCheckbox(string proposalId){
         return Proposal_Controller.getConsentCheckbox(proposalId);
     }
+
+    // OLD CODE - RETURNING Application_Proposal__c
+    // @RemoteAction
+    // public static Application_Proposal__c getConsentCheckbox(string proposalId){
+    //     return Proposal_Controller.getConsentCheckbox(proposalId);
+    // }
    
     
     @RemoteAction
@@ -1024,6 +1061,13 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     public static List<Contact> getPairingDetails(string hashcode, String campaignId){
         return Proposal_Controller.getPairingDetails(hashcode,campaignId);
     }
+
+    ///New Method aaded by Karthik 
+    @RemoteAction
+    public static List<Contact> getPairingDetailsinWiser(string hashcode, String campaignId){
+        return Proposal_Controller.getPairingDetails(hashcode,campaignId);
+    }
+    ////////////////////////////
     
     @RemoteAction
     public static Proposal_Controller.insertPairingWrapper insertPairingDetails(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall){

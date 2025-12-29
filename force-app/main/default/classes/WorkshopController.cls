@@ -138,7 +138,35 @@ public without sharing class WorkshopController {
         }
         return  randomNew;
     }
-    
+
+    // ======================================================================== //
+    public class ProposalData{
+        public String proposalStage {get; set;}
+        public Boolean isCoordinator {get; set;}
+    }
+
+    @RemoteAction
+    public static ProposalData getProposalStageUsingProposalId(String proposalId, String apaId){
+
+        Applicant_Proposal_Association__c apaDetails = [
+            SELECT Id, Contact__c, Proposals__c, Proposals__r.Id, Proposals__r.Name, Proposals__r.Proposal_Stages__c, Is_Coordinator__c
+            FROM Applicant_Proposal_Association__c 
+            WHERE Id =: apaId 
+            AND Proposals__c =: proposalId
+            LIMIT 1
+        ];
+
+        ProposalData pData = new ProposalData();
+        pData.proposalStage = apaDetails.Proposals__r.Proposal_Stages__c;
+        pData.isCoordinator = apaDetails.Is_Coordinator__c;
+
+        return pData;
+        // Application_Proposal__c ap = [SELECT Id, Stage__c, Proposal_Stages__c FROM Application_Proposal__c WHERE Id =: proposalId];
+
+        // return ap.Proposal_Stages__c;
+   
+    }
+    // ======================================================================== //
     
     @InvocableMethod(label='Update password' description='Updating null password for Contacts.' category='Contact')
     public static void updatePassword(List<string> ids) {
