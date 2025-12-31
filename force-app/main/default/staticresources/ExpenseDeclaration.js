@@ -37,6 +37,7 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
     $scope.financeDetails = {};
     $rootScope.apaId = '';
 
+<<<<<<< HEAD
     $scope.getApplicantDeetails = function () {
         ApplicantPortal_Contoller.getProjectDetailsDetails($rootScope.proposalId, function (result, event) {
             if (event.status) {
@@ -173,6 +174,8 @@ angular.module('cp_app').controller('ExpenseDeclaration', function ($scope, $roo
     // }
     $scope.getApplicantDeetails();
 
+=======
+>>>>>>> company/saurabh
     $scope.getExpenseRecords = function () {
         debugger;
         ApplicantPortal_Contoller.getExpenseRecords($rootScope.proposalId, $rootScope.contactId, function (result, event) {

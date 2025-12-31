@@ -28,7 +28,11 @@
                                         <div class="icon-circle">
                                             <i class="fa-regular fa-user"></i>
                                         </div>
+<<<<<<< HEAD
                                         <span>Personal Information</span>
+=======
+                                        <span>Personal Information 123</span>
+>>>>>>> company/saurabh
                                     </a>
                                 </li>
                                 <li class="active pb-cursor">
@@ -83,7 +87,11 @@
                                         <div class="icon-circle">
                                             <i class="fa-regular fa-user"></i>
                                         </div>
+<<<<<<< HEAD
                                         <span>Personal Information</span>
+=======
+                                        <span>Personal Information 456</span>
+>>>>>>> company/saurabh
                                     </a>
                                 </li>
                                 <li class="active">

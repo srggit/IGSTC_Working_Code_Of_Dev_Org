@@ -1,5 +1,10 @@
 public withOut sharing class Proposal_Controller {
     
+<<<<<<< HEAD
+=======
+    
+    
+>>>>>>> company/saurabh
     /* public string thematicAreaList {get;set;}
 public string duration  {get;set;}
 public String ApplicantPortalSiteURL {get;set;}
@@ -1734,11 +1739,17 @@ return appProposal;
         String yearlyCallId
     ){
         insertApplicationWrapper datawrapper = new insertApplicationWrapper();
+<<<<<<< HEAD
         
         try {
             System.debug('------------------ insertCoordinatorsInformation2 ------------------');
             System.debug('accList : ' + accList);
 
+=======
+ 
+        try {
+ 
+>>>>>>> company/saurabh
             List<Id> conIds = new List<Id>();
             Applicant_Proposal_Association__c primaryAPA;
             Application_Proposal__c proposalRec;
@@ -1747,9 +1758,14 @@ return appProposal;
             Map<String,String> accMap = new Map<String,String>();
  
             for(Account accRecord : accList){
+<<<<<<< HEAD
 
                 if(accRecord.Is_Coordinator__c){
                     accRecord.BillingState = accRecord.BillingState;
+=======
+                if(accRecord.Is_Coordinator__c){
+                    accRecord.BillingState = accRecord.State__c;
+>>>>>>> company/saurabh
                 }
                 accMap.put(accRecord.Name, '');
             }
@@ -2808,6 +2824,7 @@ return e.getMessage() + e.getLineNumber();
     
     ///************************************** Project Details In Wiser **********************************************************
     
+<<<<<<< HEAD
     public static Application_Proposal__c getApplicantDetailsWiser(string applicantHashCode ,String proposalId){
         
         contact conRec = [select name,id,Proposals__c from contact where Login_Hash_Code__c =:applicantHashCode limit 1];
@@ -2845,6 +2862,30 @@ return e.getMessage() + e.getLineNumber();
         }
     }
 
+=======
+    public static Application_Proposal__c getApplicantDetailsWiser(string applicantHashCode){
+        
+        contact conRec = [select name,id,Proposals__c from contact where Login_Hash_Code__c =:applicantHashCode limit 1];
+        system.debug('applicantHashCode' +applicantHashCode);
+        Application_Proposal__c proposalRecord;
+        if(!string.isBlank(conRec.Proposals__c)){
+            proposalRecord = [SELECT id,Name,Title_Of__c,Duration_In_Months_Max_36__c,KeyWords__c,Abstract_of_proposed_work__c,Broad_area_of_research__c,Project_Description__c FROM Application_Proposal__c WHERE Id=: conRec.Proposals__c];
+            system.debug('proposalRecord----'+proposalRecord);
+            return proposalRecord;
+        }else{
+            return proposalRecord;  
+        }     
+    }
+    
+    public static String insertApplicationWiser(Application_Proposal__c applicantDetails, String conId, String recordType){
+        try{
+            upsert applicantDetails;
+            return applicantDetails.Id;
+        }catch(Exception e){
+            return 'Exception';
+        }
+    }
+>>>>>>> company/saurabh
     
     //************************************** UPDATE WORK PACKAGE DETAILS **********************************************************
     
@@ -3786,7 +3827,11 @@ for(Expense_Line_Item__c exl : mapofExpenseHeadByLineItems.get(mapKey)){
         }   
     }
     
+<<<<<<< HEAD
     
+=======
+    /*
+>>>>>>> company/saurabh
     // ------------ WRAPPER CLASS ------------- //
     public class ProposalWithContactsDTO {
         public String Id;
@@ -3805,6 +3850,7 @@ for(Expense_Line_Item__c exl : mapofExpenseHeadByLineItems.get(mapKey)){
     public class AccountDTO {
         public String Country_Type;
     }
+<<<<<<< HEAD
 
     public static ProposalWithContactsDTO getConsentCheckbox(String proposalId) {
 
@@ -3860,6 +3906,12 @@ for(Expense_Line_Item__c exl : mapofExpenseHeadByLineItems.get(mapKey)){
     
     // NEW METHOD FOR WORKSHOP
     /*
+=======
+    
+    
+    // NEW METHOD FOR WORKSHOP
+    
+>>>>>>> company/saurabh
     public static ProposalWithContactsDTO getConsentCheckbox(String hashcode) {
         
         System.debug('------------- getConsentCheckbox() ---------------');
@@ -3960,6 +4012,7 @@ for(Expense_Line_Item__c exl : mapofExpenseHeadByLineItems.get(mapKey)){
     
     // OLD CODE - CODE
 
+<<<<<<< HEAD
         // public static Application_Proposal__c getConsentCheckbox(string proposalId){
         // Application_Proposal__c appDetails = new Application_Proposal__c();
         // try{
@@ -3973,6 +4026,21 @@ for(Expense_Line_Item__c exl : mapofExpenseHeadByLineItems.get(mapKey)){
         // return appDetails;
         // }
         // }
+=======
+        public static Application_Proposal__c getConsentCheckbox(string proposalId){
+        Application_Proposal__c appDetails = new Application_Proposal__c();
+        try{
+        appDetails = [SELECT Id, Name, Privacy_Policy_Accepted__c,
+        (SELECT Id, Name, Account.Country_Type__c, Declaration_Sign_Date__c 
+        FROM Contacts__r) 
+        FROM Application_Proposal__c WHERE Id= :proposalId
+        ];
+        return appDetails;
+        }catch(Exception e){
+        return appDetails;
+        }
+        }
+>>>>>>> company/saurabh
 
     
     // NEW METHOD - FOR WORKSHOP
@@ -4087,11 +4155,18 @@ return e.getMessage() + e.getLineNumber();
 } */
     
     // NEW METHOD - FOR WORKSHOP
+<<<<<<< HEAD
+=======
+    // NEW METHOD - FOR WORKSHOP using hashcode
+>>>>>>> company/saurabh
     public static String upsertCheckbox(Application_Proposal__c proposalList, String hashcode, Integer year, Integer month, Integer day){
         try{
             System.debug(' --------------- upsertCheckbox() ------------------- ');
             
+<<<<<<< HEAD
             /*
+=======
+>>>>>>> company/saurabh
             Contact userContact = [
                 SELECT Id, Name, Declaration_Sign_Date__c, Login_Hash_Code__c 
                 FROM Contact 
@@ -4114,9 +4189,14 @@ return e.getMessage() + e.getLineNumber();
             if (apa == null || apa.Proposals__c == null) {
                 return 'Error: No proposal found for this contact';
             }
+<<<<<<< HEAD
             */
 
             Id proposalId = proposalList.Id;
+=======
+            
+            Id proposalId = apa.Proposals__c;
+>>>>>>> company/saurabh
             System.debug('proposalId : ' + proposalId);
             
             List<Contact> contactList = [
@@ -4161,7 +4241,11 @@ return e.getMessage() + e.getLineNumber();
             // upsert proposalToUpdate;
             
             
+<<<<<<< HEAD
             proposalList.Stage__c = '1st Stage';
+=======
+            // proposalDetails.Stage__c = '1st Stage';
+>>>>>>> company/saurabh
             proposalList.Proposal_Stages__c = 'Draft';
             proposalList.Submitted__c = true;
             
@@ -4173,6 +4257,7 @@ return e.getMessage() + e.getLineNumber();
             return e.getMessage() + e.getLineNumber();
         }
     } 
+<<<<<<< HEAD
 
     // NEW METHOD - FOR WORKSHOP using hashcode
     // public static String upsertCheckbox(Application_Proposal__c proposalList, String hashcode, Integer year, Integer month, Integer day){
@@ -4259,6 +4344,8 @@ return e.getMessage() + e.getLineNumber();
     //         return e.getMessage() + e.getLineNumber();
     //     }
     // } 
+=======
+>>>>>>> company/saurabh
     
     
     // OLD METHOD
@@ -4521,6 +4608,7 @@ return null;
         
         return conList;
     }
+<<<<<<< HEAD
 
 
     //***********************************NEW METHOD ADDED BY KARTHIK for pairing page
@@ -4547,6 +4635,9 @@ return null;
         return conList;
     }
     ////********************************************************** */
+=======
+    
+>>>>>>> company/saurabh
     
     /*  public static List<Contact> getPairingDetails(string hashcode, string campaignId){
 Contact conRec = [SELECT Id,FirstName,LastName,Email,AccountId,Proposals__r.Yearly_Call__r.Pecfar_age_limit__c,Proposals__r.Yearly_Call__r.Date_of_Birth_PECFAR__c,Account.Name,Account.Proposals__c,MailingCountry,Is_Primary__c,Birthdate,Proposals__c,Proposals__r.Campaign__r.Result_Announcement_Date__c FROM Contact WHERE Login_Hash_Code__c=: hashcode];
@@ -4909,6 +5000,7 @@ public class insertPairingWrapper {
     public Applicant_Proposal_Association__c apa { get; set; }
 }
 
+<<<<<<< HEAD
 
 
 
@@ -5089,6 +5181,8 @@ public class insertPairingWrapperinWiser {
 }
 /////*********************************New method Added By Karthik  for pairing page*****************/
 
+=======
+>>>>>>> company/saurabh
  
     public class wrapperPairing {
         public Contact cont;

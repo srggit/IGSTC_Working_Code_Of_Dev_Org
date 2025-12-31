@@ -10,9 +10,15 @@ public without sharing class WorkshopController {
     public string participatingWorkshop {get;set;}
     // public string degree  {get;set;}
     public string specialization  {get;set;}
+<<<<<<< HEAD
      
     public string presentingWorkshop  {get;set;}
     public string currencyType2  {get;set;} 
+=======
+    
+    public string presentingWorkshop  {get;set;}
+    public string currencyType2  {get;set;}
+>>>>>>> company/saurabh
     public string stage  {get;set;}
     public String ApplicantPortalSiteURL {get;set;}
     public string secondstage  {get;set;}
@@ -94,6 +100,7 @@ public without sharing class WorkshopController {
             //     proposalStage = proposal.Proposal_Stages__c;
             // }
             proposalWrapperList = new List<proposalWrap>();
+<<<<<<< HEAD
 
             if(!applicantDetails[0].Applicant_Proposal_Associations__r.isEmpty()){
                 for(Applicant_Proposal_Association__c apa : applicantDetails[0].Applicant_Proposal_Associations__r) {
@@ -107,6 +114,14 @@ public without sharing class WorkshopController {
                     System.debug('Stage = ' + proposalStage);
                     wrap.stage = apa.Proposals__r.Stage__c;
                     wrap.secondStage = (apa.Proposals__r.Stage__c == '2nd Stage');
+=======
+            if(!applicantDetails[0].Applicant_Proposal_Associations__r.isEmpty()){
+                for(Applicant_Proposal_Association__c apa : applicantDetails[0].Applicant_Proposal_Associations__r) {
+                    proposalWrap wrap = new proposalWrap();
+                    wrap.Id = apa.Proposals__r.Id;
+                    wrap.proposalStage = apa.Proposals__r.Proposal_Stages__c;
+                    wrap.stage = apa.Proposals__r.Stage__c;
+>>>>>>> company/saurabh
                     proposalWrapperList.add(wrap);
                 }
             }
@@ -134,8 +149,11 @@ public without sharing class WorkshopController {
         public String Id {get; set;}
         public String stage {get; set;}
         public String proposalStage {get; set;}
+<<<<<<< HEAD
         public Boolean secondStage {get;set;}
         public String apaId {get;set;}
+=======
+>>>>>>> company/saurabh
     }
     
     public static String generateRandomString(){
@@ -147,7 +165,39 @@ public without sharing class WorkshopController {
         }
         return  randomNew;
     }
+<<<<<<< HEAD
     
+=======
+
+    // ======================================================================== //
+    public class ProposalData{
+        public String proposalStage {get; set;}
+        public Boolean isCoordinator {get; set;}
+    }
+
+    @RemoteAction
+    public static ProposalData getProposalStageUsingProposalId(String proposalId, String apaId){
+
+        Applicant_Proposal_Association__c apaDetails = [
+            SELECT Id, Contact__c, Proposals__c, Proposals__r.Id, Proposals__r.Name, Proposals__r.Proposal_Stages__c, Is_Coordinator__c
+            FROM Applicant_Proposal_Association__c 
+            WHERE Id =: apaId 
+            AND Proposals__c =: proposalId
+            LIMIT 1
+        ];
+
+        ProposalData pData = new ProposalData();
+        pData.proposalStage = apaDetails.Proposals__r.Proposal_Stages__c;
+        pData.isCoordinator = apaDetails.Is_Coordinator__c;
+
+        return pData;
+        // Application_Proposal__c ap = [SELECT Id, Stage__c, Proposal_Stages__c FROM Application_Proposal__c WHERE Id =: proposalId];
+
+        // return ap.Proposal_Stages__c;
+   
+    }
+    // ======================================================================== //
+>>>>>>> company/saurabh
     
     @InvocableMethod(label='Update password' description='Updating null password for Contacts.' category='Contact')
     public static void updatePassword(List<string> ids) {
@@ -785,6 +835,7 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
     
     //************************************** Project Details in Wiser **********************************************************
     @RemoteAction
+<<<<<<< HEAD
     public static Application_Proposal__c getApplicantDetailsWiser(String applicantHashCode,String proposalId){
         return Proposal_Controller.getApplicantDetailsWiser(applicantHashCode, proposalId);
     }
@@ -799,6 +850,16 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
         return Proposal_Controller.insertApplicationWiser(applicantDetails, conId, recordType);
     }
     
+=======
+    public static Application_Proposal__c getApplicantDetailsWiser(String applicantHashCode){
+        return Proposal_Controller.getApplicantDetailsWiser(applicantHashCode);
+    }
+    
+    @RemoteAction
+    public static String insertApplicationWiser(Application_Proposal__c applicantDetails,  String conId, String recordType){
+        return Proposal_Controller.insertApplicationWiser(applicantDetails, conId, recordType);
+    }
+>>>>>>> company/saurabh
     @RemoteAction
     public static String LogoutApplicant(String loginHasgCode){
         return Proposal_Controller.LogoutApplicant(loginHasgCode);
@@ -829,6 +890,7 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
     }
     
     // NEW CODE - RETURNING CUSTOM TYPE
+<<<<<<< HEAD
     @RemoteAction
     public static Proposal_Controller.ProposalWithContactsDTO getConsentCheckbox(String proposalId){
         return Proposal_Controller.getConsentCheckbox(proposalId);
@@ -840,6 +902,19 @@ return Proposal_Controller.insertParticipants(allParticipantDetails);
     //     return Proposal_Controller.getConsentCheckbox(proposalId);
     // }
     
+=======
+    // @RemoteAction
+    // public static Proposal_Controller.ProposalWithContactsDTO getConsentCheckbox(String proposalId){
+    //     return Proposal_Controller.getConsentCheckbox(proposalId);
+    // }
+    
+    // OLD CODE - Re-using same method (RETURNING Application_Proposal__c)
+    @RemoteAction
+    public static Application_Proposal__c getConsentCheckbox(string proposalId){
+        return Proposal_Controller.getConsentCheckbox(proposalId);
+    }
+    
+>>>>>>> company/saurabh
     
     @RemoteAction
     public static string saveAsDraftWorkshop(Application_Proposal__c proposalList, String projectId, Integer year, Integer month, Integer day){

@@ -16,7 +16,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function($scope, $roo
      $scope.durationMonths=0;
 
      $scope.getAccounts = function(){
+<<<<<<< HEAD
         IndustrialFellowshipController.getProposalAccounts($rootScope.proposalId,function(result,event){
+=======
+        IndustrialFellowshipController.getProposalAccounts($rootScope.projectId,function(result,event){
+>>>>>>> company/saurabh
             console.log('onload :: =>');
             console.log(result);
             if (event.status && result != null) {
@@ -43,7 +47,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function($scope, $roo
  
      $scope.getExpenseRecords = function(){
          debugger;
+<<<<<<< HEAD
          IndustrialFellowshipController.getExpenseRecords($rootScope.proposalId, function(result,event){
+=======
+         IndustrialFellowshipController.getExpenseRecords($rootScope.projectId, function(result,event){
+>>>>>>> company/saurabh
              console.log("declred expense list");
              console.log(result);
              debugger;

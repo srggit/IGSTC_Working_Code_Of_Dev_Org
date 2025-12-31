@@ -85,6 +85,7 @@ angular.module('cp_app').controller('SignatureSealsSing_Ctrl', function($scope,$
         });    
     }
     $scope.getOnload();
+<<<<<<< HEAD
     // $scope.redirectPageURL=function(URL){
     //     var link=document.createElement("a");
     //     link.id = 'someLink'; //give it an ID!
@@ -131,6 +132,14 @@ $scope.redirectPageURL = function(pageName) {
 
 
 
+=======
+    $scope.redirectPageURL=function(URL){
+        var link=document.createElement("a");
+        link.id = 'someLink'; //give it an ID!
+        link.href='#/'+URL+'';
+        link.click();
+    }
+>>>>>>> company/saurabh
     $scope.submitSingApp=function(saveType){
         if($rootScope.proposalStage){
             $scope.redirectPageURL('ApplicantPortal');
@@ -360,5 +369,8 @@ $scope.redirectPageURL = function(pageName) {
                     { buffer: true, escape: true, timeout: 120000 }
                        );
             }
+<<<<<<< HEAD
             
+=======
+>>>>>>> company/saurabh
         });

@@ -16,6 +16,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
         fileSize = 0,
         doneUploading = false;
     debugger
+<<<<<<< HEAD
     // $scope.redirectPageURL = function (URL) {
     //     var link = document.createElement("a");
     //     link.id = 'someLink'; //give it an ID!
@@ -62,6 +63,14 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
 };
 
     
+=======
+    $scope.redirectPageURL = function (URL) {
+        var link = document.createElement("a");
+        link.id = 'someLink'; //give it an ID!
+        link.href = '#/' + URL + '';
+        link.click();
+    }
+>>>>>>> company/saurabh
     
      // Fetching the proposalId from Local Storage
     if (localStorage.getItem('proposalId')) {
@@ -240,6 +249,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                         dangerMode: false,
                     }).then((willDelete) => {
                         if (willDelete) {
+<<<<<<< HEAD
                             $scope.redirectPageURL('Home');                            
                             // $scope.redirectPageURL = function (URL) {
                             //     var link = document.createElement("a");
@@ -248,6 +258,15 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                             //     link.click();
                                 
                             // }
+=======
+                            // $scope.redirectPageURL('Home');
+                            $scope.redirectPageURL = function (URL) {
+                                var link = document.createElement("a");
+                                link.id = 'someLink'; //give it an ID!
+                                link.href = '#/' + URL + '';
+                                link.click();
+                            }
+>>>>>>> company/saurabh
                         } else {
                             return;
                         }
@@ -264,6 +283,7 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                         dangerMode: false,
                     }).then((willDelete) => {
                         if (willDelete) {
+<<<<<<< HEAD
                              $scope.redirectPageURL('Home');                          
                             // $scope.redirectPageURL = function (URL) {
                             //     var link = document.createElement("a");
@@ -271,6 +291,15 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
                             //     link.href = '#/' + URL + '';
                             //     link.click();
                             // }
+=======
+                            // $scope.redirectPageURL('Home');
+                            $scope.redirectPageURL = function (URL) {
+                                var link = document.createElement("a");
+                                link.id = 'someLink'; //give it an ID!
+                                link.href = '#/' + URL + '';
+                                link.click();
+                            }
+>>>>>>> company/saurabh
                         } else {
                             return;
                         }
@@ -283,8 +312,11 @@ angular.module('cp_app').controller('ReviewAndSubmitIF_Ctrl', function ($scope, 
             }
         });
     }
+<<<<<<< HEAD
 
      
+=======
+>>>>>>> company/saurabh
     $scope.uploadFile = function (type, userDocId, fileId, fileSizeFun) {
         debugger;
         maxFileSize = fileSizeFun;

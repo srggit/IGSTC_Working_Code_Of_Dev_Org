@@ -321,6 +321,7 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             return;
         }
 
+<<<<<<< HEAD
         // ------------- POSTAL CODE VALIDATION ------------------ //
         debugger;
         var country = $scope.addressDetails.BillingCountry;
@@ -345,6 +346,8 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             return;
         }
 
+=======
+>>>>>>> company/saurabh
 
         if ($scope.addressDetails.Industry__c == true) {
             if ($scope.addressDetails.Year_Of_Establishment__c == undefined || $scope.addressDetails.Year_Of_Establishment__c == "") {
@@ -507,6 +510,7 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             obj._charLimitMap[fieldName] = false;
         }
     };
+<<<<<<< HEAD
 
     $scope.checkCharLimit = function (obj, fieldName, limit) {
         debugger;
@@ -597,4 +601,6 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             targetObj._charLimitMap[fieldName] = false;
         }
     };
+=======
+>>>>>>> company/saurabh
 });

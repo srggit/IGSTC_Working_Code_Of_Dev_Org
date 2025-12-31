@@ -35,10 +35,15 @@ public with sharing class CongaHelperToolLightning {
         req.setEndpoint(url);
         req.setTimeout(120000);
         // Send the request, and return a response
+<<<<<<< HEAD
         system.debug('request is'+req); 
         HttpResponse res = h.send(req);
         integer StatusCode= res.getStatusCode();
         System.debug('getStatusCode is '+StatusCode);
+=======
+        system.debug('request is'+req);
+        HttpResponse res = h.send(req);
+>>>>>>> company/saurabh
         system.debug('body is '+ res.getBody());
         return res.getBody();
     }
@@ -95,6 +100,7 @@ public with sharing class CongaHelperToolLightning {
         return sessionId;//userinfo.getSessionId();//sessionId;
     }
     
+<<<<<<< HEAD
     public static String getSessionId2(String username, String password) {
     String sessionId;
         string loginDomain;
@@ -147,6 +153,8 @@ public with sharing class CongaHelperToolLightning {
     
     
     
+=======
+>>>>>>> company/saurabh
     /* 
 public static String getSessionId(String username, String password){
         String loginDomain;

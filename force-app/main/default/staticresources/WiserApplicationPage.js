@@ -33,7 +33,10 @@ $scope.objContact.stateList={};
 $scope.$on("fileProgress", function(e, progress) {
     $scope.progress = progress.loaded / progress.total;
   });
+<<<<<<< HEAD
   
+=======
+>>>>>>> company/saurabh
 
   $scope.getDependentPicklistValues = function(){
     debugger;    
@@ -56,10 +59,13 @@ $scope.$on("fileProgress", function(e, progress) {
     }
     )  
 }
+<<<<<<< HEAD
 
 if(localStorage.getItem('proposalId')){
     $rootScope.proposalId = localStorage.getItem('proposalId'); 
 }
+=======
+>>>>>>> company/saurabh
 $scope.getDependentPicklistValues();
 
 $scope.onCountryChange = function(){
@@ -363,7 +369,11 @@ $scope.getProjectdetils = function () {
     }
 
     $scope.accDet = $scope.objContact.Account;
+<<<<<<< HEAD
     IndustrialFellowshipController.saveApplicantPortalWiser($scope.objContact,$scope.accDet,birthYear,birthMonth,birthDay, $rootScope.proposalId, function(result, event){
+=======
+    IndustrialFellowshipController.saveApplicantPortalWiser($scope.objContact,$scope.accDet,birthYear,birthMonth,birthDay,$rootScope.campaignId, function(result, event){
+>>>>>>> company/saurabh
         debugger;
         if (event.status && result !=null) {
             $rootScope.projectId = result;

@@ -4,7 +4,11 @@ angular.module('cp_app').controller('basicDetails_ctrl', function ($scope, $sce,
     // Fetching the proposalId from Local Storage
     if (localStorage.getItem('proposalId')) {
         $rootScope.proposalId = localStorage.getItem('proposalId');
+<<<<<<< HEAD
         console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
+=======
+        console.log('Loaded proposalId from localStorage:', $rootScope.proposalId); 
+>>>>>>> company/saurabh
     }
 
     $rootScope.proposalId;
@@ -12,7 +16,11 @@ angular.module('cp_app').controller('basicDetails_ctrl', function ($scope, $sce,
     $rootScope.candidateId;
     $rootScope.siteURL;
     $rootScope.contactId;
+<<<<<<< HEAD
     $scope.proposedDate; 
+=======
+    $scope.proposedDate;
+>>>>>>> company/saurabh
     $scope.endDate;
     $scope.announcementDate;
     $scope.config.height = 400;
@@ -41,7 +49,11 @@ angular.module('cp_app').controller('basicDetails_ctrl', function ($scope, $sce,
     $scope.getApplicantProjectDetails = function () {
         // ApplicantPortal_Contoller.getBasicDetails($rootScope.candidateId, function (result, event) {
         // WorkshopController.getBasicDetails($rootScope.candidateId, function (result, event) {
+<<<<<<< HEAD
         WorkshopController.getBasicDetails($rootScope.proposalId, function (result, event) {
+=======
+            ApplicantPortal_Contoller.getBasicDetails($rootScope.proposalId, function (result, event) {
+>>>>>>> company/saurabh
             if (event.status) {
                 debugger;
                 // if (result.Campaign__r?.Result_Announcement_Date__c != null) {
@@ -229,7 +241,11 @@ angular.module('cp_app').controller('basicDetails_ctrl', function ($scope, $sce,
         console.log('$rootScope.proposalId ', $rootScope.proposalId);
 
         //ApplicantPortal_Contoller.insertBasicDetails2($scope.applicantDetails, day, month, year, endday, endmonth, endyear, $rootScope.contactId, $rootScope.proposalId, 'Workshop', function (result, event) {
+<<<<<<< HEAD
         WorkshopController.insertBasicDetails2($scope.applicantDetails, day, month, year, endday, endmonth, endyear, $rootScope.contactId, $rootScope.proposalId, 'Workshop', function (result, event) {
+=======
+            ApplicantPortal_Contoller.insertBasicDetails2($scope.applicantDetails, day, month, year, endday, endmonth, endyear, $rootScope.contactId, $rootScope.proposalId, 'Workshop', function (result, event) {
+>>>>>>> company/saurabh
             if (event.status && result != null) {
                 debugger;
                 Swal.fire(

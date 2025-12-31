@@ -228,12 +228,15 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
             { buffer: true, escape: true, timeout: 120000 }
         );
     }
+<<<<<<< HEAD
 
 
 
 
 
 
+=======
+>>>>>>> company/saurabh
     // $scope.checkEmail = function(email,contId){
     //     debugger;
     //     $scope.emailCheck = false;
@@ -462,7 +465,10 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
     //     $("#acedmiaDetails"+index+"").hide();
     //     $("#basicDetailsId"+index+"").show();
     // }
+<<<<<<< HEAD
 
+=======
+>>>>>>> company/saurabh
     $scope.industryAcademiaCoordinator = function (industryType, index) {
         //$scope.arrySaveStatus[index].status=false;
         debugger
@@ -472,6 +478,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
         } else {
             $scope.CoordinatorDetails[index].Industry__c = true;
             $scope.CoordinatorDetails[index].Academia__c = false;
+<<<<<<< HEAD
 
         }
         $scope.$apply();
@@ -513,6 +520,11 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
      };
      */
 
+=======
+        }
+        $scope.$apply();
+    }
+>>>>>>> company/saurabh
     $scope.industryAcademia = function (industryType, index) {
         $scope.arrySaveStatus[index].status = false;
         debugger
@@ -526,6 +538,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
         $scope.$apply();
     }
 
+<<<<<<< HEAD
     // $scope.industryAcademia = function (industryType, index) {
     //     debugger;
 
@@ -565,6 +578,8 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
     // };
 
 
+=======
+>>>>>>> company/saurabh
     // $scope.getPatnerDetails = function () {
     //     debugger;
     //     $scope.consortiaDetails = [];
@@ -643,7 +658,10 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
     //         escape: true
     //     })
     // }
+<<<<<<< HEAD
 
+=======
+>>>>>>> company/saurabh
     $scope.addAccount = function () {
         debugger;
         if ($scope.allCoordinatorDetails.length > 5) {
@@ -1096,8 +1114,11 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
     //             debugger
     //             $scope.arrySaveStatus[index].status=false;
     //           }
+<<<<<<< HEAD
 
     /*
+=======
+>>>>>>> company/saurabh
     $scope.setSaveStatus = function (country) {
         debugger
         if (country == "India") {
@@ -1106,6 +1127,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
             $scope.stateList = $scope.germanStates;
         }
     }
+<<<<<<< HEAD
     */
 
     $scope.setSaveStatus = function (account) {
@@ -1153,6 +1175,8 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
     };
 
 
+=======
+>>>>>>> company/saurabh
     var inputQuantity = [];
     $(function () {
         $(".zipcode-number").on("keyup", function (e) {
@@ -1295,11 +1319,14 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
 
         for (i = 0; i < $scope.allPartners.length; i++) {
 
+<<<<<<< HEAD
             if ($scope.allPartners[i].Website.length > 255) {
                 swal("Info !", "Website cannot exceed 255 characters.");
                 return;
             }
 
+=======
+>>>>>>> company/saurabh
             // $scope.allPartners[i].Contacts[0].Proposals__c = $rootScope.projectId;
             if ($scope.allPartners[i].Id == undefined || $scope.allPartners.Id == "") {
                 $scope.allPartners[i].Contacts[0].AccountId = $scope.allPartners[i].Name;
@@ -1343,6 +1370,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
                     swal("info", "Please Enter Postal/Zip Code for Coordinator.");
                     return;
                 }
+<<<<<<< HEAD
 
                 // ------------- POSTAL CODE VALIDATION ------------------ //
                 var country = $scope.allPartners[i].BillingCountry;
@@ -1366,6 +1394,8 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
                     );
                     return;
                 }
+=======
+>>>>>>> company/saurabh
             }
 
             if ($scope.allPartners[i].Contacts != undefined) {
@@ -1396,6 +1426,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
                         return;
                     }
 
+<<<<<<< HEAD
                     // ===================== EXTRA VALIDATIONS START ===================== //
                     // if ($scope.allPartners[i].Industry__c === true) {
                     if ($scope.allPartners[i].Contacts[j].FirstName.length > 40) {
@@ -1420,6 +1451,8 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
                     // }
                     // ===================== EXTRA VALIDATIONS END ===================== //
 
+=======
+>>>>>>> company/saurabh
                     if ($scope.allPartners[i].Contacts[j].Email == undefined || $scope.allPartners[i].Contacts[j].Email == "") {
                         swal("info", "Please Enter Email.");
                         // $("#email"+j+"").addClass('border-theme');
@@ -1672,6 +1705,7 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
 
 
     $scope.checkCharLimit = function (obj, fieldName, limit) {
+<<<<<<< HEAD
         debugger;
 
         if (!obj) return;
@@ -1818,10 +1852,26 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
 
         if (!value) {
             targetObj._charLimitMap[fieldName] = false;
+=======
+
+        // SAFETY: if Contacts[0] not ready, stop
+        if (!obj) return;
+
+        // Initialize map once
+        if (!obj._charLimitMap) {
+            obj._charLimitMap = {};
+        }
+
+        var value = obj[fieldName];
+
+        if (!value) {
+            obj._charLimitMap[fieldName] = false;
+>>>>>>> company/saurabh
             return;
         }
 
         if (value.length > limit) {
+<<<<<<< HEAD
             //setter(value.substring(0, limit));
             targetObj._charLimitMap[fieldName] = true;
         } else {
@@ -1885,6 +1935,15 @@ angular.module('cp_app').controller('Consortia_Ctrl', function ($scope, $rootSco
          }
      };
      */
+=======
+            obj[fieldName] = value.substring(0, limit);
+            obj._charLimitMap[fieldName] = true;
+        } else {
+            obj._charLimitMap[fieldName] = false;
+        }
+    };
+
+>>>>>>> company/saurabh
 
 
 });

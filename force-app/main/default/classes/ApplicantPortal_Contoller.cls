@@ -1062,11 +1062,16 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
         return Proposal_Controller.getPairingDetails(hashcode,campaignId);
     }
 
+<<<<<<< HEAD
     ///*************************New Method aaded by Karthik 
+=======
+    ///New Method aaded by Karthik 
+>>>>>>> company/saurabh
     @RemoteAction
     public static List<Contact> getPairingDetailsinWiser(string hashcode, String campaignId){
         return Proposal_Controller.getPairingDetails(hashcode,campaignId);
     }
+<<<<<<< HEAD
 
 
     @RemoteAction
@@ -1074,6 +1079,9 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
         return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall);
     }
     ////////////////////////////New Method aaded by Karthik 
+=======
+    ////////////////////////////
+>>>>>>> company/saurabh
     
     @RemoteAction
     public static Proposal_Controller.insertPairingWrapper insertPairingDetails(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall){
