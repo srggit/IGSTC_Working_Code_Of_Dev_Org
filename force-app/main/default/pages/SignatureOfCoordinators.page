@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 <!-- <apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="IndustrialFellowshipController"> -->
 <apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="WorkshopController">
-=======
-<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="IndustrialFellowshipController">
->>>>>>> company/saurabh
     <html>
     <div ng-controller="sign_Ctrl">
 
@@ -247,11 +243,7 @@
 
                                 <div class="col-md-6">
                                     <div style="margin-right: -100px;">
-<<<<<<< HEAD
                                         <label class="font-if">{{checkbox.Contacts__r[1].Name}} Signature
-=======
-                                        <label class="font-if">{{checkbox.Contacts__r[1].Name}}
->>>>>>> company/saurabh
                                             <span class="text-danger ms-2">*</span>
                                         </label>
                                         <!--<label class="font-if">{{checkbox.Contacts[1].Name}} Signature

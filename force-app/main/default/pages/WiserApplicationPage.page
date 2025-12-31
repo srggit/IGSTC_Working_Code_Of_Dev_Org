@@ -47,7 +47,6 @@
                                 <div class="progress-success w-100"></div>
                             </div>
                             <ul>
-<<<<<<< HEAD
                                  <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
                                         <div class="icon-circle">
@@ -56,8 +55,6 @@
                                         <span>Applicant Project Details</span>
                                     </a>
                                 </li>
-=======
->>>>>>> company/saurabh
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('WiserApplicationPage')">
                                         <div class="icon-circle">
@@ -75,18 +72,7 @@
                                         <span>Pair Details</span>
                                     </a>
                                 </li>
-<<<<<<< HEAD
                                
-=======
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
-                                        <div class="icon-circle">
-                                            <i class="fa fa-home"></i>
-                                        </div>
-                                        <span>Applicant Project Details</span>
-                                    </a>
-                                </li>
->>>>>>> company/saurabh
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('FinancialOverview_wiser')">
                                         <div class="icon-circle">
@@ -113,7 +99,6 @@
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
-<<<<<<< HEAD
                                             <i class="fa fa-home"></i>
                                         </div>
                                         <span>Applicant Project Details</span>
@@ -122,8 +107,6 @@
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
-=======
->>>>>>> company/saurabh
                                             <i class="fas fa-user-alt"></i>
                                         </div>
                                         <span>Applicant Details</span>
@@ -137,18 +120,7 @@
                                         <span>Pair Details</span>
                                     </a>
                                 </li>
-<<<<<<< HEAD
                                 
-=======
-                                <li>
-                                    <a>
-                                        <div class="icon-circle">
-                                            <i class="fa fa-home"></i>
-                                        </div>
-                                        <span>Applicant Project Details</span>
-                                    </a>
-                                </li>
->>>>>>> company/saurabh
                                 <li>
                                     <a>
                                         <div class="icon-circle">
@@ -448,12 +420,9 @@
                         <div class="col-md-12">
                             <button class="blue-btn float-end" ng-click="saveApplicantPortalWiser()" type="button">
                                 <i class="fa-solid fa-check me-2"></i>Save and Next</button>
-<<<<<<< HEAD
                             <button class="blue-bordered-btn float-end me-3" ng-click="redirectPageURL('ProjectDetailsInWiserPage')" type="button">Previous
                                 <i class="fa-solid fa-arrow-left ms-2"></i>
                             </button>
-=======
->>>>>>> company/saurabh
                         </div>
                     </div>
                 </form>

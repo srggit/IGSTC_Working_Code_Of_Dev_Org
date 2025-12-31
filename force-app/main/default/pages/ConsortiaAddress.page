@@ -749,7 +749,6 @@
     
                             <div class="col-md-6">
                                 <label class="font-if">Postal/Zip Code<span class="ms-2 text-danger">*</span></label>
-<<<<<<< HEAD
                                 <input 
                                     ng-focus="removeClass2('IPcode')" 
                                     id="IPcode" 
@@ -766,10 +765,6 @@
                                 Invalid Postal / Zip Code
                             </small>
 
-=======
-                                <input ng-focus="removeClass2('IPcode')" id="IPcode" type="text" ng-model="addressDetails.BillingPostalCode" class="form-control" ng-disabled="proposalStage" />
-                            </div>
->>>>>>> company/saurabh
                         </div>
     
                         <div class="row mt-5 mb-5">

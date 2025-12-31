@@ -13,6 +13,7 @@ $scope.indiaCode=true;
 $scope.baseURL = window.location.origin;
 $scope.genderFemale=['Female','Other'];
   $scope.objContact = {
+    "Salutation":"",
     "FirstName": " ",
     "LastName": " ",
     "Email": " ",
@@ -33,10 +34,7 @@ $scope.objContact.stateList={};
 $scope.$on("fileProgress", function(e, progress) {
     $scope.progress = progress.loaded / progress.total;
   });
-<<<<<<< HEAD
   
-=======
->>>>>>> company/saurabh
 
   $scope.getDependentPicklistValues = function(){
     debugger;    
@@ -59,13 +57,10 @@ $scope.$on("fileProgress", function(e, progress) {
     }
     )  
 }
-<<<<<<< HEAD
 
 if(localStorage.getItem('proposalId')){
     $rootScope.proposalId = localStorage.getItem('proposalId'); 
 }
-=======
->>>>>>> company/saurabh
 $scope.getDependentPicklistValues();
 
 $scope.onCountryChange = function(){
@@ -132,6 +127,9 @@ $scope.getProjectdetils = function () {
                     delete  $scope.objContact.Attachments;
                 }
 
+                if(result.Salutation != undefined || result.Salutation != ''){
+                  $scope.objContact.Salutation = $scope.objContact.Salutation ? $scope.objContact.Salutation.replace(/&amp;/g,'&').replaceAll('&amp;amp;','&').replaceAll('&amp;gt;','>').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&amp;','&') : $scope.objContact.Salutation;  
+                }
                 if(result.FirstName != undefined || result.FirstName != ''){
                   $scope.objContact.FirstName = $scope.objContact.FirstName ? $scope.objContact.FirstName.replace(/&amp;/g,'&').replaceAll('&amp;amp;','&').replaceAll('&amp;gt;','>').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&amp;','&') : $scope.objContact.FirstName;  
                 }
@@ -369,11 +367,7 @@ $scope.getProjectdetils = function () {
     }
 
     $scope.accDet = $scope.objContact.Account;
-<<<<<<< HEAD
     IndustrialFellowshipController.saveApplicantPortalWiser($scope.objContact,$scope.accDet,birthYear,birthMonth,birthDay, $rootScope.proposalId, function(result, event){
-=======
-    IndustrialFellowshipController.saveApplicantPortalWiser($scope.objContact,$scope.accDet,birthYear,birthMonth,birthDay,$rootScope.campaignId, function(result, event){
->>>>>>> company/saurabh
         debugger;
         if (event.status && result !=null) {
             $rootScope.projectId = result;

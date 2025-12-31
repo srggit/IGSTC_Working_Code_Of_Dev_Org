@@ -244,7 +244,6 @@ $scope.filePreviewHandler = function(fileContent){
       }
 
 
-<<<<<<< HEAD
        //**********************New methods by karthik for pairing page************************************//
 
      debugger;
@@ -572,8 +571,6 @@ $scope.filePreviewHandler = function(fileContent){
 
 
 
-=======
->>>>>>> company/saurabh
      $scope.getApplicantDetailsWiser = function () {
         
 

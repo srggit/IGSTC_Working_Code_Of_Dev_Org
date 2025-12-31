@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 <!-- <apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="ApplicantPortal_Contoller"> -->
 <apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="WorkshopController">
 
-=======
-<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="ApplicantPortal_Contoller">
->>>>>>> company/saurabh
     <html>
         <div ng-controller="basicDetails_ctrl">
             <head>

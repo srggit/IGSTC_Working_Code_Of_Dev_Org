@@ -286,7 +286,6 @@ angular.module('cp_app').controller('declarationplus2_ctrl', function ($scope, $
                                 $rootScope.proposalStage = true;
                                 CKEDITOR.config.readOnly = true;
                                 $scope.$apply();
-<<<<<<< HEAD
 
                                 // Swal.fire(
                                 //     'Success',
@@ -306,13 +305,6 @@ angular.module('cp_app').controller('declarationplus2_ctrl', function ($scope, $
                                     }, 1500);
 
                                 });
-=======
-                                Swal.fire(
-                                    'Success',
-                                    'Your application has been Submitted successfully.',
-                                    'success'
-                                );
->>>>>>> company/saurabh
                             }
                             else {
 
@@ -377,7 +369,6 @@ angular.module('cp_app').controller('declarationplus2_ctrl', function ($scope, $
         ApplicantPortal_Contoller.upsertSign($scope.decDetails, year, month, day, function (result, event) {
             if (event.status) {
                 debugger;
-<<<<<<< HEAD
                 // Swal.fire(
                 //     'Success',
                 //     'Your data has been saved successfully.',
@@ -399,14 +390,6 @@ angular.module('cp_app').controller('declarationplus2_ctrl', function ($scope, $
 
 
                 // $scope.redirectPageURL('Home');
-=======
-                Swal.fire(
-                    'Success',
-                    'Your data has been saved successfully.',
-                    'success'
-                );
-                $scope.redirectPageURL('Home');
->>>>>>> company/saurabh
                 $scope.decDetails = result;
                 $scope.$apply();
             }

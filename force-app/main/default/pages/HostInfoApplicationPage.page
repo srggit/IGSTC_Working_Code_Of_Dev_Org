@@ -47,7 +47,6 @@
                                 <div class="progress-success w-100"></div>
                             </div>
                             <ul>
-<<<<<<< HEAD
                                 
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
@@ -59,9 +58,6 @@
                                 </li>
 
                                 <li class="pb-cursor">
-=======
-                                <li class="active pb-cursor">
->>>>>>> company/saurabh
                                     <a ng-click="redirectPageURL('WiserApplicationPage')">
                                         <div class="icon-circle">
                                             <i class="fas fa-user-alt"></i>
@@ -70,11 +66,7 @@
                                     </a>
                                 </li>
                                 
-<<<<<<< HEAD
                                 <li class="pb-cursor">
-=======
-                                <li class="active pb-cursor">
->>>>>>> company/saurabh
                                     <a ng-click="redirectPageURL('HostInfoApplicationPage')">
                                         <div class="icon-circle">
                                             <i class="fas fa-file-invoice"></i>
@@ -83,17 +75,6 @@
                                     </a>
                                 </li>
                                 <li class="active pb-cursor">
-<<<<<<< HEAD
-=======
-                                    <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
-                                        <div class="icon-circle">
-                                            <i class="fa fa-home"></i>
-                                        </div>
-                                        <span>Applicant Project Details</span>
-                                    </a>
-                                </li>
-                                <li class="active pb-cursor">
->>>>>>> company/saurabh
                                     <a ng-click="redirectPageURL('FinancialOverview_wiser')">
                                         <div class="icon-circle">
                                             <i class="fas fa-chart-line"></i>
@@ -116,7 +97,6 @@
                                 <div class="progress-success wp-3"></div>
                             </div>
                             <ul>
-<<<<<<< HEAD
                                 
                                 <li>
                                     <a>
@@ -128,9 +108,6 @@
                                 </li>
 
                                 <li>
-=======
-                                <li class="active">
->>>>>>> company/saurabh
                                     <a>
                                         <div class="icon-circle">
                                             <i class="fas fa-user-alt"></i>
@@ -138,11 +115,7 @@
                                         <span>Applicant Details</span>
                                     </a>
                                 </li>
-<<<<<<< HEAD
                                 <li>
-=======
-                                <li class="active">
->>>>>>> company/saurabh
                                     <a>
                                         <div class="icon-circle">
                                             <i class="fas fa-file-invoice"></i>
@@ -153,17 +126,6 @@
                                 <li>
                                     <a>
                                         <div class="icon-circle">
-<<<<<<< HEAD
-=======
-                                            <i class="fa fa-home"></i>
-                                        </div>
-                                        <span>Applicant Project Details</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <div class="icon-circle">
->>>>>>> company/saurabh
                                             <i class="fas fa-chart-line"></i>
                                         </div>
                                         <span>Financial Overview</span>
@@ -501,12 +463,9 @@
                         </div>
                     </div>
                 </form>
-<<<<<<< HEAD
 
 
                
-=======
->>>>>>> company/saurabh
             </div>
             
             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

@@ -5,11 +5,7 @@
         <name>ApexClass</name>
     </types>
     <types>
-<<<<<<< HEAD
         <members>*</members>
-=======
-        <members>*</members>           
->>>>>>> company/saurabh
         <name>ApexComponent</name>
     </types>
     <types>
@@ -20,11 +16,7 @@
         <members>*</members>
         <name>ApexTestSuite</name>
     </types>
-<<<<<<< HEAD
     <types>
-=======
-    <types>   
->>>>>>> company/saurabh
         <members>*</members>
         <name>ApexTrigger</name>
     </types>
@@ -36,11 +28,7 @@
         <members>*</members>
         <name>LightningComponentBundle</name>
     </types>
-<<<<<<< HEAD
     <types>
-=======
-    <types>xxZ
->>>>>>> company/saurabh
         <members>*</members>
         <name>StaticResource</name>
     </types>

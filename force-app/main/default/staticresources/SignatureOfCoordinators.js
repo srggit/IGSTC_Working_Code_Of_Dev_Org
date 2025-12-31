@@ -16,7 +16,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
     $scope.signDate2;
     $rootScope.proposalId;
 
-<<<<<<< HEAD
     // LATEST METHOD
     // $scope.getProposalConsentCheckbox = function () {
     //     debugger;
@@ -78,19 +77,11 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
 
     // NEW METHOD
 
-=======
-    /*
-    // NEW METHOD
->>>>>>> company/saurabh
     $scope.getProposalConsentCheckbox = function () {
         debugger;
         console.log(' ----------------- getProposalConsentCheckbox() --------------------- ');
 
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> company/saurabh
         // ApplicantPortal_Contoller.getConsentCheckbox($rootScope.candidateId, function (result, event) {
         WorkshopController.getConsentCheckbox($rootScope.proposalId, function (result, event) {
             if (event.status) {
@@ -104,26 +95,16 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                     console.log("Contacts available:", result.Contacts);
 
                     for (var i = 0; i < result.Contacts.length; i++) {
-<<<<<<< HEAD
                         if (result.Contacts[i].Account.Country_Type === "India") {
                             $scope.indianCo = result.Contacts[i].Id;
                         } else if (result.Contacts[i].Account.Country_Type === "Germany") {
-=======
-                        if (result.Contacts[i].Account.Country_Type__c === "India") {
-                            $scope.indianCo = result.Contacts[i].Id;
-                        } else if (result.Contacts[i].Account.Country_Type__c === "Germany") {
->>>>>>> company/saurabh
                             $scope.germanCo = result.Contacts[i].Id;
                         }
                     }
 
                     // Only if at least ONE contact exists:
                     if (result.Contacts[0].Declaration_Sign_Date__c) {
-<<<<<<< HEAD
                         $scope.signDate = new Date(result.Contacts[0].Declaration_Sign_Date);
-=======
-                        $scope.signDate = new Date(result.Contacts[0].Declaration_Sign_Date__c);
->>>>>>> company/saurabh
                     } else {
                         $scope.signDate = new Date($rootScope.signDate);
                     }
@@ -132,11 +113,7 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                     if (result.Contacts.length > 1 &&
                         result.Contacts[1].Declaration_Sign_Date__c) {
 
-<<<<<<< HEAD
                         $scope.signDate2 = new Date(result.Contacts[1].Declaration_Sign_Date);
-=======
-                        $scope.signDate2 = new Date(result.Contacts[1].Declaration_Sign_Date__c);
->>>>>>> company/saurabh
                     } else {
                         $scope.signDate2 = new Date($rootScope.signDate);
                     }
@@ -153,15 +130,9 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
         )
     }
     $scope.getProposalConsentCheckbox();
-<<<<<<< HEAD
 
 
     /*
-=======
-    }
-    */
-
->>>>>>> company/saurabh
     // OLD METHOD
     // Keep a single definition of getProposalConsentCheckbox
     $scope.getProposalConsentCheckbox = function () {
@@ -199,10 +170,7 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
         )
     }
     $scope.getProposalConsentCheckbox();
-<<<<<<< HEAD
     */
-=======
->>>>>>> company/saurabh
 
     $scope.getProjectdetils = function () {
         debugger;
@@ -570,7 +538,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                     'Success',
                     'Your proposal have been submitted successfully.',
                     'success'
-<<<<<<< HEAD
                 ).then(function () {
 
                     setTimeout(function () {
@@ -582,10 +549,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                 // $scope.redirectPageURL('Home');
 
 
-=======
-                );
-                $scope.redirectPageURL('Home');
->>>>>>> company/saurabh
                 $scope.checkbox = result;
                 $scope.$apply();
             }
@@ -618,7 +581,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                     'Success',
                     'Your proposal has been saved as Draft.',
                     'success'
-<<<<<<< HEAD
                 ).then(function () {
 
                     setTimeout(function () {
@@ -630,11 +592,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
                 // swal("Draft", "Your proposal has been saved as Draft.","");
                 // $scope.redirectPageURL('Home');
 
-=======
-                );
-                // swal("Draft", "Your proposal has been saved as Draft.","");
-                $scope.redirectPageURL('Home');
->>>>>>> company/saurabh
                 $scope.checkbox = result;
                 $scope.$apply();
             }
@@ -649,7 +606,6 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
         link.id = 'someLink'; //give it an ID!
         link.href = "#/" + pageName;
         link.click();
-<<<<<<< HEAD
     };
 
     $scope.redirectPageURL = function () {
@@ -659,7 +615,3 @@ angular.module('cp_app').controller('sign_Ctrl', function ($scope, $sce, $rootSc
             window.location.search;
     };
 });
-=======
-    }
-});
->>>>>>> company/saurabh
