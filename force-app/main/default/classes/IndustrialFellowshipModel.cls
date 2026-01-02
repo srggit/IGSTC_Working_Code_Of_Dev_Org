@@ -105,6 +105,8 @@ public class IndustrialFellowshipModel {
         }
     }
 
+    // ------------------------------------- OLD: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
+    /*
     public static Application_Proposal__c getHostProjectDetails(string hashcode){
 
         contact userDetail = [select name,id,Proposals__c from contact where Login_Hash_Code__c =:hashcode limit 1];
@@ -122,7 +124,30 @@ public class IndustrialFellowshipModel {
         //     return null;
         // }
     }
+    */
 
+    // ------------------------------------- OLD: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
+    public static Application_Proposal__c getHostProjectDetails(String proposalId){
+
+        Application_Proposal__c appProposal;
+        try{
+            if(proposalId != null){
+                appProposal = [SELECT Id, Host_Project_Title__c, Host_Abstract_Of_Project__c, Host_Funding_Source__c, Actual_Application_Start_Date__c, Actual_Application_End_Date__c 
+                    FROM Application_Proposal__c 
+                    WHERE Id =: proposalId 
+                    Limit 1];
+            }
+            System.debug('appproposal :: ' + appProposal);
+
+            return appProposal;
+        }catch(Exception e){
+            System.debug('ERROR LINE NUMBER : ' + e.getLineNumber());
+            System.debug('ERROR MESSAGE : ' + e.getMessage());
+
+            throw new AuraHandledException('ERROR : ' + e.getLineNumber() + ' @ ' + e.getMessage());
+        }
+        
+    }
 
     public List<Contact> getContactEduOtherDet(String AccountId){
         Id eduId = Schema.SObjectType.Education_Details__c.getRecordTypeInfosByName().get('Education').getRecordTypeId();

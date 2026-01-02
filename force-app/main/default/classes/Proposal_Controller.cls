@@ -6771,10 +6771,12 @@ return null;
         //29 Aug 2023 D: Modified query to get OtherStreet field and try to store the value of MailingStreet from js.
         Contact ContactRecord = [SELECT Id,Title,FirstName,LastName,Name,Email,Actual_Position__c,MailingStreet,OtherStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Country__c,States__c,Account.Name,Publications_Patents__c,Publications_Patents_Relevant__c,
                                  Account.BillingCountry,
+                                 (SELECT Id, Publications_Patents__c,List_Of_Patents_Filed_Granted__c,Book_Chapters_Monographs__c,Any_Other_Notable_Achievements__c
+								 FROM Applicant_Proposal_Associations__r WHERE Id = :apaId), // New query added.to get APA Fields.
                                  (SELECT Name,Degree__c,Start_Year__c,End_Year__c,CGPA__c,End_Date__c,Start_Date__c,Institution_Name__c,Area_of_specialization__c,Percentage__c,Percentage_cgpa__c 
                                   FROM Education_Details__r where Applicant_Proposal_Association__c =:apaId ORDER BY End_Year__c DESC),
                                  (SELECT Id,Organization_Name__c,Position__c,Start_Year__c,End_Year__c FROM Employment_Details__r  where Applicant_Proposal_Association__c =:apaId)
-                                 FROM Contact WHERE Login_Hash_Code__c=: hashcode];
+                                 FROM Contact WHERE Login_Hash_Code__c=: hashcode ];
         return ContactRecord;
     }
 
