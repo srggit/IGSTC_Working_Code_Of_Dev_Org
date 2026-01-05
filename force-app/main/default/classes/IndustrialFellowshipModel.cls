@@ -132,7 +132,8 @@ public class IndustrialFellowshipModel {
         Application_Proposal__c appProposal;
         try{
             if(proposalId != null){
-                appProposal = [SELECT Id, Host_Project_Title__c, Host_Abstract_Of_Project__c, Host_Funding_Source__c, Actual_Application_Start_Date__c, Actual_Application_End_Date__c 
+                appProposal = [SELECT Id, Host_Project_Title__c, Host_Abstract_Of_Project__c, Host_Funding_Source__c, Actual_Application_Start_Date__c, Actual_Application_End_Date__c, 
+                    Title_Of__c, Broad_area_of_research__c, Duration_In_Months_Max_36__c, KeyWords__c 
                     FROM Application_Proposal__c 
                     WHERE Id =: proposalId 
                     Limit 1];

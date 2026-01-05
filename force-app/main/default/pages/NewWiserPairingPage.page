@@ -44,19 +44,19 @@
                                         <div class="icon-circle">
                                             <i class="fa fa-home"></i>
                                         </div>
-                                        <span>Pairing Details</span>
+                                        <span>Applicant Project Details</span>
                                     </a>
                                 </li>
 
                                 <!-- Pair Details -->
-                                <!-- <li class="active pb-cursor">
+                                <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('HostInfoApplicationPage')">
                                         <div class="icon-circle">
                                             <i class="fas fa-file-invoice"></i>
                                         </div>
                                         <span>Host Details</span>
                                     </a>
-                                </li> -->
+                                </li>
 
                                 <!-- Applicant Details -->
                                 <li class="active pb-cursor">

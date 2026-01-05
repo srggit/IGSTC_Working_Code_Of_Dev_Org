@@ -2019,9 +2019,10 @@ userDocc.Id = udId;
         return Proposal_Controller.createHostContact(conID,projectid);
     }
     
+   
     @RemoteAction
-    public static Contact getCVDetailsForWiserApplicant(string candidateId){
-        return Proposal_Controller.getCVDetailsForWiserApplicant(candidateId);
+    public static Contact getCVDetailsForWiserApplicant(string candidateId,String apaId){
+        return Proposal_Controller.getCVDetailsForWiserApplicant(candidateId, apaId);
     }
  /*   
     @RemoteAction
@@ -2144,7 +2145,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
         list<Account> applicantList = New list<Account>();
         if(conRec.AccountId != null){
             system.debug('applicantList-----'+applicantList);
-            applicantList = [select Id,Name,Proposals__c,(SELECT Id,Title__c,Funding_Agency__c,Budget__c,Starting_Date__c,End_Date__c,Role_in_the_Project__c,Account__c,Application__c,Currency__c FROM Existing_Grants__r),(Select Id,Login_Hash_Code__c From Contacts) from Account where Proposals__c=:conRec.Proposals__c];
+            applicantList = [select Id,Name,Proposals__c,(SELECT Id,Title__c,Funding_Agency__c,Budget__c,Starting_Date__c,End_Date__c,Role_in_the_Project__c,Account__c,Application__c,Currency__c FROM Existing_Grants__r),(Select Id,Login_Hash_Code__c From Contacts) from Account where Id =:conRec.AccountId];
             return applicantList;
         }
         return null;

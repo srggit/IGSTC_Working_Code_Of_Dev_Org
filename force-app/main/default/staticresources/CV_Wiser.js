@@ -2,14 +2,51 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
     debugger;
     $scope.siteURL = siteURL;
     $scope.contactData = {};
+    $scope.proposalStage = false;
     $scope.objRtf=[{charCount:0,maxCharLimit:0,errorStatus:false}];
     $scope.objRtf.push({charCount:0,maxCharLimit:0,errorStatus:false});
     $scope.objRtf.push({charCount:0,maxCharLimit:0,errorStatus:false});
     $scope.objRtf.push({charCount:0,maxCharLimit:0,errorStatus:false});
 
+    $scope.getDataFromLocalStorage = function(){
+        debugger;
+        if(localStorage.getItem('candidateId')){
+            $rootScope.candidateId = localStorage.getItem('candidateId');
+        }
+        if(localStorage.getItem('apaId')){
+            $rootScope.apaId = localStorage.getItem('apaId');
+            $scope.apaId = $rootScope.apaId;
+        }
+        if(localStorage.getItem('proposalId')){
+            $rootScope.proposalId = localStorage.getItem('proposalId');
+            $scope.proposalId = $rootScope.proposalId;
+        }
+    }
+
+    $scope.getDataFromLocalStorage();
+
+    /**
+     * Fetches proposal stage from Apex on page load
+     */
+    $scope.getProposalStage = function(){
+        debugger;
+        if($rootScope.apaId && $rootScope.proposalId){
+            ApplicantPortal_Contoller.getProposalStageUsingProposalId($rootScope.proposalId, $rootScope.apaId, function(result, event){
+                debugger;
+                if(event.status && result){
+                    $scope.proposalStage = (result.proposalStage != 'Draft' && result.proposalStage != null && result.proposalStage != undefined);
+                    $rootScope.proposalStage = $scope.proposalStage;
+                    $scope.$apply();
+                }
+            }, { escape: true });
+        }
+    }
+
+    $scope.getProposalStage();
+
     $scope.getCVDetailsForWiserApplicant = function(){
         debugger;
-        ApplicantPortal_Contoller.getCVDetailsForWiserApplicant($rootScope.candidateId, function(result,event){
+        ApplicantPortal_Contoller.getCVDetailsForWiserApplicant($rootScope.candidateId, $rootScope.apaId, function(result,event){
             debugger;
             if(event.status && result){
                 debugger;
@@ -34,6 +71,7 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
                 }
                 if($scope.contactData.Education_Details__r == undefined){
                     var rec = {
+                        'Applicant_Proposal_Association__c': $scope.apaId,
                         'Institution_Name__c':'',
                         'Contact__c': $scope.contactData.Id
                     };
@@ -55,6 +93,7 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
                 }
                 if($scope.contactData.Employment_Details__r == undefined){
                     var emprec = {
+                        'Applicant_Proposal_Association__c': $scope.apaId,
                         "Organization_Name__c":"",
                         "Contact__c": $scope.contactData.Id
                     };
@@ -83,6 +122,7 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
         if($scope.contactData != undefined){
         if($scope.contactData.Education_Details__r != undefined){
             for(var i=0; i<$scope.contactData.Education_Details__r.length; i++){
+                $scope.contactData.Education_Details__r[i].Applicant_Proposal_Association__c = $scope.apaId;
                 if($scope.contactData.Education_Details__r[i].Institution_Name__c == undefined || $scope.contactData.Education_Details__r[i].Institution_Name__c == ""){
                     swal("Education Details", "Please Enter Institution Name.");
                     $("#institution"+i+"").addClass('border-theme');
@@ -113,6 +153,8 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
 
         if($scope.contactData.Employment_Details__r != undefined){
             for(var j=0; j<$scope.contactData.Employment_Details__r.length; j++){
+                $scope.contactData.Employment_Details__r[j].Applicant_Proposal_Association__c = $scope.apaId;
+
                 if($scope.contactData.Employment_Details__r[j].Organization_Name__c == undefined || $scope.contactData.Employment_Details__r[j].Organization_Name__c == ""){
                     swal("Employment Details", "Please Enter Organization Name.");
                     $("#org"+j+"").addClass('border-theme');
@@ -167,7 +209,7 @@ angular.module('cp_app').controller('cv_wiser', function($scope,$rootScope) {
                     'your CV Details has been Saved successfully.',
                     'success'
                 );
-               $scope.redirectPageURL('AttachmentsInWiser');
+               $scope.redirectPageURL('Declaration_Wiser');
                $scope.$apply();
             }
         })

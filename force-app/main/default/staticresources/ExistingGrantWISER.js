@@ -8,6 +8,45 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function($scope,$rootScop
     var statusLoginHas=0;
     $scope.pickListCurrency=$rootScope.currencyPickList;
 
+
+    
+$scope.getDataFromLocalStorage = function(){
+    debugger;
+    if(localStorage.getItem('candidateId')){
+        $rootScope.candidateId = localStorage.getItem('candidateId');
+    }
+    if(localStorage.getItem('apaId')){
+        $rootScope.apaId = localStorage.getItem('apaId');
+        $scope.apaId = $rootScope.apaId;
+    }
+    if(localStorage.getItem('proposalId')){
+        $rootScope.proposalId = localStorage.getItem('proposalId');
+        $scope.proposalId = $rootScope.proposalId;
+    }
+}
+
+$scope.getDataFromLocalStorage();
+
+/**
+ * Fetches proposal stage from Apex on page load
+ */
+$scope.getProposalStage = function(){
+    debugger;
+    if($rootScope.apaId && $rootScope.proposalId){
+        ApplicantPortal_Contoller.getProposalStageUsingProposalId($rootScope.proposalId, $rootScope.apaId, function(result, event){
+            debugger;
+            if(event.status && result){
+                $scope.proposalStage = (result.proposalStage != 'Draft' && result.proposalStage != null && result.proposalStage != undefined);
+                $rootScope.proposalStage = $scope.proposalStage;
+                $scope.$apply();
+            }
+        }, { escape: true });
+    }
+}
+
+$scope.getProposalStage();
+
+
     $scope.getApplicantDetails = function(){
      ApplicantPortal_Contoller.getApplicantDetailsForGrantWISER($rootScope.contactId, function (result, event){
             if(event.status) {
@@ -39,7 +78,7 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function($scope,$rootScop
                             'Starting_Date__c': '',
                             'End_Date__c': '',
                             'Account__c': $scope.input[i].Id,
-                            'Application__c': $rootScope.projectId
+                            'Application__c': $rootScope.proposalId
                         };
                         $scope.input[i].Existing_Grants__r = [];
                         debugger;
@@ -131,9 +170,9 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function($scope,$rootScop
                 // }
                 var grantApplication = {"title":"","fundingagency":"","Account":$scope.input[i].Id,"AccountName":$scope.input[i].Name,"role":"",currencyPick:"","budget":"","id":"","startDate":"","endDate":"","Application":""};
                     grantApplication.Account = $scope.input[i].Id;
-                    grantApplication.Application = $rootScope.projectId;
+                    grantApplication.Application = $rootScope.proposalId;
                     grantApplication.AccountName = $scope.input[i].Name;
-                    grantApplication.id = $scope.input[i].Existing_Grants__r[j].Id;
+                    grantApplication.id = $scope.input[i].Existing_Grants__r[j].Id==undefined?null:$scope.input[i].Existing_Grants__r[j].Id;
                     grantApplication.title = $scope.input[i].Existing_Grants__r[j].Title__c;
                     grantApplication.fundingagency = $scope.input[i].Existing_Grants__r[j].Funding_Agency__c;
                     grantApplication.role = $scope.input[i].Existing_Grants__r[j].Role_in_the_Project__c;
@@ -189,7 +228,7 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function($scope,$rootScop
             'Budget__c': '',
             'Starting_Date__c': '',
             'Account__c': $scope.input[index].Id,
-            'Application__c': $rootScope.projectId
+            'Application__c': $rootScope.proposalId
         };
         $scope.input[index].Existing_Grants__r.push(rec);
     }

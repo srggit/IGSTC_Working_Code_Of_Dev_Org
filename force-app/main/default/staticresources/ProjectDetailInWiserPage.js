@@ -549,7 +549,8 @@ $scope.filePreviewHandler = function(fileContent){
 }
 
      $scope.redirectToApplicantPortal = function() {
-          window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
+        $scope.redirectPageURL('HostProjectDetails');
+        //   window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
       };
 
         $scope.valid = function(value){
