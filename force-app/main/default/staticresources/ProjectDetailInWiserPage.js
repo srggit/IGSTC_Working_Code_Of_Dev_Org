@@ -62,6 +62,44 @@ $scope.filePreviewHandler = function(fileContent){
     //.ContentDistribution.DistributionPublicUrl
 }
 
+
+    $scope.getDataFromLocalStorage = function(){
+        debugger;
+        if(localStorage.getItem('candidateId')){
+            $rootScope.candidateId = localStorage.getItem('candidateId');
+        }
+        if(localStorage.getItem('apaId')){
+            $rootScope.apaId = localStorage.getItem('apaId');
+            $scope.apaId = $rootScope.apaId;
+        }
+        if(localStorage.getItem('proposalId')){
+            $rootScope.proposalId = localStorage.getItem('proposalId');
+            $scope.proposalId = $rootScope.proposalId;
+        }
+        if(localStorage.getItem('contactId')){
+            $rootScope.contactId = localStorage.getItem('contactId');
+            $scope.contactId = $rootScope.contactId;
+        }
+    }
+
+    $scope.getDataFromLocalStorage();   
+
+    $scope.getProposalStage = function(){
+        debugger;
+        if($rootScope.apaId && $rootScope.proposalId){
+            ApplicantPortal_Contoller.getProposalStageUsingProposalId($rootScope.proposalId, $rootScope.apaId, function(result, event){
+                debugger;
+                if(event.status && result){
+                    $scope.proposalStage = (result.proposalStage != 'Draft' && result.proposalStage != null && result.proposalStage != undefined);
+                    $rootScope.proposalStage = $scope.proposalStage;
+                    $scope.$apply();
+                }
+            }, { escape: true });
+        }
+    }
+
+    $scope.getProposalStage();
+
      $scope.getProjectdetils = function () {
           debugger;
           ApplicantPortal_Contoller.getAllUserDoc($rootScope.projectId, function (result, event) {

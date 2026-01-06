@@ -1065,7 +1065,7 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     ///*************************New Method aaded by Karthik 
     @RemoteAction
     public static List<Contact> getPairingDetailsinWiser(string hashcode, String campaignId){
-        return Proposal_Controller.getPairingDetails(hashcode,campaignId);
+        return Proposal_Controller.getPairingDetailsinWiser(hashcode,campaignId);
     }
 
 
@@ -2771,4 +2771,34 @@ public static void updateProposalStage(Id proposalId) {
             return e.getMessage()+e.getLineNumber();
         }
     }
+
+    @RemoteAction
+    public static Application_Proposal__c getProjectDetailsFromApex(String proposalId){
+        try{
+            System.debug('----------- getProjectDetailsFromApex() ------------');
+
+            Application_Proposal__c proposal = [
+                SELECT Research_Approach_Objectives__c, Current_State_Of_The_Art__c, Project_Description__c,
+                Expected_Deliverables__c, Reasons_For_And_Benefits_Of_Cooperation__c, Equipment__c,
+                Brief_Statement_of_Purpose__c, Main_Objective_Research_Approach_S2__c, Current_State_Of_The_Art_Stage_2__c,
+                Project_Description_Stage_2__c, Risk_Assessment_And_Migration_Strategy__c, Reasons_For_And_Benefits_Of_Corp_Stage2__c,
+                Innovative_Aspects__c, Market_Assessment_Of_Proposed_Tech__c, Future_Commercialization_Plan__c, 
+                Data_Management_And_Sharing_Protocols__c, Involvement_Of_Young_Scientists__c, Necessity_Of_Funding__c
+                FROM Application_Proposal__c
+                WHERE Id = :proposalId
+                LIMIT 1
+            ];
+            System.debug('proposal : ' + proposal);
+
+            return proposal;
+        }
+        catch(Exception ex){
+            System.debug('ERROR @ LINE NUMBER :: ' + ex.getLineNumber());
+            System.debug('ERROR MESSAGE :: ' + ex.getMessage());
+
+            return null;
+            // return 'ERROR @ LINE NUMBER :: ' + ex.getLineNumber() + ' ERROR MESSAGE :: ' + ex.getMessage();
+        }
+    }
+    
 }

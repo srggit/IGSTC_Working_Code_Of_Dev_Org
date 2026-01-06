@@ -126,7 +126,7 @@ public class IndustrialFellowshipModel {
     }
     */
 
-    // ------------------------------------- OLD: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
+    // ------------------------------------- NEW: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
     public static Application_Proposal__c getHostProjectDetails(String proposalId){
 
         Application_Proposal__c appProposal;

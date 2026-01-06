@@ -158,7 +158,8 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                               button: "ok!",
                          })
                          // $scope.redirectPageURL('TwoReferenceWiser');
-                         $scope.redirectPageURL('ProjectDetailsInWiserPage');
+                         // $scope.redirectPageURL('ProjectDetailsInWiserPage');
+                         $scope.redirectPageURL('WiserApplicationPage');
                          // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/TwoReferenceWiser');
 
                     } else {

@@ -26,15 +26,6 @@
                             </div>
 
                             <ul>
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('HostProjectDetails')">
-                                        <div class="icon-circle">
-                                            <i class="far fa-address-card"></i>
-                                        </div>
-                                        <span>Pair Project Details</span>
-                                    </a>
-                                </li>
 
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
@@ -45,6 +36,18 @@
                                         <span>Pairing Details</span>
                                     </a>
                                 </li>
+
+                                <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('HostProjectDetails')">
+                                        <div class="icon-circle">
+                                            <i class="far fa-address-card"></i>
+                                        </div>
+                                        <span>Pair Project Details</span>
+                                    </a>
+                                </li>
+
+
 
                                 <!-- Pair Details -->
                                 <!-- <li class="active pb-cursor">
@@ -59,7 +62,7 @@
                                 <!-- Applicant Details -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('WiserApplicationPage')">
-                                        <div class="icon-circle">
+                                        <div c-lass="icon-circle">
                                             <i class="fas fa-user-alt"></i>
                                         </div>
                                         <span>Applicant Details</span>
@@ -83,9 +86,18 @@
 
                         <div class="tab-link" ng-hide="proposalStage">
                             <div class="progress">
-                                <div class="progress-success wp-2"></div>
+                                <div class="progress-success wp-5"></div>
                             </div>
                             <ul>
+                                <li class="active">
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="far fa-address-card"></i>
+                                        </div>
+                                        <span>Pairing Details</span>
+                                    </a>
+                                </li>
+
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
@@ -95,14 +107,7 @@
                                     </a>
                                 </li>
 
-                                <li>
-                                    <a>
-                                        <div class="icon-circle">
-                                            <i class="far fa-address-card"></i>
-                                        </div>
-                                        <span>Pairing Details</span>
-                                    </a>
-                                </li>
+
 
                                 <!-- <li >
                                     <a>
@@ -396,7 +401,7 @@
                                     <b>Title of project</b>
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="applicantDetails.Title_Of__c" ng-disabled="proposalStage" />
+                                <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage" />
                             </div>
 
                             <div class="col-md-6">
@@ -404,8 +409,7 @@
                                     <b>Broad area of research</b>
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="applicantDetails.Broad_area_of_research__c" ng-disabled="proposalStage"
-                                />
+                                <input class="form-control" type="text" ng-model="objContact.Broad_area_of_research__c" ng-disabled="proposalStage" />
                             </div>
 
                         </div>
@@ -419,13 +423,14 @@
                                     <b>Duration in months (Min 24 Max 36)</b>
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input name="duration" placeholder="Min -24 months and Maximum – 36 months." class="form-control mt-3" number="applicantDetails.Duration_In_Months_Max_36__c"
-                                    type="text" ng-model="applicantDetails.Duration_In_Months_Max_36__c" ng-focus="removeClass('txtDuration')"
+                                <input name="duration" placeholder="Min -24 months and Maximum – 36 months." class="form-control mt-3" number="objContact.Duration_In_Months_Max_36__c"
+                                    type="text" ng-model="objContact.Duration_In_Months_Max_36__c" ng-focus="removeClass('txtDuration')"
                                     id="txtDuration" ng-disabled="proposalStage" ng-maxlength="2" ng-minlength="2" min="24" max="36"
-                                    ng-keyup="restrictDecimalVal(applicantDetails.Duration_In_Months_Max_36__c)" />
+                                    ng-keyup="restrictDecimalVal(objContact.Duration_In_Months_Max_36__c)" />
                                 <span ng-if="!formPrjDet.duration.$valid" class="text-danger">duration must be between 24 and 36 Months</span>
                             </div>
 
+                            <!--
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-10">
@@ -450,7 +455,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                        -->
                         </div>
                     </div>
 

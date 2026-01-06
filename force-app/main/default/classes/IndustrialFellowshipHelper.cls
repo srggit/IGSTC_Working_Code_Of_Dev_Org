@@ -925,7 +925,41 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
         }
    }
 
+    public static String insertHostProjectDetails(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
+        
+        if(hostDetails != null){
+            
+            hostDetails.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
+            hostDetails.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
+            hostDetails.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
+            hostDetails.Duration_In_Months_Max_36__c = hostDetails.Duration_In_Months_Max_36__c;
+            upsert proposalRec;
+            return 'SUCCESS';
+        }
+        
+        
+        
+        if(!String.isBlank(proposalId)){
+ 
+                Application_Proposal__c proposalRec = [
+                    SELECT Id, Host_Abstract_Of_Project__c, Host_Project_Title__c, Host_Funding_Source__c, 
+                    Actual_Application_End_Date__c, Broad_area_of_research__c
+                    FROM Application_Proposal__c
+                    WHERE Id = :proposalId
+                    LIMIT 1
+                ];
+
+                proposalRec.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
+                proposalRec.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
+                proposalRec.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
+
+                upsert proposalRec;
+                return 'SUCCESS';
+        }
+        return 'proposalId doesen\'t exists';
+    }
    // ------------------------------------- WISER METHOD TO CREATE PROPOSAL ----------------------------------------- //
+   /*
     public static IndustrialFellowshipHelper.ProposalAndAPAWrapper insertHostProjectDetails(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
         try {
             System.debug(' ================= IndustrialFellowshipHelper.insertHostProjectDetails() ================== ');
@@ -956,7 +990,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
  
                 proposalRec = [
                     SELECT Id, Host_Abstract_Of_Project__c, Host_Project_Title__c, Host_Funding_Source__c, 
-                    Actual_Application_End_Date__c
+                    Actual_Application_End_Date__c, Broad_area_of_research__c
                     FROM Application_Proposal__c
                     WHERE Id = :proposalId
                     LIMIT 1
@@ -964,8 +998,9 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
 
                 proposalRec.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
                 proposalRec.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
+                proposalRec.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
 
-                update proposalRec;
+                upsert proposalRec;
  
                 // Find Primary APA
                 for(Applicant_Proposal_Association__c apa : [
@@ -1018,7 +1053,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                     Host_Project_Title__c = hostDetails.Host_Project_Title__c
                     //Actual_Application_Start_Date__c = Date.newInstance(sYear,sMonth,sDate)
                 );
-                insert proposalRec;
+                upsert proposalRec;
  
                 List<Applicant_Proposal_Association__c> apaList = new List<Applicant_Proposal_Association__c>();
                 for(Contact c : conList){
@@ -1056,22 +1091,21 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
             );
         }
 
-        /*
-        if(sDate == 0 && sMonth == 0 && sYear == 0){
+    
+        // if(sDate == 0 && sMonth == 0 && sYear == 0){
 
-        }else{
-            hostDetails.Actual_Application_Start_Date__c = Date.newInstance(sYear,sMonth,sDate);
-        }
+        // }else{
+        //     hostDetails.Actual_Application_Start_Date__c = Date.newInstance(sYear,sMonth,sDate);
+        // }
 
-        if(eDate == 0 && eMonth == 0 && eYear == 0){
+        // if(eDate == 0 && eMonth == 0 && eYear == 0){
 
-        }else{
-            hostDetails.Actual_Application_End_Date__c = Date.newInstance(eYear,eMonth,eDate);
-        }
-        system.debug('@@@ ::'+hostDetails);
-        upsert hostDetails;
-        return 'SUCCESS';
-        */
+        // }else{
+        //     hostDetails.Actual_Application_End_Date__c = Date.newInstance(eYear,eMonth,eDate);
+        // }
+        // system.debug('@@@ ::'+hostDetails);
+        // upsert hostDetails;
+        // return 'SUCCESS';
     }  
 
     public class ProposalAndAPAWrapper {
@@ -1079,6 +1113,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
         public Application_Proposal__c proposal { get; set; }
         public Applicant_Proposal_Association__c apa { get; set; }
     }
+    */
 
 
 /*    public static String insertHostProjectDetails(Application_Proposal__c hostDetails, integer sDate, integer sMonth, integer sYear, integer eDate, integer eMonth, integer eYear){
