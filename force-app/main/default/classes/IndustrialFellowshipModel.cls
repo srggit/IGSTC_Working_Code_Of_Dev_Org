@@ -126,7 +126,7 @@ public class IndustrialFellowshipModel {
     }
     */
 
-    // ------------------------------------- NEW: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
+    // ------------------------------------- OLD: WISER METHOD TO GET PROPOSAL ----------------------------------------- //
     public static Application_Proposal__c getHostProjectDetails(String proposalId){
 
         Application_Proposal__c appProposal;
@@ -317,7 +317,7 @@ public class IndustrialFellowshipModel {
         }
     }
     public Campaign getCampaignEndDate(String campaignName){
-        return [SELECT NAME,EndDate FROM Campaign where Name=:campaignName Limit 1];
+        return [SELECT Id, NAME,EndDate FROM Campaign where Name=:campaignName Limit 1];
     }
     public class ContactUserDocumentWrapper{
         public list<UserDocumentWrapper> userDocWrapper;

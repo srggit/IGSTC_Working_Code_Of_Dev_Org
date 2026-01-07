@@ -37,16 +37,6 @@
                             </div>
                             <ul>
 
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('HostProjectDetails')">
-                                        <div class="icon-circle">
-                                            <i class="far fa-address-card"></i>
-                                        </div>
-                                        <span>Pair Project Details</span>
-                                    </a>
-                                </li>
-
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
@@ -54,6 +44,16 @@
                                             <i class="fa fa-home"></i>
                                         </div>
                                         <span>Pairing Details</span>
+                                    </a>
+                                </li>
+
+                                <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('HostProjectDetails')">
+                                        <div class="icon-circle">
+                                            <i class="far fa-address-card"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
                                     </a>
                                 </li>
 
@@ -139,21 +139,20 @@
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
-                                            <i class="fas fa-user-alt"></i>
-                                        </div>
-                                        <span>Pair Project Details</span>
-                                    </a>
-                                </li>
-
-                                <li class="active">
-                                    <a>
-                                        <div class="icon-circle">
                                             <i class="far fa-address-card"></i>
                                         </div>
                                         <span>Pairing Details</span>
                                     </a>
                                 </li>
 
+                                <li class="active">
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-user-alt"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
+                                    </a>
+                                </li>
                                 <!-- <li >
                                     <a>
                                         <div class="icon-circle">

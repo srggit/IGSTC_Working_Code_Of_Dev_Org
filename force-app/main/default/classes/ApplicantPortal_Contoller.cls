@@ -272,7 +272,7 @@ public without sharing class ApplicantPortal_Contoller {
             
             // Applied campaigns 
             List<Applicant_Proposal_Association__c> applicantAssociationList = [
-                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name, Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name, Proposals__r.Campaign__r.Description, Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,Proposals__r.yearly_Call__r.Campaign_End_Date__c
+                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name,Proposals__r.Proposal_Stages__c, Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name,Contact__r.Title_Of_Project__c, Proposals__r.Campaign__r.Description, Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,Proposals__r.yearly_Call__r.Campaign_End_Date__c
                 FROM Applicant_Proposal_Association__c WHERE Contact__r.Login_hash_code__c = :candidateId  AND Proposals__r.yearly_Call__r.Years__C = :yearId];
             
             if(!applicantAssociationList.isEmpty()) {
@@ -714,6 +714,49 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     public static List<Account> getProposalAccounts(String ProposalId){
         return Proposal_Controller.getProposalAccounts(ProposalId);
     }
+
+    @RemoteAction 
+    public static String saveWorkPackageDet(List<IndustrialFellowshipHelper.WrapperWorkpackageDet> wrapper,String ProposalId){
+        IndustrialFellowshipHelper instanceIFH = new IndustrialFellowshipHelper();
+        return instanceIFH.saveWorkPackageDet(wrapper,ProposalId);
+    }
+    
+    /**
+     * Gets accounts through contacts linked to proposal via Applicant_Proposal_Association__c
+     */
+    @RemoteAction
+    public static List<Account> getProposalAccountsFromAPA(String proposalId){
+        try {
+            List<Contact> contactList = [
+                SELECT Id, FirstName, LastName, AccountId, Account.Name, Account.BillingCountry, Account.Country_Type__c
+                FROM Contact
+                WHERE Id IN (
+                    SELECT Contact__c
+                    FROM Applicant_Proposal_Association__c
+                    WHERE Proposals__c = :proposalId
+                )
+            ];
+            
+            Set<Id> accountIds = new Set<Id>();
+            for(Contact con : contactList) {
+                if(con.AccountId != null) {
+                    accountIds.add(con.AccountId);
+                }
+            }
+            
+            List<Account> accountList = [
+                SELECT Id, Name, BillingCountry, Country_Type__c
+                FROM Account
+                WHERE Id IN :accountIds
+            ];
+            
+            return accountList;
+        } catch(Exception e) {
+            System.debug('Error in getProposalAccountsFromAPA: ' + e.getMessage());
+            return new List<Account>();
+        }
+    }
+    
     @RemoteAction
     public static Proposal_Controller.accountWrapper getProposalAccount(String loginhashcode){
         return Proposal_Controller.getProposalAccount(loginhashcode);
@@ -785,6 +828,30 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     @RemoteAction
     public static List<PI_Deliverables__c> getDeliverablesDetails(string applicantHashCode){
         return Proposal_Controller.getDeliverablesDetails(applicantHashCode);
+    }
+    
+    /**
+     * Gets deliverables by proposal ID directly
+     */
+    @RemoteAction
+    public static List<PI_Deliverables__c> getDeliverablesDetailsByProposalId(String proposalId){
+        List<PI_Deliverables__c> deliverableList = new List<PI_Deliverables__c>();
+        try {
+            if(!String.isBlank(proposalId)){
+                deliverableList = [
+                    SELECT Id, Title__c, External_Id__c, Due_Date__c, Application__c, Account__c, Account__r.Name,
+                        (SELECT Id, Name, Account_Name__c, Account__c FROM Deliverables_Account_Mapping__r),
+                        (SELECT Id, Name FROM Accounts__r) 
+                    FROM PI_Deliverables__c 
+                    WHERE Application__c = :proposalId
+                ];
+            }
+            System.debug('deliverableList by proposalId: ' + deliverableList);
+            return deliverableList;
+        } catch(Exception e) {
+            System.debug('Error in getDeliverablesDetailsByProposalId: ' + e.getMessage());
+            return new List<PI_Deliverables__c>();
+        }
     }
     
     @RemoteAction
@@ -2783,7 +2850,8 @@ public static void updateProposalStage(Id proposalId) {
                 Brief_Statement_of_Purpose__c, Main_Objective_Research_Approach_S2__c, Current_State_Of_The_Art_Stage_2__c,
                 Project_Description_Stage_2__c, Risk_Assessment_And_Migration_Strategy__c, Reasons_For_And_Benefits_Of_Corp_Stage2__c,
                 Innovative_Aspects__c, Market_Assessment_Of_Proposed_Tech__c, Future_Commercialization_Plan__c, 
-                Data_Management_And_Sharing_Protocols__c, Involvement_Of_Young_Scientists__c, Necessity_Of_Funding__c
+                Data_Management_And_Sharing_Protocols__c, Involvement_Of_Young_Scientists__c, Necessity_Of_Funding__c,
+                Tentative_plans_for_networking__c, Plan_For_Utilisation_and_Preservation__c, Profile_Of_The_Academic_Institutions__c
                 FROM Application_Proposal__c
                 WHERE Id = :proposalId
                 LIMIT 1

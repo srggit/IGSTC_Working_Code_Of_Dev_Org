@@ -561,7 +561,7 @@ $scope.filePreviewHandler = function(fileContent){
                 button: "ok!",
               }).then((value) => {
                 $scope.getPairingDetailsinWiser();
-                  $scope.redirectPageURL('WiserApplicationPage');
+                  $scope.redirectPageURL('HostProjectDetails');
                   });
             //  Swal.fire(
             //      'Success',
@@ -587,8 +587,8 @@ $scope.filePreviewHandler = function(fileContent){
 }
 
      $scope.redirectToApplicantPortal = function() {
-        $scope.redirectPageURL('HostProjectDetails');
-        //   window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
+        // $scope.redirectPageURL('HostProjectDetails');
+          window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
       };
 
         $scope.valid = function(value){

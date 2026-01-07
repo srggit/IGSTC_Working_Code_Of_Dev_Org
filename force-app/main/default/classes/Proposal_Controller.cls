@@ -2861,13 +2861,12 @@ return e.getMessage() + e.getLineNumber();
     public static List<Work_Package__c> getWPDetails(string applicantHashCode){
         List<Work_Package__c> workPackageList = New List<Work_Package__c>();
         
-        Contact conRec = [Select Id,Name,Proposals__c From Contact WHERE Login_Hash_Code__c =:applicantHashCode limit 1];
-        system.debug('applicantHashCode ::'+applicantHashCode);
         
-        if(!string.isBlank(conRec.Proposals__c)){
+        
+      
             workPackageList = [SELECT Id,TRL_Level__c,End_TRL_Level__c,WP_Sequence__c,Work_Package_Detail__c,Title__c,External_Id__c,Duration__c,Application__c,Account__c,Account__r.Name,(SELECT Id,Name,Account_Name__c,Account__c FROM Account_Mapping__r),
-                               (SELECT Id,Name From Accounts__r) From Work_Package__c WHERE Application__c =: conRec.Proposals__c];
-        }
+                               (SELECT Id,Name From Accounts__r) From Work_Package__c WHERE Application__c =: applicantHashCode];
+        
         // for(Work_Package__c wpack : workPackageList){
         //     wpack.WP_Sequence__c = Integer.valueOf(wpack.WP_Sequence__c);
         // }
@@ -6670,7 +6669,7 @@ return null;
         
         try{
             Contact conRec = [SELECT Id,Planned_research_activities_of_the_visit__c,Expected_outcomes__c,Basis_for_choosing_your_paired_member__c,Tentative_plans__c,Tentative_Start_Date__c,Tentative_End_Date__c, Title_Of_Project__c,
-                              Availing_Fellowship__c,Associated_with_IGSTC__c,Give_Fellowship_Details__c,Give_Associated_Details__c,(SELECT Id,Proposals__r.Id,Proposals__r.Campaign__r.Result_Announcement_Date__c,Proposals__r.Campaign__r.Yearly_Call__r.Pecfar_Information_Text__c
+                              Availing_Fellowship__c,Associated_with_IGSTC__c,Give_Fellowship_Details__c,Give_Associated_Details__c,(SELECT Id,Proposals__r.Id,Proposals__r.yearly_Call__r.Result_Announcement_Date__c,Proposals__r.yearly_Call__r.Pecfar_Information_Text__c
                                                                                                                                      FROM Applicant_Proposal_Associations__r WHERE Proposals__r.RecordType_Name__c='PECFAR' LIMIT 1) FROM Contact WHERE Login_Hash_Code__c =: applicantHashCode];
             
             return conRec;

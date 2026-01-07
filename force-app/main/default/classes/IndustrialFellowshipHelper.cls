@@ -926,19 +926,6 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
    }
 
     public static String insertHostProjectDetails(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
-        
-        if(hostDetails != null){
-            
-            hostDetails.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
-            hostDetails.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
-            hostDetails.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
-            hostDetails.Duration_In_Months_Max_36__c = hostDetails.Duration_In_Months_Max_36__c;
-            upsert proposalRec;
-            return 'SUCCESS';
-        }
-        
-        
-        
         if(!String.isBlank(proposalId)){
  
                 Application_Proposal__c proposalRec = [

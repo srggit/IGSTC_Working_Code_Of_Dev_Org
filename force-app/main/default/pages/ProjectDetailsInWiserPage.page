@@ -28,16 +28,6 @@
                             </div>
                             <ul>
                                 
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('HostProjectDetails')">
-                                        <div class="icon-circle">
-                                            <i class="far fa-address-card"></i>
-                                        </div>
-                                        <span>Pair Project Details</span>
-                                    </a>
-                                </li>
-
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
@@ -47,6 +37,17 @@
                                         <span>Pairing Details</span>
                                     </a>
                                 </li>
+
+                                 <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('HostProjectDetails')">
+                                        <div class="icon-circle">
+                                            <i class="far fa-address-card"></i>
+                                        </div>
+                                        <span>Pair Project Details</span>
+                                    </a>
+                                </li>
+
 
                                 <!-- Pair Details -->
                                 <!-- <li class="active pb-cursor">
@@ -123,18 +124,9 @@
                         </div>
                         <div class="tab-link" ng-hide="proposalStage">
                             <div class="progress">
-                                <div class="progress-success wp-5"></div>
+                                <div class="progress-success wp-2"></div>
                             </div>
                             <ul>
-                               
-                                <li class="active">
-                                    <a>
-                                        <div class="icon-circle">
-                                            <i class="fas fa-user-alt"></i>
-                                        </div>
-                                        <span>Pair Project Details</span>
-                                    </a>
-                                </li>
 
                                 <li class="active">
                                     <a>
@@ -144,6 +136,17 @@
                                         <span>Pairing Details</span>
                                     </a>
                                 </li>
+                               
+                                <li >
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-user-alt"></i>
+                                        </div>
+                                        <span>Pair Project Details</span>
+                                    </a>
+                                </li>
+
+                                
 
                                 <!-- <li >
                                     <a>
@@ -593,9 +596,9 @@
                             
                             <div class="col-md-12 my-4 mb-5 mt-5" ng-if="!proposalStage">
                                 <button class="blue-btn float-end" ng-click="insertPairingDetailsinWiser()" type="button">
-                                    <i class="fa-solid fa-check me-2"></i>Save and Next</button> &nbsp; &nbsp;
+                                    <i class="fa-solid fa-check me-2"></i>Save and Next</button>
                                 <button class="blue-btn float-end" ng-click="redirectToApplicantPortal()" type="button">
-                                    <i class="fa-solid fa-check me-2"></i>Back</button> &nbsp; &nbsp;
+                                    <i class="fa-solid fa-check me-2"></i>Back</button>
                             </div>
                         </div>
                         
