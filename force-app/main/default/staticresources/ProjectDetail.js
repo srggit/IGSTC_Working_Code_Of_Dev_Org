@@ -13,6 +13,12 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         console.log('Loaded apaId from localStorage:', $rootScope.apaId);
     }
 
+    // Fetching the candidateId from Local Storage
+    // if (localStorage.getItem('candidateId')) {
+    //     $rootScope.candidateId = localStorage.getItem('candidateId');
+    //     console.log('Loaded candidateId from localStorage:', $rootScope.candidateId);
+    // }
+
     $scope.config = {};
     $scope.config.toolbarGroups = [
         { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
@@ -107,12 +113,64 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
+    $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false }); // Index 11 - Tentative_plans_for_networking__c
+    $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false }); // Index 12 - Plan_For_Utilisation_and_Preservation__c
+    $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false }); // Index 13 - Profile_Of_The_Academic_Institutions__c
 
     // Work Package Variables
     $scope.workPackList = [];
     $scope.AccountList = [];
     $scope.defaultAccountList = [];
     const accountIdXaccount = new Map();
+
+    // Existing Grants Variables
+    $scope.input = [];
+    $scope.disableGrants = [];
+    $scope.grantList = [];
+    $scope.grants = [];
+
+    // ------------------------------------------------------------------------------ //
+    // Method to get the Proposal Stage and APA Is_Coordinator
+    // ------------------------------------------------------------------------------ //
+    $rootScope.currentProposalStage = '';
+    $rootScope.isCoordinator = false;
+    $rootScope.stage = '';
+
+    $scope.getProposalStage = function () {
+        debugger;
+
+        ApplicantPortal_Contoller.getProposalStageUsingProposalId(
+            $rootScope.proposalId,
+            $rootScope.apaId,
+            function (result, event) {
+
+                if (event.status && result) {
+                    $scope.$apply(function () {
+
+                        $rootScope.currentProposalStage = result.proposalStage;
+                        $rootScope.isCoordinator = result.isCoordinator;
+                        $rootScope.stage = result.stage;
+                        $rootScope.maxDurationInMonths = result.durationInMonths;
+
+                        $rootScope.secondStage = $rootScope.stage == '2nd Stage' ? true : false;
+
+                        $scope.uploadDisable =
+                            !(
+                                $rootScope.currentProposalStage === "Draft"
+                                && $rootScope.isCoordinator === true
+                            );
+                    });
+                }
+
+                console.log('$rootScope.currentProposalStage : ', $rootScope.currentProposalStage);
+                console.log('$rootScope.isCoordinator : ', $rootScope.isCoordinator);
+                console.log('$rootScope.stage : ', $rootScope.stage);
+                console.log('$rootScope.secondStage : ', $rootScope.secondStage);
+                console.log('uploadDisable:', $scope.uploadDisable);
+            }
+        );
+    };
+    $scope.getProposalStage();
 
     /**
      * Gets proposal accounts (partners) through contacts linked via Applicant_Proposal_Association__c
@@ -135,6 +193,8 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                         $scope.defaultAccountList.push(option);
                     }
                 }
+                // Load work package details after accounts are loaded
+                $scope.getWPDetails();
                 $scope.$applyAsync();
             } else {
                 console.error('Error fetching partner accounts:', event.message);
@@ -143,11 +203,11 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     }
     $scope.getProposalAccounts();
 
-    /**
-     * Gets work package details
-     */
+    /* -------------------------------------------------------------------------------- */
+    // Gets work package details
+    /* -------------------------------------------------------------------------------- */
     $scope.getWPDetails = function () {
-        ApplicantPortal_Contoller.getWPDetails($rootScope.proposalId, function (result, event) {
+        ApplicantPortal_Contoller.getWPDetails($rootScope.proposalId, $rootScope.stage, function (result, event) {
             debugger;
             console.log('work packages data', result);
             if (event.status && result) {
@@ -209,10 +269,8 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         }, { escape: true });
     }
 
-    // Delay WP details load to ensure accounts are loaded first
-    setTimeout(function () {
-        $scope.getWPDetails();
-    }, 500);
+    // Note: getWPDetails() is now called from inside getProposalAccounts() callback
+    // to ensure accounts are loaded before work packages are fetched
 
     /**
      * Opens work package detail popup
@@ -257,7 +315,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
             $scope.workPackList.splice(index, 1);
             return;
         }
-        IndustrialFellowshipController.deleteWorkPackageDetails($scope.workPackList[index].Id, function (result, event) {
+        ApplicantPortal_Contoller.deleteWorkPackageDetails($scope.workPackList[index].Id, function (result, event) {
             if (event.status) {
                 swal("Work Package", "Your Work Package data has been Deleted Successfully");
                 $scope.workPackList.splice(index, 1);
@@ -384,7 +442,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
 
         console.log('Saving work package data:', objData);
 
-        IndustrialFellowshipController.saveWorkPackageDet(objData, $rootScope.proposalId, function (result, event) {
+        IndustrialFellowshipController.saveWorkPackageDet(objData, $rootScope.proposalId, $rootScope.stage, function (result, event) {
             debugger;
             console.log('Save work package result:', result);
             console.log('Event:', event);
@@ -455,49 +513,6 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         )
     }
     $scope.getProjectdetils();
-
-
-    // ------------------------------------------------------------------------------ //
-    // Method to get the Proposal Stage and APA Is_Coordinator
-
-    $rootScope.currentProposalStage = '';
-    $rootScope.isCoordinator = false;
-    $rootScope.stage = '';
-
-    $scope.getProposalStage = function () {
-        debugger;
-
-        ApplicantPortal_Contoller.getProposalStageUsingProposalId(
-            $rootScope.proposalId,
-            $rootScope.apaId,
-            function (result, event) {
-
-                if (event.status && result) {
-                    $scope.$apply(function () {
-
-                        $rootScope.currentProposalStage = result.proposalStage;
-                        $rootScope.isCoordinator = result.isCoordinator;
-                        $rootScope.stage = result.stage;
-
-                        $rootScope.secondStage = $rootScope.stage == '2nd Stage' ? true : false;
-
-                        $scope.uploadDisable =
-                            !(
-                                $rootScope.currentProposalStage === "Draft"
-                                && $rootScope.isCoordinator === true
-                            );
-                    });
-                }
-
-                console.log('$rootScope.currentProposalStage : ', $rootScope.currentProposalStage);
-                console.log('$rootScope.isCoordinator : ', $rootScope.isCoordinator);
-                console.log('$rootScope.stage : ', $rootScope.stage);
-                console.log('$rootScope.secondStage : ', $rootScope.secondStage);
-                console.log('uploadDisable:', $scope.uploadDisable);
-            }
-        );
-    };
-    $scope.getProposalStage();
 
     // Method to get the Files onload based on the Stage of the Proposal
     $scope.getDocsDet = function () {
@@ -783,6 +798,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                     doneUploading = false;
                     debugger;
                     // if (fileSize < maxStringSize) {
+                    /*
                     if (true) {
                         // Add the info or warning message here after uploading
                         swal({
@@ -812,7 +828,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                         swal("info", "File size should be lesser than 4 MB.", "info"); return;
                         // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                     }
-
+                    */
                 }
                 fileReader.onerror = function (e) {
                     $scope.isUploading = false;
@@ -1485,11 +1501,82 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
 
         // Check if there are work packages to save
         if (!$scope.workPackList || $scope.workPackList.length === 0) {
-            if (callback) callback(true);
+            console.log('No work packages to save');
+            // Still need to save deliverables and grants even if no work packages
+            $scope.saveDeliverablesInternal(function (deliverablesSuccess) {
+                if (deliverablesSuccess) {
+                    console.log('Deliverables saved successfully (no work packages)');
+                } else {
+                    console.error('Error saving deliverables');
+                }
+                if (callback) callback(true);
+            });
             return;
         }
 
         var objData = JSON.parse(JSON.stringify($scope.workPackList));
+
+        // === ADD VALIDATIONS HERE (BEFORE preparing data) ===
+        for (var i = 0; i < objData.length; i++) {
+            var count = 0;
+            if (objData[i].AccountList) {
+                for (var k = 0; k < objData[i].AccountList.length; k++) {
+                    if (objData[i].AccountList[k].selected == true) {
+                        count = count + 1;
+                    }
+                }
+            }
+            if (count <= 0) {
+                swal("Work Package Details", "Please Select Partners.");
+                $("#account" + i + "").addClass('border-theme');
+                return;
+            }
+
+            if (objData[i].trl_level == undefined || objData[i].trl_level == "") {
+                swal("Work Package Details", "Please Enter Start TRL Level.");
+                $("#STL" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].end_trl_level == undefined || objData[i].end_trl_level == "") {
+                swal("Work Package Details", "Please Enter End TRL Level.");
+                $("#ETL" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].trl_level < 3 || objData[i].trl_level > 9) {
+                swal("Work Package Details", "Minimum TRL Level should be 3 and Maximum TRL Level should be 9");
+                $("#STL" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].end_trl_level < 3 || objData[i].end_trl_level > 9) {
+                swal("Work Package Details", "Minimum TRL Level should be 3 and Maximum TRL Level should be 9");
+                $("#ETL" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].end_trl_level < objData[i].trl_level) {
+                swal("Work Package Details", "End TRL Level should be greater than Start TRL Level.");
+                $("#ETL" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].title == undefined || objData[i].title == "") {
+                swal("Work Package Details", "Please Enter Title.");
+                $("#title" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].duration == undefined || objData[i].duration == "") {
+                swal("Work Package Details", "Please Enter Duration.");
+                $("#duration" + i + "").addClass('border-theme');
+                return;
+            }
+            if (objData[i].duration != undefined && objData[i].duration != "") {
+                if (Number(objData[i].duration) > Number($rootScope.maxDurationInMonths)) {
+                    swal("Work Package Details", "Max. Duration can be " + $rootScope.maxDurationInMonths + " months.");
+                    $("#duration" + i + "").addClass('border-theme');
+                    return;
+                }
+            }
+
+        }
+        // === END VALIDATIONS ===
 
         // Prepare data for saving - map field names to match Apex wrapper
         for (var i = 0; i < objData.length; i++) {
@@ -1540,7 +1627,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
 
         console.log('Saving work package data from saveDetails:', objData);
 
-        ApplicantPortal_Contoller.saveWorkPackageDet(objData, $rootScope.proposalId, function (result, event) {
+        ApplicantPortal_Contoller.saveWorkPackageDet(objData, $rootScope.proposalId, $rootScope.stage, function (result, event) {
             debugger;
             console.log('Save work package result:', result);
             if (event.status && result === 'success') {
@@ -1571,7 +1658,15 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         // Check if there are deliverables to save
         if (!$scope.PIList || $scope.PIList.length === 0) {
             console.log('No deliverables to save');
-            if (callback) callback(true);
+            // Still need to save grants even if no deliverables
+            $scope.saveExistingGrantsInternal(function (grantsSuccess) {
+                if (grantsSuccess) {
+                    console.log('Existing grants saved successfully (no deliverables)');
+                } else {
+                    console.error('Error saving existing grants');
+                }
+                if (callback) callback(true);
+            });
             return;
         }
 
@@ -1613,12 +1708,101 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
             console.log('Save deliverables result:', result);
             if (event.status) {
                 console.log('Deliverables saved successfully');
-                if (callback) callback(true);
+                // Save existing grants after deliverables
+                $scope.saveExistingGrantsInternal(function (grantsSuccess) {
+                    if (grantsSuccess) {
+                        console.log('Existing grants saved successfully');
+                    } else {
+                        console.error('Error saving existing grants');
+                    }
+                    if (callback) callback(true);
+                });
             } else {
                 console.error('Error saving deliverables:', event.message);
                 if (callback) callback(false);
             }
         });
+    }
+
+    /**
+     * Internal function to save existing grants (called from saveDeliverablesInternal)
+     */
+    $scope.saveExistingGrantsInternal = function (callback) {
+        debugger;
+
+        // Check if there are grants to save
+        if (!$scope.input || $scope.input.length === 0) {
+            console.log('No existing grants to save');
+            if (callback) callback(true);
+            return;
+        }
+
+        // Build grant list for saving
+        var grantListToSave = [];
+        for (var i = 0; i < $scope.input.length; i++) {
+            if ($scope.input[i].Existing_Grants__r) {
+                for (var j = 0; j < $scope.input[i].Existing_Grants__r.length; j++) {
+                    var grant = $scope.input[i].Existing_Grants__r[j];
+
+                    // Set defaults for empty values
+                    if (grant.Budget__c === undefined || grant.Budget__c === "") {
+                        grant.Budget__c = 0;
+                    }
+                    if (grant.Duration__c === undefined || grant.Duration__c === "") {
+                        grant.Duration__c = 0;
+                    }
+
+                    var grantApplication = {
+                        "title": grant.Title__c || "",
+                        "fundingagency": grant.Funding_Agency__c || "",
+                        "Account": $scope.input[i].Id,
+                        "AccountName": $scope.input[i].Name,
+                        "duration": grant.Duration__c,
+                        "budget": grant.Budget__c,
+                        "id": (grant.Id && grant.Id.length > 0) ? grant.Id : null,
+                        "startingyear": 0,
+                        "startingmonth": 0,
+                        "startingday": 0,
+                        "Application": $scope.input[i].Proposals__c || $rootScope.proposalId
+                    };
+
+                    // Handle date
+                    if (grant.Starting_Date__c !== undefined && grant.Starting_Date__c !== "") {
+                        var startDate;
+                        if (grant.Starting_Date__c instanceof Date) {
+                            startDate = grant.Starting_Date__c;
+                        } else {
+                            startDate = new Date(grant.Starting_Date__c);
+                        }
+                        grantApplication.startingyear = startDate.getUTCFullYear();
+                        grantApplication.startingmonth = startDate.getUTCMonth() + 1;
+                        grantApplication.startingday = startDate.getDate();
+                    }
+
+                    grantListToSave.push(grantApplication);
+                }
+            }
+        }
+
+        if (grantListToSave.length === 0) {
+            console.log('No grants data to save');
+            if (callback) callback(true);
+            return;
+        }
+
+        console.log('Saving existing grants:', grantListToSave);
+
+        ApplicantPortal_Contoller.insertExistingGrants(grantListToSave, $rootScope.apaId, function (result, event) {
+            debugger;
+            console.log('Save existing grants result:', result);
+            if (event.status) {
+                console.log('Existing grants saved successfully');
+                if (callback) callback(true);
+            } else {
+                console.error('Error saving existing grants:', event.message);
+                if (callback) callback(false);
+            }
+        }, { escape: true });
     }
 
 
@@ -2038,6 +2222,199 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         var controlIdfor = controlid + "" + index;
         $("#" + controlIdfor + "").removeClass('border-theme');
     }
+
+    /* ------------------------------- ONGOING PROJECTS / GRANT APPLICATIONS ------------------------------- */
+    $scope.getApplicantDetails = function () {
+        // ApplicantPortal_Contoller.getApplicantDetailsForGrant($rootScope.candidateId, function (result, event) {
+        ApplicantPortal_Contoller.getApplicantDetailsForGrant($rootScope.apaId, $rootScope.proposalId, function (result, event) {
+            if (event.status) {
+                debugger;
+                $scope.applicantDetails = result;
+                $scope.grants = [];
+                for (var i = 0; i < $scope.applicantDetails.length; i++) {
+                    statusLoginHas = 0;
+                    if ($scope.applicantDetails[i].Contacts != undefined) {
+                        for (j = 0; j < $scope.applicantDetails[i].Contacts.length; j++) {
+                            if ($scope.applicantDetails[i].Contacts[j].Login_Hash_Code__c == $rootScope.candidateId) {
+                                $scope.input.push($scope.applicantDetails[i]);
+                                statusLoginHas = 1;
+                            }
+                        }
+                    }
+                    if (statusLoginHas == 0) {
+                        $scope.disableGrants.push($scope.applicantDetails[i]);
+                    }
+                }
+                for (var i = 0; i < $scope.input.length; i++) {
+                    if ($scope.input[i].Existing_Grants__r != undefined) {
+                        for (var j = 0; j < $scope.input[i].Existing_Grants__r.length; j++) {
+                            if ($scope.input[i].Existing_Grants__r[j].Starting_Date__c != undefined) {
+                                $scope.input[i].Existing_Grants__r[j].Starting_Date__c = new Date($scope.input[i].Existing_Grants__r[j].Starting_Date__c);
+                            }
+                        }
+
+                    } else if ($scope.input[i].Existing_Grants__r == undefined) {
+                        var rec = {
+                            'Account__r.Name': $scope.input[i].Name,
+                            'Title__c': '',
+                            'Funding_Agency__c': '',
+                            'Duration__c': '',
+                            'Budget__c': '',
+                            'Starting_Date__c': '',
+                            'Account__c': $scope.input[i].Id,
+                            'Application__c': $scope.input[i].Proposals__c
+                        };
+                        $scope.input[i].Existing_Grants__r = [];
+                        debugger;
+                        $scope.input[i].Existing_Grants__r.push(rec);
+                    }
+                }
+                for (var i = 0; i < $scope.disableGrants.length; i++) {
+                    if ($scope.disableGrants[i].Existing_Grants__r != undefined) {
+                        for (var j = 0; j < $scope.disableGrants[i].Existing_Grants__r.length; j++) {
+                            if ($scope.disableGrants[i].Existing_Grants__r[j].Starting_Date__c != undefined) {
+                                var date = new Date($scope.disableGrants[i].Existing_Grants__r[j].Starting_Date__c);
+                                var year = date.getUTCFullYear();
+                                var month = date.getMonth() + 1;
+                                var day = date.getDate();
+                                $scope.disableGrants[i].Existing_Grants__r[j].Starting_Date__c = year.toString() + '-' + month.toString() + '-' + day.toString();
+                            }
+                        }
+                    }
+                }
+
+                var existingGrant = [{ "title": "", "fundingagency": "", "Account": "", "AccountName": "", "duration": "", "budget": "", "id": "", "startingyear": 0, "startingmonth": 0, "startingday": 0, "Application": "" }];
+                $scope.grants.push(existingGrant);
+                $scope.$apply();
+            }
+        },
+            { escape: true }
+        )
+    }
+    $scope.getApplicantDetails();
+
+    /**
+     * Adds a new row to existing grants table
+     */
+    $scope.addRow = function (index) {
+        var rec = {
+            'Account__r.Name': $scope.input[index].Name,
+            'Title__c': '',
+            'Funding_Agency__c': '',
+            'Duration__c': '',
+            'Budget__c': '',
+            'Starting_Date__c': '',
+            'Account__c': $scope.input[index].Id,
+            'Application__c': $scope.input[index].Proposals__c
+        };
+        if ($scope.input[index].Existing_Grants__r == undefined) {
+            $scope.input[index].Existing_Grants__r = [];
+        }
+        $scope.input[index].Existing_Grants__r.push(rec);
+    }
+
+    /**
+     * Deletes a row from existing grants table
+     */
+    $scope.deleteRow = function (parentIndex, childIndex) {
+        if ($scope.input[parentIndex].Existing_Grants__r.length > 1) {
+            $scope.input[parentIndex].Existing_Grants__r.splice(childIndex, 1);
+        } else {
+            swal("Info", "At least one grant record is required.");
+        }
+    }
+
+    $scope.submitExistingGrants = function () {
+        debugger;
+        for (var i = 0; i < $scope.input.length; i++) {
+            for (var j = 0; j < $scope.input[i].Existing_Grants__r.length; j++) {
+                if ($scope.input[i].Existing_Grants__r[j].Funding_Agency__c == undefined || $scope.input[i].Existing_Grants__r[j].Funding_Agency__c == "") {
+                    swal("Existing Grants", "Please Enter Funding Agency.");
+                    return;
+                }
+                if ($scope.input[i].Existing_Grants__r[j].Budget__c == undefined || $scope.input[i].Existing_Grants__r[j].Budget__c == "") {
+                    swal("Existing Grants", "Please Enter Budget.");
+                    return;
+                }
+                if ($scope.input[i].Existing_Grants__r[j].Starting_Date__c == undefined || $scope.input[i].Existing_Grants__r[j].Starting_Date__c == "") {
+                    swal("Existing Grants", "Please Enter Starting Date.");
+                    return;
+                }
+                if ($scope.input[i].Existing_Grants__r[j].Duration__c == undefined || $scope.input[i].Existing_Grants__r[j].Duration__c == "") {
+                    swal("Existing Grants", "Please Enter Duration(Number in months).");
+                    return;
+                }
+            }
+        }
+        $scope.grantList = [];
+        for (let i = 0; i < $scope.input.length; i++) {
+            for (let j = 0; j < $scope.input[i].Existing_Grants__r.length; j++) {
+                if ($scope.input[i].Existing_Grants__r[j].Budget__c == undefined || $scope.input[i].Existing_Grants__r[j].Budget__c == "") {
+                    $scope.input[i].Existing_Grants__r[j].Budget__c = 0;
+                    // Number('$scope.applicantDetails[i].Existing_Grants__r[j].Budget__c');
+                }
+                if ($scope.input[i].Existing_Grants__r[j].Duration__c == undefined || $scope.input[i].Existing_Grants__r[j].Duration__c == "") {
+                    $scope.input[i].Existing_Grants__r[j].Duration__c = 0;
+                    // Number('$scope.applicantDetails[i].Existing_Grants__r[j].Duration__c'); 
+                }
+                var grantId = $scope.input[i].Existing_Grants__r[j].Id;
+                var grantApplication = {
+                    "title": $scope.input[i].Existing_Grants__r[j].Title__c || "",
+                    "fundingagency": $scope.input[i].Existing_Grants__r[j].Funding_Agency__c || "",
+                    "Account": $scope.input[i].Id,
+                    "AccountName": $scope.input[i].Name,
+                    "duration": $scope.input[i].Existing_Grants__r[j].Duration__c,
+                    "budget": $scope.input[i].Existing_Grants__r[j].Budget__c,
+                    "id": (grantId && grantId.length > 0) ? grantId : null,
+                    "startingyear": 0,
+                    "startingmonth": 0,
+                    "startingday": 0,
+                    "Application": $scope.input[i].Proposals__c || $rootScope.proposalId
+                };
+                $scope.grantList.push(grantApplication);
+
+                if ($scope.input[i].Existing_Grants__r[j].Starting_Date__c != undefined && $scope.input[i].Existing_Grants__r[j].Starting_Date__c != "") {
+                    grantApplication.startingyear = $scope.input[i].Existing_Grants__r[j].Starting_Date__c.getUTCFullYear();
+                    grantApplication.startingmonth = $scope.input[i].Existing_Grants__r[j].Starting_Date__c.getUTCMonth() + 1;
+                    grantApplication.startingday = $scope.input[i].Existing_Grants__r[j].Starting_Date__c.getDate();
+                } else {
+                    delete ($scope.input[i].Existing_Grants__r[j].Starting_Date__c);
+                }
+
+                delete ($scope.input[i].Existing_Grants__r[j].Starting_Date__c);
+            }
+        }
+        ApplicantPortal_Contoller.insertExistingGrants($scope.grantList, $rootScope.apaId, function (result, event) {
+            if (event.status) {
+                debugger;
+                Swal.fire(
+                    'Success',
+                    'your proposal has been Submitted successfully.',
+                    'success'
+                );
+                //  
+                $scope.redirectPageURL('Home');
+                $scope.grantList = result;
+                $scope.$apply();
+            }
+        },
+            { escape: true }
+        )
+    }
+
+    $scope.validateDuration = function (applicnt) {
+        debugger;
+        if (
+            applicnt.duration != null &&
+            $rootScope.maxDurationInMonths != null &&
+            Number(applicnt.duration) > Number($rootScope.maxDurationInMonths)
+        ) {
+            applicnt.durationError = true;
+        } else {
+            applicnt.durationError = false;
+        }
+    };
+
 
     // ----------------------------- Need to add afterwards -----------------------------
     // if ($scope.applicantDetails.Summary__c != undefined || $scope.applicantDetails.Summary__c != "") {

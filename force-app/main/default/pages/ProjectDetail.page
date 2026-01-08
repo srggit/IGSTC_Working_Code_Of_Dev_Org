@@ -619,7 +619,7 @@ type="button" ng-disabled="isUploading"> -->
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-5 ">
+                        <div class="col-md-12 mt-5 mb-5">
                             <label class="pb-3 color-theme ">
                                 <b>Project description including work packages/work distribution amongst partners. Comment on
                                     starting TRL and expected TRL at end of the project (max. chars 12000)
@@ -638,11 +638,141 @@ type="button" ng-disabled="isUploading"> -->
                             <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show
                         " aria-labelledby="panelsStayOpen-headingOne ">
                                 <ng-ckeditor ng-model="proposalFieldsDetails.Project_Description__c " ng-change="readCharacter(proposalFieldsDetails.Project_Description__c,2,
-                        12000) " name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="12000 "></ng-ckeditor>
+                        12000) " name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="12000"></ng-ckeditor>
                                 <span>Total characters : {{objRtf[2].charCount}}</span>
                                 <span class="text-danger " ng-if="objRtf[2].errorStatus ">maximum character limit is 12000</span>
                             </div>
                         </div>
+
+                        <!-- WORK PACKAGE FUNCTIONALITY -->
+                        <div class="mt-5">
+                            <div>
+                                <div class="col-md-12 mt-5">
+                                    <h4>
+                                        <b>Work Package (WP)</b>
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="col-md-12">
+                                    <table class="table" cellpadding="4">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:8%" nowrap="true">No.</th>
+                                                <th style="width:8%" nowrap="true">Start TRL Level
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                </th>
+                                                <th style="width:8%" nowrap="true">End TRL Level
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                </th>
+                                                <th style="width:32%">Title
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                </th>
+                                                <th style="width:30%" nowrap="true">Partner
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                </th>
+                                                <th style="width:12%">Duration
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+                                                </th>
+                                                <th></th>
+                                                <th ng-hide="proposalStage" class="text-center">
+                                                    <i class="fas fa-plus-circle icon" ng-click="addRowsWorkPackage()" style="width:2%"></i>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr class="font-tbl" ng-repeat="applicnt in workPackList">
+                                                <td class="text-center">
+                                                    <input ng-focus="removeClass('sequence',$index)" id="sequence{{$index}}" type="text" class="form-control" ng-model="applicnt.WPSequence"
+                                                        ng-disabled="proposalStage" required="true" ng-required="applicnt.WPSequence"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('STL',$index)" id="STL{{$index}}" type="text" class="form-control" number="applicnt.trl_level"
+                                                        ng-model="applicnt.trl_level" ng-disabled="proposalStage" />
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('ETL',$index)" id="ETL{{$index}}" type="text" class="form-control" number="applicnt.end_trl_level"
+                                                        ng-model="applicnt.end_trl_level" ng-disabled="proposalStage" required="true"
+                                                        ng-required="applicnt.end_trl_level" />
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('title',$index)" id="title{{$index}}" type="text" class="form-control" ng-model="applicnt.title"
+                                                        ng-disabled="proposalStage" required="true" ng-required="applicnt.title"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown mt-1">
+                                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            Select Partners
+                                                        </button>
+                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                            <li class="dropdown-item" ng-repeat="x in applicnt.AccountList">
+                                                                <label for="{{$parent.$index}}{{$index}}" class="form-control scrollV ng-valid ng-dirty ng-touched" style="height: 10%;">
+                                                                    <input ng-focus="removeClass('account',$index)" id="account{{$index}}" type="checkbox" name="chkFields" ng-model="x.selected"
+                                                                        class="ng-pristine ng-untouched ng-valid" ng-disabled="proposalStage"
+                                                                        required="true" ng-required="x.selected" />
+                                                                    <span class="ng-binding ng-scope" style="width:15px;"> {{x.Name}} </span>
+                                                                </label>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('duration',$index)" id="duration{{$index}}" type="text" class="form-control" ng-model="applicnt.duration"
+                                                        ng-disabled="proposalStage" required="true" ng-required="applicnt.duration"
+                                                        ng-change="validateDuration(applicnt)" />
+
+                                                    <!-- Error message -->
+                                                    <small class="text-danger lh-1" ng-if="applicnt.durationError">
+                                                        max duration {{maxDurationInMonths}} months
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <i class="fa-solid fa-file fa-2x mt-1 text-primary" ng-click="OpenPopup($index)"></i>
+                                                    <div class="modal" id="flipFlop{{$index}}">
+                                                        <div class="modal-dialog" style="min-width:1000px">
+                                                            <div class="modal-content">
+
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title">
+                                                                        <div class="d-flex justify-content-center" style="background:unset;">
+                                                                            <h3>
+                                                                                <b>Work Package Detail</b>
+                                                                            </h3>
+                                                                        </div>
+                                                                    </h4>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <ng-ckeditor ng-model="applicnt.Workpackage_detail" ng-config="config" ng-disabled="proposalStage"></ng-ckeditor>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mt-3">
+                                                                        <div class="col-md-12">
+                                                                            <button type="button" data-bs-dismiss="modal" class="blue-btn float-end">Save</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="!proposalStage">
+                                                    <i class="fa-sharp fa-solid fa-circle-xmark fa-2x text-danger mt-1" ng-click="removeRow($index)" ng-if="!proposalStage"></i>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="col-md-12 mt-5 ">
                             <label class="pb-3 color-theme ">
@@ -833,16 +963,23 @@ type="button" ng-disabled="isUploading"> -->
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-5">
+                        <div class="mt-5">
                             <!-- WORK PACKAGE FUNCTIONALITY -->
-                            <div class="mt-5">
-                                <b>Work Package (WP)</b>
+                            <div>
+                                <div class="col-md-12 mt-5">
+                                    <h4>
+                                        <b>Work Package (WP)</b>
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div>
                                 <div class="col-md-12">
                                     <table class="table" cellpadding="4">
                                         <thead>
                                             <tr>
                                                 <th style="width:8%" nowrap="true">No.</th>
-                                                <th style="width:30%" nowrap="true">Partner
+                                                <th style="width:32%">Title
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th style="width:8%" nowrap="true">Start TRL Level
@@ -851,7 +988,7 @@ type="button" ng-disabled="isUploading"> -->
                                                 <th style="width:8%" nowrap="true">End TRL Level
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:32%">Title
+                                                <th style="width:30%" nowrap="true">Partner
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th style="width:12%">Duration
@@ -872,7 +1009,20 @@ type="button" ng-disabled="isUploading"> -->
                                                     />
                                                 </td>
                                                 <td>
-
+                                                    <input ng-focus="removeClass('title',$index)" id="title{{$index}}" type="text" class="form-control" ng-model="applicnt.title"
+                                                        ng-disabled="proposalStage" required="true" ng-required="applicnt.title"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('STL',$index)" id="STL{{$index}}" type="text" class="form-control" number="applicnt.trl_level"
+                                                        ng-model="applicnt.trl_level" ng-disabled="proposalStage" />
+                                                </td>
+                                                <td>
+                                                    <input ng-focus="removeClass('ETL',$index)" id="ETL{{$index}}" type="text" class="form-control" number="applicnt.end_trl_level"
+                                                        ng-model="applicnt.end_trl_level" ng-disabled="proposalStage" required="true"
+                                                        ng-required="applicnt.end_trl_level" />
+                                                </td>
+                                                <td>
                                                     <div class="dropdown mt-1">
                                                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                             Select Partners
@@ -890,23 +1040,14 @@ type="button" ng-disabled="isUploading"> -->
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <input ng-focus="removeClass('STL',$index)" id="STL{{$index}}" type="text" class="form-control" number="applicnt.trl_level"
-                                                        ng-model="applicnt.trl_level" ng-disabled="proposalStage" />
-                                                </td>
-                                                <td>
-                                                    <input ng-focus="removeClass('ETL',$index)" id="ETL{{$index}}" type="text" class="form-control" number="applicnt.end_trl_level"
-                                                        ng-model="applicnt.end_trl_level" ng-disabled="proposalStage" required="true"
-                                                        ng-required="applicnt.end_trl_level" />
-                                                </td>
-                                                <td>
-                                                    <input ng-focus="removeClass('title',$index)" id="title{{$index}}" type="text" class="form-control" ng-model="applicnt.title"
-                                                        ng-disabled="proposalStage" required="true" ng-required="applicnt.title"
-                                                    />
-                                                </td>
-                                                <td>
                                                     <input ng-focus="removeClass('duration',$index)" id="duration{{$index}}" type="text" class="form-control" ng-model="applicnt.duration"
                                                         ng-disabled="proposalStage" required="true" ng-required="applicnt.duration"
-                                                    />
+                                                        ng-change="validateDuration(applicnt)" />
+
+                                                    <!-- Error message -->
+                                                    <small class="text-danger lh-1" ng-if="applicnt.durationError">
+                                                        max duration {{maxDurationInMonths}} months
+                                                    </small>
                                                 </td>
                                                 <td>
                                                     <i class="fa-solid fa-file fa-2x mt-1 text-primary" ng-click="OpenPopup($index)"></i>
@@ -952,62 +1093,71 @@ type="button" ng-disabled="isUploading"> -->
 
                             <!-- DELIVERABLES FUNCTIONALITY -->
                             <div class="mt-5">
-                                <b>Deliverables (D)</b>
-                                <div class="col-md-12">
-                                    <table class="table" cellpadding="4">
-                                        <thead>
-                                            <tr>
-                                                <th>Sr.No.</th>
-                                                <th nowrap="true">Partner
-                                                    <span class="required-asterisk" style="color:red;">*</span>
-                                                </th>
-                                                <th>Title
-                                                    <span class="required-asterisk" style="color:red;">*</span>
-                                                </th>
-                                                <th>Due Date
-                                                    <span class="required-asterisk" style="color:red;">*</span>
-                                                </th>
-                                                <th ng-hide="proposalStage">
-                                                    <i class="fas fa-plus-circle icon ps-3" ng-click="addRows()"></i>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="font-tbl" ng-repeat="applicnt in PIList">
-                                                <td>{{$index+1}}</td>
-                                                <td>
+                                <div>
+                                    <div class="col-md-12">
+                                        <h4>
+                                            <b>Deliverables (D)</b>
+                                        </h4>
+                                    </div>
+                                </div>
 
-                                                    <div class="dropdown mt-1">
-                                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Select Partners
-                                                        </button>
-                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                            <li class="dropdown-item" ng-repeat="x in applicnt.AccountList">
-                                                                <label for="{{$parent.$index}}{{$index}}" class="form-control scrollV ng-valid ng-dirty ng-touched" style="height: 10%;">
-                                                                    <input ng-focus="removeClass('account',$index)" id="account{{$index}}" type="checkbox" name="chkFields" ng-model="x.selected"
-                                                                        class="ng-pristine ng-untouched ng-valid" ng-disabled="proposalStage"
-                                                                        required="true" ng-required="x.selected" />
-                                                                    <span class="ng-binding ng-scope" style="width:15px;"> {{x.Name}} </span>
-                                                                </label>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                <div>
+                                    <div class="col-md-12">
+                                        <table class="table" cellpadding="4">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sr.No.</th>
+                                                    <th>Title
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th nowrap="true">Responsible Partner
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
 
-                                                </td>
-                                                <td>
-                                                    <input ng-focus="removeClass('title',$index)" id="title{{$index}}" type="text" class="form-control" ng-model="applicnt.title"
-                                                        ng-disabled="proposalStage" />
-                                                </td>
-                                                <td>
-                                                    <input ng-focus="removeClass('due',$index)" id="due{{$index}}" type="date" class="form-control" ng-model="applicnt.Due_Date__c"
-                                                        ng-disabled="proposalStage" />
-                                                </td>
-                                                <td ng-hide="proposalStage">
-                                                    <i class="fas fa-times-circle icon ps-3" ng-click="removeRow($index)"></i>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                    <th>Due Date
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th ng-hide="proposalStage">
+                                                        <i class="fas fa-plus-circle icon ps-3" ng-click="addRows()"></i>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="font-tbl" ng-repeat="applicnt in PIList">
+                                                    <td class="text-center">{{$index+1}}</td>
+                                                    <td>
+                                                        <input ng-focus="removeClass('title',$index)" id="title{{$index}}" type="text" class="form-control" ng-model="applicnt.title"
+                                                            ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td>
+                                                        <div class="dropdown mt-1">
+                                                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                Select Partners
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                                <li class="dropdown-item" ng-repeat="x in applicnt.AccountList">
+                                                                    <label for="{{$parent.$index}}{{$index}}" class="form-control scrollV ng-valid ng-dirty ng-touched" style="height: 10%;">
+                                                                        <input ng-focus="removeClass('account',$index)" id="account{{$index}}" type="checkbox" name="chkFields" ng-model="x.selected"
+                                                                            class="ng-pristine ng-untouched ng-valid" ng-disabled="proposalStage"
+                                                                            required="true" ng-required="x.selected" />
+                                                                        <span class="ng-binding ng-scope" style="width:15px;"> {{x.Name}} </span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+
+                                                    </td>
+                                                    <td>
+                                                        <input ng-focus="removeClass('due',$index)" id="due{{$index}}" type="date" class="form-control" ng-model="applicnt.Due_Date__c"
+                                                            ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td ng-hide="proposalStage">
+                                                        <i class="fas fa-times-circle icon ps-3" ng-click="removeRow($index)"></i>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1239,9 +1389,15 @@ type="button" ng-disabled="isUploading"> -->
 
                         <!-- Annexures Section -->
                         <div class="col-md-12 mt-5">
-                            <b>Annexures</b>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4>
+                                        <b>Annexures</b>
+                                    </h4>
+                                </div>
+                            </div>
 
-                            <div class="col-md-12 mt-5 ">
+                            <div class="mt-5">
                                 <label class="pb-3 color-theme ">
                                     <b>Tentative Plans For Network Meetings and Exchange Visits (including duration) (max. chars
                                         3000)
@@ -1260,16 +1416,16 @@ type="button" ng-disabled="isUploading"> -->
                                         </b>
                                     </small>
                                 </div>
-                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show
-                        " aria-labelledby="panelsStayOpen-headingOne ">
-                                    <ng-ckeditor ng-model="proposalFieldsDetails.Tentative_plans_for_networking__c " ng-change="readCharacter(proposalFieldsDetails.Tentative_plans_for_networking__c,11,
-                        3000) " name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="3000 "></ng-ckeditor>
+                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne ">
+                                    <ng-ckeditor ng-model="proposalFieldsDetails.Tentative_plans_for_networking__c" ng-change="readCharacter(proposalFieldsDetails.Tentative_plans_for_networking__c,11, 3000)"
+                                        name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="3000 ">
+                                    </ng-ckeditor>
                                     <span>Total characters : {{objRtf[11].charCount}}</span>
                                     <span class="text-danger " ng-if="objRtf[11].errorStatus ">maximum character limit is 3000</span>
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt-5 ">
+                            <div class="mt-5">
                                 <label class="pb-3 color-theme ">
                                     <b>Plan for the utilisation and preservation of project-acquired equipment after the completion
                                         of the project. (max. chars 3000)
@@ -1285,16 +1441,16 @@ type="button" ng-disabled="isUploading"> -->
                                         </b>
                                     </small>
                                 </div>
-                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show
-                        " aria-labelledby="panelsStayOpen-headingOne ">
-                                    <ng-ckeditor ng-model="proposalFieldsDetails.Plan_For_Utilisation_and_Preservation__c " ng-change="readCharacter(proposalFieldsDetails.Plan_For_Utilisation_and_Preservation__c,12,
-                        3000) " name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="3000 "></ng-ckeditor>
+                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                    <ng-ckeditor ng-model="proposalFieldsDetails.Plan_For_Utilisation_and_Preservation__c" ng-change="readCharacter(proposalFieldsDetails.Plan_For_Utilisation_and_Preservation__c,12,3000)"
+                                        name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="3000 ">
+                                    </ng-ckeditor>
                                     <span>Total characters : {{objRtf[12].charCount}}</span>
                                     <span class="text-danger " ng-if="objRtf[12].errorStatus ">maximum character limit is 3000</span>
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt-5 mb-5">
+                            <div class="mt-5 mb-5">
                                 <label class="pb-3 color-theme ">
                                     <b>Profile of the academic institutions (max. chars 3000)
                                         <span class="required-asterisk text-danger ">*</span>
@@ -1309,19 +1465,138 @@ type="button" ng-disabled="isUploading"> -->
                                         </b>
                                     </small>
                                 </div>
-                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show
-                        " aria-labelledby="panelsStayOpen-headingOne ">
-                                    <ng-ckeditor ng-model="proposalFieldsDetails.Profile_Of_The_Academic_Institutions__c " ng-change="readCharacter(proposalFieldsDetails.Profile_Of_The_Academic_Institutions__c,13,
-                        10000) " name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="10000 "></ng-ckeditor>
+                                <div id="panelsStayOpen-collapseOne " class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne ">
+                                    <ng-ckeditor ng-model="proposalFieldsDetails.Profile_Of_The_Academic_Institutions__c" ng-change="readCharacter(proposalFieldsDetails.Profile_Of_The_Academic_Institutions__c,13,10000)"
+                                        name="ckSummary2 " id="ckSummary " ng-config="config " maxlength="10000">
+                                    </ng-ckeditor>
                                     <span>Total characters : {{objRtf[13].charCount}}</span>
                                     <span class="text-danger " ng-if="objRtf[13].errorStatus ">maximum character limit is 10000</span>
                                 </div>
                             </div>
 
+                            <!-- ###################### ONGOING PROJECTS / GRANT APPLICATIONS ###################### -->
+                            <div class="mt-5">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4>
+                                            <b>Existing Grants</b>
+                                        </h4>
+                                    </div>
+                                </div>
 
+                                <div class="row mt-3" ng-repeat="appli in input">
+                                    <div class="col-md-12">
+                                        <h4 class="font-if">{{appli.Name}}</h4>
+                                    </div>
+                                    <div class="col-md-12">
+
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th nowrap="true" class="text-center">Sr. No.</th>
+                                                    <th>Title</th>
+                                                    <th>Funding Agency
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th>Budget
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th>Starting Date
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th>Duration
+                                                        <br />
+                                                        <small class="text-muted">(Number-In Months)</small>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                    <th ng-show="!proposalStage">
+                                                        <a type="button" ng-click="addRow($index)">
+                                                            <i class="fa-solid fa-circle-plus fa-2x text-success"></i>
+                                                        </a>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="font-tbl" ng-repeat="applicnt in appli.Existing_Grants__r">
+                                                    <td nowrap="true" class="text-center">{{$index+1}}</td>
+                                                    <td>
+                                                        <input type="text" class="form-control" ng-model="applicnt.Title__c" ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" ng-model="applicnt.Funding_Agency__c" required="true" ng-required="applicnt.Funding_Agency__c"
+                                                            ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" ng-model="applicnt.Budget__c" required="true" ng-required="applicnt.Budget__c" ng-disabled="proposalStage"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input type="date" class="form-control" ng-model="applicnt.Starting_Date__c" required="true" ng-required="applicnt.Starting_Date__c"
+                                                            ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="Number" class="form-control" ng-model="applicnt.Duration__c" required="true" ng-required="applicnt.Duration__c"
+                                                            ng-disabled="proposalStage" />
+                                                    </td>
+                                                    <td ng-show="!proposalStage">
+                                                        <a type="button" ng-click="deleteRow($parent.$index,$index)">
+                                                            <i class="fa-solid fa-circle-xmark fa-2x text-danger"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4>
+                                            <b>Existing Grants of Other Partners</b>
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3" ng-repeat="appli in disableGrants">
+                                    <div class="col-md-12">
+                                        <h4 class="font-if">{{appli.Name}}</h4>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr class="font-tbl">
+                                                    <th class="text-center">Sr. No.</th>
+                                                    <th>Title</th>
+                                                    <th>Funding Agency</th>
+                                                    <th>Budget</th>
+                                                    <th>Starting Date</th>
+                                                    <th>Duration
+                                                        <br />
+                                                        <small class="text-muted">(Number-In Months)</small>
+                                                        <span class="required-asterisk" style="color:red;">*</span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="font-tbl" ng-repeat="applicnt in appli.Existing_Grants__r">
+                                                    <td class="text-center">{{$index+1}}</td>
+                                                    <td>{{applicnt.Title__c}}</td>
+                                                    <td>{{applicnt.Funding_Agency__c}}</td>
+                                                    <td>{{applicnt.Budget__c}}</td>
+                                                    <td>{{applicnt.Starting_Date__c}}</td>
+                                                    <td>{{applicnt.Duration__c}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- ###################### ADDITIONAL DOCUMENT UPLOADS ###################### -->
                             <div class="row mt-5">
-                                <!-- ###################### ADDITIONAL DOCUMENT UPLOADS ###################### -->
-
                                 <!-- Audited Financial Statement Upload -->
                                 <div class="row mt-5">
                                     <div class="col-md-6">

@@ -164,13 +164,15 @@ public without sharing class ApplicantPortal_Contoller {
         public String proposalStage {get; set;}
         public Boolean isCoordinator {get; set;}
         public String stage {get; set;}
+        public Decimal durationInMonths {get;set;}
     }
 
     @RemoteAction
     public static ProposalData getProposalStageUsingProposalId(String proposalId, String apaId){
 
         Applicant_Proposal_Association__c apaDetails = [
-            SELECT Id, Contact__c, Is_Coordinator__c, Proposals__c, Proposals__r.Id, Proposals__r.Name, Proposals__r.Proposal_Stages__c, Proposals__r.Stage__c
+            SELECT Id, Contact__c, Is_Coordinator__c, Proposals__c, Proposals__r.Id, Proposals__r.Name, Proposals__r.Proposal_Stages__c, 
+            Proposals__r.Stage__c, Proposals__r.Duration_In_Months_Max_36__c
             FROM Applicant_Proposal_Association__c 
             WHERE Id =: apaId 
             AND Proposals__c =: proposalId
@@ -181,6 +183,7 @@ public without sharing class ApplicantPortal_Contoller {
         pData.proposalStage = apaDetails.Proposals__r.Proposal_Stages__c;
         pData.isCoordinator = apaDetails.Is_Coordinator__c;
         pData.stage = apaDetails.Proposals__r.Stage__c;
+        pData.durationInMonths = apaDetails.Proposals__r.Duration_In_Months_Max_36__c;
 
         return pData;
         // Application_Proposal__c ap = [SELECT Id, Stage__c, Proposal_Stages__c FROM Application_Proposal__c WHERE Id =: proposalId];
@@ -272,7 +275,7 @@ public without sharing class ApplicantPortal_Contoller {
             
             // Applied campaigns 
             List<Applicant_Proposal_Association__c> applicantAssociationList = [
-                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name,Proposals__r.Proposal_Stages__c, Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name,Contact__r.Title_Of_Project__c, Proposals__r.Campaign__r.Description, Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,Proposals__r.yearly_Call__r.Campaign_End_Date__c
+                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name,Proposals__r.Title_Of__c,Proposals__r.Proposal_Stages__c, Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name,Contact__r.Title_Of_Project__c, Proposals__r.Campaign__r.Description, Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,Proposals__r.yearly_Call__r.Campaign_End_Date__c
                 FROM Applicant_Proposal_Association__c WHERE Contact__r.Login_hash_code__c = :candidateId  AND Proposals__r.yearly_Call__r.Years__C = :yearId];
             
             if(!applicantAssociationList.isEmpty()) {
@@ -706,19 +709,25 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     
     //************************************** WORK PACKAGE **********************************************************
     
-    @RemoteAction
+    /* @RemoteAction
     public static List<Work_Package__c> getWPDetails(string applicantHashCode){
         return Proposal_Controller.getWPDetails(applicantHashCode);
+    } */
+
+    @RemoteAction
+    public static List<Work_Package__c> getWPDetails(String proposalId, String proposalStage){
+        return Proposal_Controller.getWPDetails(proposalId, proposalStage);
     }
+
     @RemoteAction
     public static List<Account> getProposalAccounts(String ProposalId){
         return Proposal_Controller.getProposalAccounts(ProposalId);
     }
 
     @RemoteAction 
-    public static String saveWorkPackageDet(List<IndustrialFellowshipHelper.WrapperWorkpackageDet> wrapper,String ProposalId){
+    public static String saveWorkPackageDet(List<IndustrialFellowshipHelper.WrapperWorkpackageDet> wrapper,String ProposalId, String proposalStage){
         IndustrialFellowshipHelper instanceIFH = new IndustrialFellowshipHelper();
-        return instanceIFH.saveWorkPackageDet(wrapper,ProposalId);
+        return instanceIFH.saveWorkPackageDet(wrapper,ProposalId, proposalStage);
     }
     
     /**
@@ -784,15 +793,20 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     
     //************************************** Grant Application **********************************************************
     
+    // @RemoteAction
+    // public static  List<Account> getApplicantDetailsForGrant(string applicantHashCode){
+    //     return Proposal_Controller.getApplicantDetailsForGrant(applicantHashCode);
+    // }
+
     @RemoteAction
-    public static  List<Account> getApplicantDetailsForGrant(string applicantHashCode){
-        return Proposal_Controller.getApplicantDetailsForGrant(applicantHashCode);
+    public static List<Account> getApplicantDetailsForGrant(String apaId, String proposalId){
+        return Proposal_Controller.getApplicantDetailsForGrant(apaId, proposalId);
     }
     
     @RemoteAction
-    public static String insertExistingGrants(List<Proposal_Controller.ExistingGrantsWrapper> grantList){
+    public static String insertExistingGrants(List<Proposal_Controller.ExistingGrantsWrapper> grantList, String apaId){
         system.debug('grantList ---> '+grantList);
-        return Proposal_Controller.insertExistingGrants(grantList);
+        return Proposal_Controller.insertExistingGrants(grantList, apaId);
     }
     
     @RemoteAction
@@ -2867,6 +2881,11 @@ public static void updateProposalStage(Id proposalId) {
             return null;
             // return 'ERROR @ LINE NUMBER :: ' + ex.getLineNumber() + ' ERROR MESSAGE :: ' + ex.getMessage();
         }
+    }
+
+    @RemoteAction
+    public static string deleteWorkPackageDetails(string workPackageId){
+        return IndustrialFellowshipHelper.deleteWorkPackageDetails(workPackageId);
     }
     
 }

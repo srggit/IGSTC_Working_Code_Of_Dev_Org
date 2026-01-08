@@ -1221,7 +1221,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
         return 'Error Occured';
         }
    }
-   public string saveWorkPackageDet(List<WrapperWorkpackageDet> wrapper,String ProposalId){
+   public string saveWorkPackageDet(List<WrapperWorkpackageDet> wrapper,String ProposalId, String proposalStage){
         try{
             system.debug('wrapper::'+wrapper);
             Map<String,List<AccountListWrapper>> mapWorkpackage=new Map<String,List<AccountListWrapper>>();
@@ -1258,6 +1258,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
                 Instanceworkpackage.Title__c=workpackage.title;
                 Instanceworkpackage.External_Id__c=workpackage.ExternalId;
                 Instanceworkpackage.Application__c=ProposalId;
+                Instanceworkpackage.Proposal_Stage__c= proposalStage;
                 Instanceworkpackage.Work_Package_Detail__c=workpackage.Workpackage_detail;
                 mapWorkpackage.put(workpackage.ExternalId,workpackage.AccountListWrapper);
                 ListWorkPackage.add(Instanceworkpackage);
