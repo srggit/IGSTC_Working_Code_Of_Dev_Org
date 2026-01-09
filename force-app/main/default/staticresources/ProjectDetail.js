@@ -281,6 +281,14 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
     }
 
     /**
+     * Opens work package detail popup for Stage 2
+     */
+    $scope.OpenPopupStage2 = function (index) {
+        var myModal = new bootstrap.Modal(document.getElementById('flipFlopStage2' + index));
+        myModal.show('slow');
+    }
+
+    /**
      * Adds new work package row
      */
     $scope.addRowsWorkPackage = function () {
@@ -321,6 +329,27 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                 $scope.workPackList.splice(index, 1);
             }
             $scope.$applyAsync();
+        });
+    }
+
+    /*
+     * Removes Deliverables
+     */
+    $scope.removeRowDeliverables = function (index) {
+        debugger;
+        if ($scope.PIList.length == 1) {
+            return;
+        }
+        if ($scope.PIList[index].Id == undefined) {
+            $scope.PIList.splice(index, 1);
+            return;
+        }
+        ApplicantPortal_Contoller.deleteDeliverables($scope.PIList[index].Id, function (result, event) {
+            if (event.status) {
+                swal("PI Deliverables", "Your PI Deliverables detail has been deleted successfully.");
+                $scope.PIList.splice(index, 1);
+            }
+            $scope.$apply();
         });
     }
 
@@ -396,6 +425,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         // Prepare data for saving - map field names to match Apex wrapper
         for (var i = 0; i < objData.length; i++) {
             delete objData[i]['$$hashKey'];
+            delete objData[i]['durationError'];
+            delete objData[i]['durationErrorMsg'];
+            delete objData[i]['minDurationError'];
+            delete objData[i]['maxDurationError'];
 
             // Map externalId to ExternalId (Apex expects capital E)
             if (objData[i].externalId !== undefined) {
@@ -798,7 +831,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                     doneUploading = false;
                     debugger;
                     // if (fileSize < maxStringSize) {
-                    /*
+
                     if (true) {
                         // Add the info or warning message here after uploading
                         swal({
@@ -828,7 +861,7 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                         swal("info", "File size should be lesser than 4 MB.", "info"); return;
                         // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                     }
-                    */
+
                 }
                 fileReader.onerror = function (e) {
                     $scope.isUploading = false;
@@ -1581,6 +1614,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         // Prepare data for saving - map field names to match Apex wrapper
         for (var i = 0; i < objData.length; i++) {
             delete objData[i]['$$hashKey'];
+            delete objData[i]['durationError'];
+            delete objData[i]['durationErrorMsg'];
+            delete objData[i]['minDurationError'];
+            delete objData[i]['maxDurationError'];
 
             // Map externalId to ExternalId (Apex expects capital E)
             if (objData[i].externalId !== undefined) {
@@ -1681,6 +1718,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                 objData[i].day = dueDate.getDate();
             }
             delete objData[i]['$$hashKey'];
+            delete objData[i]['durationError'];
+            delete objData[i]['durationErrorMsg'];
+            delete objData[i]['minDurationError'];
+            delete objData[i]['maxDurationError'];
 
             var accountWrapperList = [];
             if (objData[i].AccountList) {
@@ -2178,6 +2219,10 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
                 objData[i].day = dueDate.getDate();
             }
             delete objData[i]['$$hashKey'];
+            delete objData[i]['durationError'];
+            delete objData[i]['durationErrorMsg'];
+            delete objData[i]['minDurationError'];
+            delete objData[i]['maxDurationError'];
 
             var accountWrapperList = [];
             if (objData[i].AccountList) {
@@ -2402,16 +2447,45 @@ angular.module('cp_app').controller('projectCtrl', function ($scope, $sce, $root
         )
     }
 
+    $rootScope.minDurationInMonths = 1;
+
     $scope.validateDuration = function (applicnt) {
         debugger;
-        if (
-            applicnt.duration != null &&
-            $rootScope.maxDurationInMonths != null &&
-            Number(applicnt.duration) > Number($rootScope.maxDurationInMonths)
-        ) {
+        // Reset flags every time
+        applicnt.durationError = false;
+        applicnt.minDurationError = false;
+        applicnt.maxDurationError = false;
+
+        if (applicnt.duration === null ||
+            applicnt.duration === undefined ||
+            applicnt.duration === '') {
+            return;
+        }
+
+        var val = Number(applicnt.duration);
+
+        // Non-numeric
+        if (isNaN(val)) {
             applicnt.durationError = true;
-        } else {
-            applicnt.durationError = false;
+            return;
+        }
+
+        // Minimum duration
+        if ($rootScope.minDurationInMonths != null &&
+            val < Number($rootScope.minDurationInMonths)) {
+
+            applicnt.minDurationError = true;
+            applicnt.durationError = true;
+            return;
+        }
+
+        // Maximum duration
+        if ($rootScope.maxDurationInMonths != null &&
+            val > Number($rootScope.maxDurationInMonths)) {
+
+            applicnt.maxDurationError = true;
+            applicnt.durationError = true;
+            return;
         }
     };
 

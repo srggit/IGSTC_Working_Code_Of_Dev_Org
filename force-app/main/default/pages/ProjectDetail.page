@@ -504,9 +504,25 @@
                 
                 
                         </div> -->
+
+                    <div ng-show="stage === '1st Stage'" class="mt-5">
+                        <div class="card-header ">
+                            <h2 class="p-3 ">
+                                <b>Project Details - Stage 1</b>
+                            </h2>
+                        </div>
+                    </div>
+                    <div ng-show="stage === '2nd Stage'" class="mt-5">
+                        <div class="card-header ">
+                            <h2 class="p-3 ">
+                                <b>Project Details - Stage 2</b>
+                            </h2>
+                        </div>
+                    </div>
+
                     <div class="row mt-5">
-                        <p ng-show="stage === '1st Stage'">1st stage</p>
-                        <p ng-show="stage === '2nd Stage'">2nd stage</p>
+                        <!-- <p ng-show="stage === '1st Stage'">1st stage</p>
+                        <p ng-show="stage === '2nd Stage'">2nd stage</p> -->
 
                         <div class="col-md-6">
                             <div class="input-group ms-4">
@@ -564,11 +580,11 @@ type="button" ng-disabled="isUploading"> -->
 
                     <!-- ###################### NEW FIELDS ADDED HERE - FOR STAGE 1 ###################### -->
                     <div class="mb-4" ng-show="stage === '1st Stage'">
-                        <div class="card-header ">
+                        <!-- <div class="card-header ">
                             <h2 class="p-3 ">
                                 <b>Project Details - Stage 1</b>
                             </h2>
-                        </div>
+                        </div> -->
                         <div class="col-md-12 mt-5 ">
                             <label class="pb-3 color-theme ">
                                 <b>Main objectives of the research approach (max. chars 3000)
@@ -660,10 +676,10 @@ type="button" ng-disabled="isUploading"> -->
                                         <thead>
                                             <tr>
                                                 <th style="width:8%" nowrap="true">No.</th>
-                                                <th style="width:8%" nowrap="true">Start TRL Level
+                                                <th style="width:8%" nowrap="true">Start TRL Level (Min. 3)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:8%" nowrap="true">End TRL Level
+                                                <th style="width:8%" nowrap="true">End TRL Level (Max. 9)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th style="width:32%">Title
@@ -672,7 +688,7 @@ type="button" ng-disabled="isUploading"> -->
                                                 <th style="width:30%" nowrap="true">Partner
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:12%">Duration
+                                                <th style="width:12%">Duration (Months)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th></th>
@@ -879,11 +895,11 @@ type="button" ng-disabled="isUploading"> -->
                     <!-- ###################### NEW FIELDS ADDED HERE - FOR STAGE 2 ###################### -->
                     <div class="mb-4" ng-show="stage === '2nd Stage'">
 
-                        <div class="card-header ">
+                        <!-- <div class="card-header ">
                             <h2 class="p-3 ">
                                 <b>Project Details - Stage 2</b>
                             </h2>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-12 mt-5 ">
                             <label class="pb-3 color-theme ">
@@ -982,16 +998,16 @@ type="button" ng-disabled="isUploading"> -->
                                                 <th style="width:32%">Title
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:8%" nowrap="true">Start TRL Level
+                                                <th style="width:8%" nowrap="true">Start TRL Level (Min. 3)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:8%" nowrap="true">End TRL Level
+                                                <th style="width:8%" nowrap="true">End TRL Level (Max. 9)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th style="width:30%" nowrap="true">Partner
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th style="width:12%">Duration
+                                                <th style="width:12%">Duration (Months)
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
                                                 <th></th>
@@ -1050,8 +1066,8 @@ type="button" ng-disabled="isUploading"> -->
                                                     </small>
                                                 </td>
                                                 <td>
-                                                    <i class="fa-solid fa-file fa-2x mt-1 text-primary" ng-click="OpenPopup($index)"></i>
-                                                    <div class="modal" id="flipFlop{{$index}}">
+                                                    <i class="fa-solid fa-file fa-2x mt-1 text-primary" ng-click="OpenPopupStage2($index)"></i>
+                                                    <div class="modal" id="flipFlopStage2{{$index}}">
                                                         <div class="modal-dialog" style="min-width:1000px">
                                                             <div class="modal-content">
 
@@ -1152,7 +1168,7 @@ type="button" ng-disabled="isUploading"> -->
                                                             ng-disabled="proposalStage" />
                                                     </td>
                                                     <td ng-hide="proposalStage">
-                                                        <i class="fas fa-times-circle icon ps-3" ng-click="removeRow($index)"></i>
+                                                        <i class="fas fa-times-circle icon ps-3" ng-click="removeRowDeliverables($index)"></i>
                                                     </td>
                                                 </tr>
                                             </tbody>

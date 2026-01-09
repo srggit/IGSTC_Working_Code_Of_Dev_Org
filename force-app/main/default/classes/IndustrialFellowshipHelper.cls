@@ -1300,7 +1300,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             return 'success';
         }catch(Exception e){
             system.debug('The Error :: '+e.getMessage()+' AND Line No :: '+e.getLineNumber()+'');
-            return 'Error Occured';
+            return 'The Error :: '+e.getMessage()+' AND Line No :: '+e.getLineNumber()+'';
         }
    }
 
