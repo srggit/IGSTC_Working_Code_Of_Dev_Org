@@ -320,7 +320,6 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
             $("#IPcode").addClass('border-theme');
             return;
         }
-
         // ------------- POSTAL CODE VALIDATION ------------------ //
         debugger;
         var country = $scope.addressDetails.BillingCountry;

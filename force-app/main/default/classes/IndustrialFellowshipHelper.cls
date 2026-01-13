@@ -925,6 +925,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
         }
    }
 
+    /*
     public static String insertHostProjectDetails(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
         if(!String.isBlank(proposalId)){
  
@@ -945,8 +946,9 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
         }
         return 'proposalId doesen\'t exists';
     }
+    */
+
    // ------------------------------------- WISER METHOD TO CREATE PROPOSAL ----------------------------------------- //
-   /*
     public static IndustrialFellowshipHelper.ProposalAndAPAWrapper insertHostProjectDetails(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
         try {
             System.debug(' ================= IndustrialFellowshipHelper.insertHostProjectDetails() ================== ');
@@ -986,7 +988,8 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                 proposalRec.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
                 proposalRec.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
                 proposalRec.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
-
+                proposalRec.Duration_In_Months_Max_36__c = hostDetails.Duration_In_Months_Max_36__c;
+                proposalRec.KeyWords__c = hostDetails.KeyWords__c;
                 upsert proposalRec;
  
                 // Find Primary APA
@@ -1100,7 +1103,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
         public Application_Proposal__c proposal { get; set; }
         public Applicant_Proposal_Association__c apa { get; set; }
     }
-    */
+
 
 
 /*    public static String insertHostProjectDetails(Application_Proposal__c hostDetails, integer sDate, integer sMonth, integer sYear, integer eDate, integer eMonth, integer eYear){
@@ -1300,7 +1303,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             return 'success';
         }catch(Exception e){
             system.debug('The Error :: '+e.getMessage()+' AND Line No :: '+e.getLineNumber()+'');
-            return 'The Error :: '+e.getMessage()+' AND Line No :: '+e.getLineNumber()+'';
+            return 'Error Occured';
         }
    }
 
@@ -1396,8 +1399,15 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             if(year!=0){
                 Date newDate=Date.newInstance(year,month,day);
                 apaRec.Contact__r.Declaration_Sign_Date__c=newDate;
+                
+                Contact con = new Contact();
+                con.id = apaRec.Contact__c;
+                con.Declaration_Sign_Date__c=newDate;
+                update con;
             }
             update apaRec;
+
+            
             Application_Proposal__c updateProposal=new Application_Proposal__c(Id=projectId);
             updateProposal.Proposal_Stages__c='Submitted';
             updateProposal.Submitted__c = true;

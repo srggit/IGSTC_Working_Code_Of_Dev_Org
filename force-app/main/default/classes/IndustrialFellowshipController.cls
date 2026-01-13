@@ -130,15 +130,15 @@ public static String saveApplicantPortalSingh(String loginHashCode,Contact con,A
         return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, sDate, sMonth, sYear, eDate, eMonth, eYear);
     } */
 
-    // @RemoteAction 
-    // public static IndustrialFellowshipHelper.ProposalAndAPAWrapper saveHostProjectInformation(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
-    //     return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, proposalId, candidateId, yearlyCallId, sDate, sMonth, sYear, eDate, eMonth, eYear);
-    // }
-
     @RemoteAction 
-    public static String saveHostProjectInformation(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
+    public static IndustrialFellowshipHelper.ProposalAndAPAWrapper saveHostProjectInformation(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
         return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, proposalId, candidateId, yearlyCallId, sDate, sMonth, sYear, eDate, eMonth, eYear);
     }
+
+    // @RemoteAction 
+    // public static String saveHostProjectInformation(Application_Proposal__c hostDetails, String proposalId, String candidateId, String yearlyCallId, Integer sDate, Integer sMonth, Integer sYear, Integer eDate, Integer eMonth, Integer eYear){
+    //     return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, proposalId, candidateId, yearlyCallId, sDate, sMonth, sYear, eDate, eMonth, eYear);
+    // }
 
     //consortia functions
     @RemoteAction 

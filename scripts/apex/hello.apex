@@ -11,3 +11,6 @@ System.debug('My name is ' + tempvar);
 
 
 System.debug('Result :::::::: ' + ApplicantPortal_Contoller.getApplicantDetailsForGrant(null, 'a04e1000000GodZAAS'));
+
+
+System.debug('Result :::::::: ' + IndustrialFellowshipController.getEduQualification('yixaEBBcB21767770073436', 'a1oe1000001QtukAAC'));
