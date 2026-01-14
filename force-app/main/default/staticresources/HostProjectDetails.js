@@ -111,6 +111,36 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                return;
           }
 
+          if ($scope.objContact.Layman_title_of_project__c == undefined || $scope.objContact.Layman_title_of_project__c == "") {
+               swal("info", "Please Enter Layman Title Of Project.", "info");
+               $("#laymanTitle").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Layman_title_of_project__c.length > 600) {
+               swal(
+                    "info",
+                    "Please Enter Layman Title Of Proposal.",
+                    "info");
+               //$("#laymanTitle").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Layman_abstract_of_proposed_work__c == undefined || $scope.objContact.Layman_abstract_of_proposed_work__c == "") {
+               swal("info", "Please Enter Layman Abstract Of Proposed Work.", "info");
+               $("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Layman_abstract_of_proposed_work__c.length > 600) {
+               swal(
+                    "info",
+                    "Please Enter Layman Abstract Of Proposed Work.",
+                    "info");
+               //$("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
           // if (
           //      $scope.objContact.Duration_In_Months_Max_36__c === null || $scope.objContact.Duration_In_Months_Max_36__c === undefined
           // ) {
@@ -124,6 +154,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                $("#txtDuration").addClass('border-theme');
                return;
           }
+
 
 
 
@@ -197,6 +228,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
 
           delete ($scope.objContact.Actual_Application_Start_Date__c);
           delete ($scope.objContact.Actual_Application_End_Date__c);
+          delete $scope.objContact._charLimitMap;
 
           // New method to create a Proposal
           IndustrialFellowshipController.saveHostProjectInformation(
@@ -291,5 +323,95 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $scope.removeClass2 = function (controlid) {
           $("#" + controlid + "").removeClass('border-theme');
      }
+
+     $scope.checkCharLimit = function (obj, fieldName, limit) {
+          debugger;
+
+          if (!obj) return;
+
+          var targetObj;
+          var value;
+
+          // 🔹 Account field
+          if (obj.hasOwnProperty(fieldName)) {
+               targetObj = obj;
+               value = obj[fieldName];
+
+          }
+          // 🔹 Contact field
+          else if (
+               obj.Contacts &&
+               obj.Contacts.length > 0 &&
+               obj.Contacts[0].hasOwnProperty(fieldName)
+          ) {
+               targetObj = obj.Contacts[0];
+               value = obj.Contacts[0][fieldName];
+
+          } else {
+               return;
+          }
+
+          // Init error map
+          targetObj._charLimitMap = targetObj._charLimitMap || {};
+
+          if (!value) {
+               targetObj._charLimitMap[fieldName] = false;
+               return;
+          }
+
+          /* =====================================================
+             SPECIAL CASE: POSTAL / ZIP CODE
+             ===================================================== */
+          if (fieldName === 'BillingPostalCode') {
+
+               var country = obj.BillingCountry;
+               var cleanedValue = value.replace(/[^0-9]/g, '');
+
+               var maxLength;
+               var regex;
+
+               if (country === 'India') {
+                    maxLength = 6;
+                    regex = /^[0-9]{6}$/;
+               }
+               else if (country === 'Germany') {
+                    maxLength = 5;
+                    regex = /^[0-9]{5}$/;
+               }
+               else {
+                    maxLength = limit; // fallback
+               }
+
+               // Length check
+               if (cleanedValue.length > maxLength) {
+                    targetObj._charLimitMap[fieldName] = true;
+                    console.log('❌ Postal code length exceeded for', country);
+                    return;
+               }
+
+               // Pattern check (only when full length entered)
+               if (cleanedValue.length === maxLength) {
+                    if (regex && !regex.test(cleanedValue)) {
+                         targetObj._charLimitMap[fieldName] = true;
+                         console.log('❌ Invalid Postal Code for', country);
+                         return;
+                    }
+               }
+
+               targetObj._charLimitMap[fieldName] = false;
+               console.log('✅ Valid Postal Code for', country);
+               return;
+          }
+
+          /* =====================================================
+              DEFAULT CHAR LIMIT LOGIC (Website, Department, etc.)
+             ===================================================== */
+
+          if (value.length > limit) {
+               targetObj._charLimitMap[fieldName] = true;
+          } else {
+               targetObj._charLimitMap[fieldName] = false;
+          }
+     };
 
 })

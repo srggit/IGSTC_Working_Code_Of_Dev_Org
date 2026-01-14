@@ -14,3 +14,10 @@ System.debug('Result :::::::: ' + ApplicantPortal_Contoller.getApplicantDetailsF
 
 
 System.debug('Result :::::::: ' + IndustrialFellowshipController.getEduQualification('yixaEBBcB21767770073436', 'a1oe1000001QtukAAC'));
+
+
+
+
+List<String> ciites = IndustrialFellowshipController.getCitiesByState('India', 'Maharashtra');
+
+System.debug('cities >>>>>> : ' + ciites);

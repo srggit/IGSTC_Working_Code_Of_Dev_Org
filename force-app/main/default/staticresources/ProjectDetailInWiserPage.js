@@ -420,6 +420,20 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         console.log('detailedList :: ' + $scope.detailedList);
         debugger;
 
+        // 🔹 Force DOB validation on Save
+        $scope.validateDOB($scope.pairingDetails.Birthdate, 'dobPrimary');
+        $scope.validateDOB($scope.pairList.Birthdate, 'dobSecondary');
+
+        // 🔹 Stop save if DOB invalid
+        if ($scope.dobErrors.dobPrimary || $scope.dobErrors.dobSecondary) {
+            swal(
+                "Invalid Date of Birth",
+                "Age must be more than 26 years and less than 55 years.",
+                "info"
+            );
+            return;
+        }
+
         if ($scope.pairingDetails != undefined) {
 
             if ($scope.pairingDetails.FirstName == undefined || $scope.pairingDetails.FirstName == "") {
@@ -660,6 +674,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
 
     $scope.applicantDetails = {};
     $scope.saveApplication = function () {
+        debugger;
 
         if (!$scope.isPdfUploded) {
             swal('info', 'Please upload the PDF file.', 'info');
@@ -848,5 +863,35 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     $scope.removeClass = function (controlid) {
         $("#" + controlid + "").removeClass('border-theme');
     }
+
+    // ======================== BIRTH DATA & AGE VERIFICATION VALIDATION ======================= //
+    // Store DOB validation errors per field
+    $scope.dobErrors = {};
+
+    // Reusable DOB validation function
+    $scope.validateDOB = function (dob, fieldName) {
+        debugger;
+
+        if (!dob) {
+            $scope.dobErrors[fieldName] = false;
+            return;
+        }
+
+        var today = new Date();
+        var birthDate = new Date(dob);
+
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+
+        // Adjust if birthday has not occurred yet this year
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        // Age rule: >26 and <55
+        $scope.dobErrors[fieldName] = !(age > 26 && age < 55);
+    };
+
+
 
 })
