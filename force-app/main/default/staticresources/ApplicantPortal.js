@@ -586,7 +586,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                     name: item?.Proposals__r?.Campaign__r?.Name ?? "",
                     PropName: item?.Proposals__r?.Name ?? "",
                     desc: item?.Proposals__r?.Campaign__r?.Description ?? "",
-                    // titleOfProject: item?.Contact__r?.Title_Of_Project__c ?? "",
+                   // titleOfProject: item?.Contact__r?.Title_Of_Project__c ?? "",
                     titleOfProject: item?.Proposals__r?.Title_Of__c ?? "",
                     deadline: item.Proposals__r?.yearly_Call__r?.Campaign_End_Date__c ?
                         new Date(item.Proposals__r?.yearly_Call__r?.Campaign_End_Date__c).toLocaleDateString('en-GB', {
@@ -602,7 +602,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                     yearlyCallId: item?.Proposals__r?.yearly_Call__c ?? "",
                     proposalStage: item?.Proposals__r?.Proposal_Stages__c ?? "",
                     category: 'applied'
-
+                 
                 })) : [];
 
                 // Simple helper for YearlyCall__c → Campaign data              
