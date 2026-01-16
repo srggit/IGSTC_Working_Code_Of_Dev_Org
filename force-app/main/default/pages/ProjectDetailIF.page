@@ -3,6 +3,11 @@
     <div ng-controller="ProjectDetailIF_Ctrl">
 
         <head>
+            <!-- Added By Karthik -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+              <!-- Added By Karthik -->
             <apex:stylesheet value="{!$Resource.ApplicantPortalCSS}" />
             <script>
                 var userId = '{!$CurrentPage.parameters.id}';
@@ -269,11 +274,13 @@
                             </div>
                             <div class="row mt-5 mx-5">
                                 <div class="col-md-12">
-                                    <h4 class="label-rtf">Brief Statement of Purpose (Max 400 characters without space)<span class="required-asterisk text-danger">*</span></h4>
+                                    <h4 class="label-rtf">Brief Statement of Purpose (Max 1200 characters without space)<span class="required-asterisk text-danger">*</span></h4>
+                                    <h5 class="label-rtf1">Why do you want to do this Work?</h5>
+                                    <h5 class="label-rtf1">What do you want to work?</h5>
                                     <small class="label-rtf"><b>To use below RTF box more efficiently, make sure you write your content in word document first and then copy paste here</b></small>
-                                    <ng-ckeditor read-Only="true" ng-model="objProposal.Brief_Statement_of_Purpose__c" ng-change="readCharacter(objProposal.Brief_Statement_of_Purpose__c,0)" maxlength="410" name="ckEditor" ng-config="config" required="true" ng-required="objProposal.Brief_Statement_of_Purpose__c"></ng-ckeditor>
+                                    <ng-ckeditor read-Only="true" ng-model="objProposal.Brief_Statement_of_Purpose__c" ng-change="readCharacter(objProposal.Brief_Statement_of_Purpose__c,0)" maxlength="1210" name="ckEditor" ng-config="config" required="true" ng-required="objProposal.Brief_Statement_of_Purpose__c"></ng-ckeditor>
                                     <span>Total characters : {{objRtf[0].charCount}}</span>
-                                <span class="text-danger" ng-if="objRtf[0].errorStatus">maximum character limit is 400</span>
+                                <span class="text-danger" ng-if="objRtf[0].errorStatus">maximum character limit is 1200</span>
                                 </div>
                                 <div class="col-md-12 mt-5">
                                     <h4 class="label-rtf">Objectives of the work (Max 500 characters without space)<span class="required-asterisk text-danger">*</span></h4>
@@ -281,8 +288,11 @@
                                     <ng-ckeditor read-Only="true" ng-model="objProposal.Research_Approach_Objectives__c" ng-change="readCharacter(objProposal.Research_Approach_Objectives__c,1)" maxlength="520" name="ckEditor1" ng-config="config" required="true" ng-required="objProposal.Research_Approach_Objectives__c"></ng-ckeditor>
                                     <span>Total characters : {{objRtf[1].charCount}}</span>
                                 <span class="text-danger" ng-if="objRtf[1].errorStatus">maximum character limit is 500</span>
-                                </div>
+                                </div>                                
+                                
+                                
                             </div>
+                            
                             <div class="row mt-5 mx-5">
                                 <div class="col-md-12">
                                     <h4 class="label-rtf">Work plan (Max 2000 characters without space)<span class="required-asterisk text-danger">*</span></h4>
@@ -317,6 +327,36 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Added By Karthik -->
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <label class="color-theme mb-0">
+                                                    <b>
+                                                        Keywords
+                                                        <span class="required-asterisk text-danger">*</span>
+                                                        (Max. 6)
+                                                        <i>(To add click plus sign)</i>
+                                                    </b>
+                                                </label>
+
+                                                <i class="fa-solid fa-circle-plus fa-2x text-primary ms-3" ng-click="addKeyword()" ng-if="!proposalStage" style="cursor:pointer;"></i>
+                                            </div>
+                                            <!-- Keywords inputs -->
+                                            <div ng-repeat="item in objKeyword track by $index" class="row mb-2">
+
+                                                <div class="col-md-10">
+                                                    <input type="text" ng-model="item.keyword" class="form-control" maxlength="255" ng-disabled="proposalStage" ng-focus="removeClass2('keywords')"
+                                                        id="keywords" />
+                                                </div>
+
+                                                <div class="col-md-2 d-flex align-items-center">
+                                                    <i class="fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeKeyword($index)" ng-if="!proposalStage" style="cursor:pointer;"></i>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                         <!-- Added By Karthik -->
+
                             <div class="row m-5" ng-if="!proposalStage">
                                 <div class="col-md-12">
                                     <button class="blue-btn float-end" ng-click="clickFellowshipDetails()" type="button">

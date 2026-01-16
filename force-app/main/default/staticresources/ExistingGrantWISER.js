@@ -205,7 +205,7 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
                     button: "ok!",
                 });
                 // $scope.redirectPageURL('CV_Wiser');
-                $scope.redirectPageURL('AttachmentsInWiser');
+                $scope.redirectPageURL('TwoReferenceWiser');
 
                 // window.location.replace('https://dev-igstc.cs114.force.com/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/AttachmentsInWiser');
             } else {
@@ -271,7 +271,7 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     $scope.previousPage = function () {
         debugger;
         //   $scope.redirectPageURL('TwoReferenceWiser');
-        $scope.redirectPageURL('ExistingGrantWISER');
+        $scope.redirectPageURL('FinancialOverview_wiser');
         // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/TwoReferenceWiser');
     }
 

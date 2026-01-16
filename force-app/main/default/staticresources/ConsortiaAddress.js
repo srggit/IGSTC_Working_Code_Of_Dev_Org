@@ -234,7 +234,6 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
         )
     }
     $scope.getAddressDetails();
-
     $scope.onCountryChange = function () {
         debugger;
 
@@ -245,7 +244,6 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
         }
         $scope.$apply();
     }
-
     $scope.redirectPageURL = function (pageName) {
         var link = document.createElement("a");
         link.id = 'someLink'; //give it an ID!
@@ -457,7 +455,6 @@ angular.module('cp_app').controller('address_ctrl', function ($scope, $sce, $roo
         delete $scope.cleanedAddressDetails['Contacts'];
         delete $scope.cleanedAddressDetails['$$hashKey'];
         delete $scope.cleanedAddressDetails['stateList'];
-        delete $scope.cleanedAddressDetails['Legal_Status_and_Mandate__c'];
         delete $scope.cleanedAddressDetails._charLimitMap;
 
         // ---------------- CLEAN CONTACT LIST ----------------

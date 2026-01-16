@@ -4852,7 +4852,7 @@ return null;
     
     //************************************** Fellowship_Details  **********************************************************
     
-    public static String insertFellowship_Details(Contact proposalDetails, integer startday, integer startmonth, integer startyear, integer endday, integer endmonth, integer endyear,String conId, String recordType){
+    public static String insertFellowship_Details(Contact proposalDetails, String proposalId, String keywords, integer startday, integer startmonth, integer startyear, integer endday, integer endmonth, integer endyear,String conId, String recordType){
         try{
             system.debug('startday ::'+startday);
             system.debug('startmonth ::'+startmonth);
@@ -4861,6 +4861,12 @@ return null;
             system.debug('endmonth ::'+endmonth);
             system.debug('endyear ::'+endyear);
             system.debug('proposalDetails ::'+proposalDetails);
+
+            if(String.isNotBlank(proposalId)){
+                Application_Proposal__c ap = new Application_Proposal__c(Id = proposalId, KeyWords__c = keywords);
+                update ap;
+            }
+
             if(startday==0 && startmonth==0 && startyear==0){
                 
             }else{
@@ -7063,11 +7069,11 @@ return null;
 //     system.debug('proposalRecord----'+proposalRecord);     
 }*/
     
-    public static Contact getFellowshipDetails(string applicantHashCode){
+    public static Contact getFellowshipDetails(string applicantHashCode, String proposalId){
         
         try{
             Contact conRec = [SELECT Id,Planned_research_activities_of_the_visit__c,Expected_outcomes__c,Basis_for_choosing_your_paired_member__c,Tentative_plans__c,Tentative_Start_Date__c,Tentative_End_Date__c, Title_Of_Project__c,
-                              Availing_Fellowship__c,Associated_with_IGSTC__c,Give_Fellowship_Details__c,Give_Associated_Details__c,(SELECT Id,Proposals__r.Id,Proposals__r.yearly_Call__r.Result_Announcement_Date__c,Proposals__r.yearly_Call__r.Pecfar_Information_Text__c
+                              Availing_Fellowship__c,Associated_with_IGSTC__c,Give_Fellowship_Details__c,Give_Associated_Details__c,(SELECT Id,Proposals__r.Id,Proposals__r.yearly_Call__r.Result_Announcement_Date__c,Proposals__r.yearly_Call__r.Pecfar_Information_Text__c,Proposals__r.KeyWords__c
                                                                                                                                      FROM Applicant_Proposal_Associations__r WHERE Proposals__r.RecordType_Name__c='PECFAR' LIMIT 1) FROM Contact WHERE Login_Hash_Code__c =: applicantHashCode];
             
             return conRec;

@@ -1146,8 +1146,8 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     }
     
     @RemoteAction
-    public static String insertFellowship_Details(Contact applicantDetails, integer startday, integer startmonth, integer startyear, integer endday, integer endmonth, integer endyear,String conId, String recordType){
-        return Proposal_Controller.insertFellowship_Details(applicantDetails, startday, startmonth, startyear, endday, endmonth, endyear, conId, recordType);
+    public static String insertFellowship_Details(Contact applicantDetails, String proposalId, String keywords, integer startday, integer startmonth, integer startyear, integer endday, integer endmonth, integer endyear,String conId, String recordType){
+        return Proposal_Controller.insertFellowship_Details(applicantDetails, proposalId, keywords, startday, startmonth, startyear, endday, endmonth, endyear, conId, recordType);
     }
     
     @RemoteAction
@@ -1541,8 +1541,8 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
         return 'success';
     }
     @RemoteAction
-    public static Contact getFellowshipDetails(string applicantHashCode){
-        return Proposal_Controller.getFellowshipDetails(applicantHashCode);
+    public static Contact getFellowshipDetails(string applicantHashCode, String proposalId){
+        return Proposal_Controller.getFellowshipDetails(applicantHashCode, proposalId);
     }
     // @RemoteAction
     // public static String doCUploadAttachmentReviewer(String attachmentBody, String attachmentName, string cvId, String udId) {

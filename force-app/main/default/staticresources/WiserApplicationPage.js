@@ -383,7 +383,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 					icon: "success",
 					button: "ok!",
 				});
-				$scope.redirectPageURL('FinancialOverview_wiser');
+				$scope.redirectPageURL('CV_Wiser');
 
 			}
 			else {

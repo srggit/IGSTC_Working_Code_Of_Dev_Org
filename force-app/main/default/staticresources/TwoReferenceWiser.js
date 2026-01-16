@@ -163,7 +163,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
      }
 
      $scope.previousPage = function () {
-          $scope.redirectPageURL('FinancialOverview_wiser');
+          $scope.redirectPageURL('ExistingGrantWISER');
           // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/HostProjectDetails');
      }
 
@@ -249,7 +249,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
                          icon: "success",
                          button: "ok!",
                     });
-                    $scope.redirectPageURL('ExistingGrantWISER');
+                    $scope.redirectPageURL('AttachmentsInWiser');
                     //    window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/ProjectHandleGrantApplicationWiser');
                } else {
                     swal({

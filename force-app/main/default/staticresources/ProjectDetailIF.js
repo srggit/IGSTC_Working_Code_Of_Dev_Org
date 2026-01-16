@@ -7,7 +7,7 @@ angular.module('cp_app').controller('ProjectDetailIF_Ctrl', function ($scope, $s
   $scope.objIndFell = {};
   $rootScope.proposalId;
   $scope.doc = {};
-  $scope.objRtf = [{ charCount: 0, maxCharLimit: 400, errorStatus: false }];
+  $scope.objRtf = [{ charCount: 0, maxCharLimit: 1200, errorStatus: false }];
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 500, errorStatus: false });
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 2000, errorStatus: false });
   $scope.objRtf.push({ charCount: 0, maxCharLimit: 400, errorStatus: false });
@@ -391,8 +391,8 @@ angular.module('cp_app').controller('ProjectDetailIF_Ctrl', function ($scope, $s
       // div.innerHTML = $scope.objProposal.Brief_Statement_of_Purpose__c;
       // let brief = div.innerText.replace(/(\r\n\t|\t|\n|\r)/gm, "");
       // brief = brief.replaceAll(' ','');
-      if ($scope.objRtf[0].charCount > 400) {
-        swal('info', 'Max character limit for Brief Statement of Purpose is 400 only', 'info');
+      if ($scope.objRtf[0].charCount > 1200) {
+        swal('info', 'Max character limit for Brief Statement of Purpose is 1200 only', 'info');
         return;
       }
     }
@@ -457,6 +457,35 @@ angular.module('cp_app').controller('ProjectDetailIF_Ctrl', function ($scope, $s
 
     delete $scope.objContact.Applicant_Proposal_Associations__r;
 
+
+    // ----------------- Add and Remove Keyword Functionality  By Karthik------------------ //
+     $scope.objKeyword = [];
+
+    $scope.addKeyword = function () {
+          debugger
+          if ($scope.objKeyword.length <= 5) {
+               $scope.objKeyword.push({ keyword: "" });
+               $scope.$apply();
+          }
+     }
+     $scope.removeKeyword = function (index) {
+          if ($scope.objKeyword.length > 1) {
+               $scope.objKeyword.splice(index, 1);
+          }
+     }
+
+
+     var keyword = ""; 
+          for (var i = 0; i < $scope.objKeyword.length; i++) {
+               if ($scope.objKeyword[i].keyword != '' && $scope.objKeyword[i].keyword != undefined) {
+                    if (i == 0)
+                         keyword = $scope.objKeyword[i].keyword;
+                    else
+                         keyword = keyword + ';' + $scope.objKeyword[i].keyword;
+               }
+          }
+
+  // ----------------- Add and Remove Keyword Functionality  By Karthik------------------ //
 
     debugger;
     IndustrialFellowshipController.saveFellowshipProposal($rootScope.candidateId, $scope.objProposal, $scope.objIndFell, $rootScope.accountId, 'Industrial Fellowship', function (result, event) {
