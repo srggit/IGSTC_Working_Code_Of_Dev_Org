@@ -135,9 +135,9 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         maxFileSize = maxSize;
         if (file != undefined) {
             if (file.size <= maxFileSize) {
-                if (file.size < minFileSize) {
-                    // alert("Your file is too small. Please try again.");
-                    // return;
+                if (minFileSize && file.size < minFileSize) {
+                    swal('info', 'Your file is too small. Minimum size is ' + (minFileSize / 1024) + ' KB.', 'info');
+                    return;
                 }
                 attachmentName = file.name;
                 const myArr = attachmentName.split(".");
@@ -282,12 +282,12 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                 } else if (event.status) {
                     if (doneUploading == true) {
                         $scope.getProjectdetils();
+                        $scope.getProjectProposalDoc();
                         swal(
                             'success',
                             'Uploaded Successfully!',
                             'success'
                         )
-                        $scope.getProjectdetils();
                         // $scope.disableSubmit = false;
 
                     }
@@ -329,8 +329,66 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
             }
         }
 
+        swal({
+            title: "SUCCESS",
+            text: 'Attachments have been saved successfully.',
+            icon: "success",
+            button: "ok!",
+        });
+
         $scope.redirectPageURL('Declaration_Wiser');
     }
+
+
+    // ----------------- CODE TO GET PROJECT PROPOSAL DOCUMENT FOR UPLOAD -------------------- //
+    $scope.getProjectProposalDoc = function () {
+        debugger;
+        ApplicantPortal_Contoller.getAllUserDoc($rootScope.proposalId, function (result, event) {
+            debugger;
+            // console.log('result return onload :: ');
+            // console.log(result);
+            if (event.status) {
+                $scope.projProposal = result;
+                for (var i = 0; i < $scope.projProposal.length; i++) {
+                    if ($scope.projProposal[i].userDocument.Name == 'project Description') {
+                        $scope.projectProposal = $scope.projProposal[i];
+                    }
+                }
+                $scope.$apply();
+            }
+        }, {
+            escape: true
+        })
+    }
+    $scope.getProjectProposalDoc();
+
+    // $scope.getProjectDetailsOnLoad = function () {
+    //     debugger;
+    //     $scope.selectedFile = '';
+    //     $('#file_frame').attr('src', '');
+    //     ApplicantPortal_Contoller.getAllProposalDoc($rootScope.proposalId, function (result, event) {
+    //         debugger
+    //         console.log('result return onload :: ');
+    //         console.log(result);
+    //         if (event.status) {
+    //             $scope.allDocs = result;
+    //             var uploadCount = 0;
+    //             for (var i = 0; i < $scope.allDocs.length; i++) {
+    //                 if ($scope.allDocs[i].userDocument.Name == 'project Description') {
+    //                     $scope.doc = $scope.allDocs[i];
+    //                     if ($scope.allDocs[i].userDocument.Status__c == 'Uploaded') {
+    //                         uploadCount = uploadCount + 1;
+    //                     }
+    //                 }
+    //             }
+    //             $scope.$apply();
+    //         }
+    //     }, {
+    //         escape: true
+    //     })
+    // }
+    // $scope.getProjectDetailsOnLoad();
+
 
 
 });

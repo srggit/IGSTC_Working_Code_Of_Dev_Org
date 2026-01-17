@@ -70,6 +70,14 @@
                                     </a>
                                 </li>
                                 <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('ParentOrganization')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <span>Parent Organization Details</span>
+                                    </a>
+                                </li>
+                                <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('Education_Qualification')">
                                         <div class="icon-circle">
                                             <i class="fas fa-user-graduate"></i>
@@ -85,14 +93,7 @@
                                         <span>Employment Details</span>
                                     </a>
                                 </li>
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('ParentOrganization')">
-                                        <div class="icon-circle">
-                                            <i class="fas fa-building"></i>
-                                        </div>
-                                        <span>Parent Organization Details</span>
-                                    </a>
-                                </li>
+                                
                             </ul>
                         </div>
                         <div class="tab-link" ng-hide="proposalStage">
@@ -119,6 +120,14 @@
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <span>Parent Organization Details</span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a>
+                                        <div class="icon-circle">
                                             <i class="fas fa-user-graduate"></i>
                                         </div>
                                         <span>Educational Qualifications</span>
@@ -132,14 +141,7 @@
                                         <span>Employment Details</span>
                                     </a>
                                 </li>
-                                <li class="active">
-                                    <a>
-                                        <div class="icon-circle">
-                                            <i class="fas fa-building"></i>
-                                        </div>
-                                        <span>Parent Organization Details</span>
-                                    </a>
-                                </li>
+                                
                             </ul>
                         </div>
                     </div>
@@ -153,6 +155,14 @@
                             </div>
                             <ul>
                                 <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('Achievements_Pecfar')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <span>Achievements</span>
+                                    </a>
+                                </li>
+                                <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('Fellowship_Details')">
                                         <div class="icon-circle">
                                             <i class="fa fa-home"></i>
@@ -161,14 +171,7 @@
                                     </a>
                                 </li>
 
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('Achievements_Pecfar')">
-                                        <div class="icon-circle">
-                                            <i class="fas fa-trophy"></i>
-                                        </div>
-                                        <span>Achievements</span>
-                                    </a>
-                                </li>
+                                
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('Attachments_Pecfar')">
                                         <div class="icon-circle">
@@ -197,9 +200,17 @@
                         </div>
                         <div class="tab-link" ng-hide="proposalStage">
                             <div class="progress">
-                                <div class="progress-success wp-1"></div>
+                                <div class="progress-success wp-3"></div>
                             </div>
                             <ul>
+                                <li class="active">
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <span>Achievements</span>
+                                    </a>
+                                </li>
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
@@ -209,14 +220,7 @@
                                     </a>
                                 </li>
 
-                                <li>
-                                    <a>
-                                        <div class="icon-circle">
-                                            <i class="fas fa-trophy"></i>
-                                        </div>
-                                        <span>Achievements</span>
-                                    </a>
-                                </li>
+                                
                                 <li>
                                     <a>
                                         <div class="icon-circle">
@@ -268,51 +272,44 @@
                         </div>
                     </div>
 
-                    <!-- KEYWORDS SECTION ADDED HERE -->
+                    <!-- SUBTOPIC SECTION -->
                     <div class="row mt-5 mx-5">
-                        <div class="col-md-4">
-                            <label class="ps-3 pt-1 color-theme">
-                                <b>Keywords<span class="required-asterisk" style="color:red;">*</span> (Max. 6) <i>(To
-                                        add click plus sign)</i></b>
+                        <div class="col-md-12">    
+                            <label class="pb-3 color-theme"><b>Subtopic</b>
+                                <span class="required-asterisk" style="color:red;">*</span>
                             </label>
-                        </div>
-                        <div class="col-md-1">
-                            <div>
-                                <i ng-click="addKeyword()" class="fa-solid fa-2x text-primary fa-circle-plus"
-                                    ng-if="!proposalStage && objKeyword.length < 6"></i>
+                            <div class="col-md-12">
+                                <div ng-repeat="theme in thematicAreaToDisplay">
+                                    <div>
+                                        <input type="checkbox" ng-checked="theme.checked" ng-click="thematicArea(theme.Id,$index)" ng-disabled="proposalStage" class="font-if" />&nbsp; <span class="pb-1">{{theme.Name}}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- KEYWORDS SECTION -->
+                    <div class="row mt-5 mx-5">
+                        <div class="col-md-4">
+                            <label class="ps-3 pt-1 color-theme">
+                                <b>Keywords<span class="required-asterisk" style="color:red;">*</span> (Max. 6) <i>(To add click plus sign)</i></b>
+                            </label>
+                        </div>
+                        <div class="col-md-1">
+                            <div>
+                                <i ng-click="addKeyword()" class="fa-solid fa-2x text-primary fa-circle-plus" ng-if="!proposalStage && objKeyword.length < 6" style="cursor:pointer;"></i>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row mx-5">
                         <div class="col-md-12">
-                            <div ng-repeat="item in objKeyword" ng-switch="true" on="$index % 2">
-                                <div class="col-md-5" style="display:inline !important" ng-switch-when="0">
-                                    <input id="key" ng-focus="removeClass2('key')" type="text" ng-model="item.keyword"
-                                        class="form-control mb-2" maxlength="255" ng-disabled="proposalStage"
-                                        style="display:inline !important" />
-                                    <!-- <span class="input-group-btn">
-                                            <i class="fa-solid fa-circle-xmark fa-2x text-danger mt-2" ng-click="removeKeyword($index)" ng-if="!proposalStage" style="display:inline !important"></i>
-                                        </span> -->
+                            <div ng-repeat="item in objKeyword track by $index" class="row mb-2">
+                                <div class="col-md-5">
+                                    <input id="key{{$index}}" ng-focus="removeClass2('key')" type="text" ng-model="item.keyword"
+                                        class="form-control" maxlength="255" ng-disabled="proposalStage" />
                                 </div>
-                                <div class="col-md-1 mt-2 pt-1" style="display:inline !important" ng-switch-when="0">
-                                    <i class="fa-solid fa-circle-xmark fa-2x text-danger mt-2"
-                                        ng-click="removeKeyword($index)" ng-if="!proposalStage"
-                                        style="display:inline !important"></i>
-                                </div>
-                                <div class="col-md-5" style="display:inline !important" ng-show="objKeyword[$index+1]">
-                                    <input id="key" ng-focus="removeClass2('key')" type="text" ng-model="item.keyword"
-                                        class="form-control mb-2" maxlength="255" ng-disabled="proposalStage"
-                                        style="display:inline !important" />
-                                    <!-- <span class="input-group-btn">
-                                            <i class="fa-solid fa-circle-xmark fa-2x text-danger mt-2" ng-click="removeKeyword($index)" ng-if="!proposalStage" style="display:inline !important"></i>
-                                        </span> -->
-                                </div>
-                                <div class="col-md-1 mt-2 pt-1" style="display:inline !important"
-                                    ng-show="objKeyword[$index+1]">
-                                    <i class="fa-solid fa-circle-xmark fa-2x text-danger mt-2"
-                                        ng-click="removeKeyword($index)" ng-if="!proposalStage"
-                                        style="display:inline !important"></i>
+                                <div class="col-md-1 d-flex align-items-center">
+                                    <i class="fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeKeyword($index)" ng-if="!proposalStage" style="cursor:pointer;"></i>
                                 </div>
                             </div>
                         </div>
@@ -325,8 +322,7 @@
                     <div class="row mt-5 mx-5">
                         <div class="col-md-12 mt-3">
                             <!--<label class="label-rtf"><b>Planned research activities of the visit(Abstract/objectives/work plan in max 1500 characters without space):</b></label>-->
-                            <label class="label-rtf"><b>Work plan for the visit duration(max 1500 characters without
-                                    space):</b></label>
+                            <label class="label-rtf"><b>Work plan for the visit duration(max 1500 characters without space):</b></label>
                             <span class="required-asterisk" style="color:red;">*</span><br />
                             <small class="label-rtf"><b>To use the below RTF box more efficiently, make sure you write
                                     your content in word document first and then copy paste here</b></small>
@@ -500,7 +496,7 @@
                             <button class="blue-btn float-end" ng-click="saveApplication()" type="button">
                                 <i class="fa-solid fa-check me-2"></i>Save and Next</button>
                             <button class="blue-bordered-btn float-end me-2"
-                                ng-click="redirectPageURL('ParentOrganization')" type="button">
+                                ng-click="redirectPageURL('Achievements_Pecfar')" type="button">
                                 <i class="fa-solid fa-arrow-left me-2"></i>Previous</button>
 
                         </div>

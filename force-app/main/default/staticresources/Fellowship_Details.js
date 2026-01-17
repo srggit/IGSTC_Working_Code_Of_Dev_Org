@@ -13,6 +13,46 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
     $rootScope.pairedApplicant;
     $scope.Pecfar_dateInformationText;
     $scope.objKeyword = [];
+    $scope.thematicAreaToDisplay = [];
+    $scope.thematicAreaList = [];
+    $scope.selectedTheme = [];
+    
+    // Fetch thematic areas dynamically
+    $scope.fetchThematicAreas = function(callback) {
+        ApplicantPortal_Contoller.fetchAllThematicArea(function(result, event) {
+            if (event.status && result != null) {
+                $scope.thematicAreaList = result;
+                $scope.$apply();
+            }
+            if (callback) callback();
+        }, { escape: true });
+    };
+    
+    // Load saved thematic areas for the proposal
+    $scope.loadSavedThematicAreas = function(proposalId) {
+        ApplicantPortal_Contoller.getApplicationThematicAreas(proposalId, function(result, event) {
+            if (event.status) {
+                var savedThematicAreaIds = [];
+                if (result != null && result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        savedThematicAreaIds.push(result[i].Thematic_Area__c);
+                    }
+                }
+                
+                // Build thematicAreaToDisplay with checked status based on saved areas
+                $scope.thematicAreaToDisplay = [];
+                for (var i = 0; i < $scope.thematicAreaList.length; i++) {
+                    var isChecked = savedThematicAreaIds.includes($scope.thematicAreaList[i].Id);
+                    $scope.thematicAreaToDisplay.push({ 
+                        "Id": $scope.thematicAreaList[i].Id, 
+                        "Name": $scope.thematicAreaList[i].Name, 
+                        "checked": isChecked 
+                    });
+                }
+                $scope.$apply();
+            }
+        }, { escape: true });
+    };
 
     $scope.objRtf = [{ charCount: 0, maxCharLimit: 1500, errorStatus: false }];
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 500, errorStatus: false });
@@ -107,10 +147,36 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
                     for (var k = 0; k < keyword.length; k++) {
                         $scope.objKeyword.push({ keyword: keyword[k] });
                     }
+                } else {
+                    // Add one empty keyword input if no keywords exist
+                    $scope.objKeyword.push({ keyword: "" });
+                }
+
+                // Store proposalId for loading thematic areas
+                var proposalId = null;
+                if (result.Applicant_Proposal_Associations__r && 
+                    result.Applicant_Proposal_Associations__r.length > 0 &&
+                    result.Applicant_Proposal_Associations__r[0].Proposals__r) {
+                    proposalId = result.Applicant_Proposal_Associations__r[0].Proposals__r.Id;
+                    // Store proposalId in rootScope for later use
+                    $rootScope.proposalId = proposalId;
+                    localStorage.setItem('proposalId', proposalId);
                 }
 
                 $scope.proposalDetails = result;
                 $scope.$apply();
+
+                // Load Thematic Areas (Subtopic) via separate call
+                if (proposalId) {
+                    $scope.loadSavedThematicAreas(proposalId);
+                } else {
+                    // If no proposal, just show unchecked thematic areas
+                    $scope.thematicAreaToDisplay = [];
+                    for (var i = 0; i < $scope.thematicAreaList.length; i++) {
+                        $scope.thematicAreaToDisplay.push({ "Id": $scope.thematicAreaList[i].Id, "Name": $scope.thematicAreaList[i].Name, "checked": false });
+                    }
+                    $scope.$apply();
+                }
             }
         },
             { escape: true }
@@ -120,10 +186,9 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
 
 
     $scope.addKeyword = function () {
-        debugger
-        if ($scope.objKeyword.length <= 5) {
+        debugger;
+        if ($scope.objKeyword.length < 6) {
             $scope.objKeyword.push({ keyword: "" });
-            $scope.$apply();
         }
     }
     $scope.removeKeyword = function (index) {
@@ -132,7 +197,20 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
         }
     }
 
-    $scope.getProjectdetils();
+    // Thematic Area (Subtopic) checkbox toggle function
+    $scope.thematicArea = function (theme, index) {
+        debugger;
+        if ($scope.thematicAreaToDisplay[index].checked) {
+            $scope.thematicAreaToDisplay[index].checked = false;
+        } else {
+            $scope.thematicAreaToDisplay[index].checked = true;
+        }
+    }
+
+    // Fetch thematic areas first, then load project details
+    $scope.fetchThematicAreas(function() {
+        $scope.getProjectdetils();
+    });
     $scope.proposalDetails = {};
 
     $scope.saveApplication = function () {
@@ -148,6 +226,20 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
             swal("info", "Please Enter Title of project.", "info");
             $("#txtTitle").addClass('border-theme');
             return;
+        }
+
+        // Validate Subtopic selection (optional - only if thematic areas are available)
+        $scope.selectedTheme = [];
+        if ($scope.thematicAreaToDisplay && $scope.thematicAreaToDisplay.length > 0) {
+            for (var i = 0; i < $scope.thematicAreaToDisplay.length; i++) {
+                if ($scope.thematicAreaToDisplay[i].checked) {
+                    $scope.selectedTheme.push($scope.thematicAreaToDisplay[i].Id);
+                }
+            }
+            if ($scope.selectedTheme.length <= 0) {
+                swal("info", "Please select at least one Subtopic.", "info");
+                return;
+            }
         }
 
         if (date1 < date2) {
@@ -324,8 +416,16 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
         delete ($scope.proposalDetails.Applicant_Proposal_Associations__r);
         delete ($scope.proposalDetails.KeyWords__c);
 
-        ApplicantPortal_Contoller.insertFellowship_Details($scope.proposalDetails, $rootScope.proposalId, keyword, startday, startmonth, startyear, endday, endmonth, endyear, $rootScope.contactId, 'PECFAR', function (result, event) {
+        console.log('Saving Fellowship Details with params:');
+        console.log('proposalId:', $rootScope.proposalId);
+        console.log('selectedTheme:', $scope.selectedTheme);
+        console.log('keyword:', keyword);
+        console.log('contactId:', $rootScope.contactId);
+        
+        ApplicantPortal_Contoller.insertFellowship_Details($scope.proposalDetails, $rootScope.proposalId, $scope.selectedTheme, keyword, startday, startmonth, startyear, endday, endmonth, endyear, $rootScope.contactId, 'PECFAR', function (result, event) {
             debugger;
+            console.log('insertFellowship_Details result:', result);
+            console.log('insertFellowship_Details event:', event);
             if (event.status && result != null) {
                 debugger;
                 swal({
@@ -334,7 +434,7 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
                     icon: "success",
                     button: "ok!",
                 }).then((value) => {
-                    $scope.redirectPageURL('Achievements_Pecfar');
+                    $scope.redirectPageURL('Attachments_Pecfar');
                     $rootScope.projectId = result;
                 });
 
@@ -342,9 +442,11 @@ angular.module('cp_app').controller('fellowshipP_ctrl', function ($scope, $rootS
 
             }
             else {
+                var errorMsg = event.message || result || "Unknown error occurred";
+                console.error('Error saving fellowship details:', errorMsg);
                 swal({
                     title: "Fellowship Details",
-                    text: "Exception!",
+                    text: "Error: " + errorMsg,
                     icon: "error",
                     button: "ok!",
                 });

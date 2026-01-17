@@ -90,7 +90,7 @@
                                 <!-- Applicant Details -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('WiserApplicationPage')">
-                                        <div c-lass="icon-circle">
+                                        <div class="icon-circle">
                                             <i class="fas fa-user-alt"></i>
                                         </div>
                                         <span>Applicant Details</span>
@@ -181,7 +181,7 @@
                                         <div class="icon-circle">
                                             <i class="fas fa-money-bill"></i>
                                         </div>
-                                        <span>Grant Details</span>
+                                        <span>Other Grants</span>
                                     </a>
                                 </li>
 
@@ -231,7 +231,7 @@
                                         <div class="icon-circle">
                                             <i class="fas fa-money-bill"></i>
                                         </div>
-                                        <span>Grant Details</span>
+                                        <span>Other Grants</span>
                                     </a>
                                 </li>
 
@@ -284,7 +284,21 @@
                     </div>
                 </div>
 
-                <div class="row mt-5 mx-5" ng-repeat="appli in input">
+                <!-- Grants Handled Picklist Section -->
+                <div class="row mt-4 mx-5">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Grants Handled? <span class="text-danger">*</span></label>
+                            <select class="form-control" ng-model="grantsHandledValue" ng-change="onGrantsHandledChange()" ng-disabled="proposalStage">
+                                <option value="">-- Select --</option>
+                                <option ng-repeat="item in grantsHandledPickList" value="{{item}}">{{item}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grants Table Section - Only shown when Grants_Handled__c is 'Yes' -->
+                <div class="row mt-5 mx-5" ng-show="showGrantsTable">
                     <div class="col-md-12">
                         <table class="table" cellpadding="4">
                             <thead>
@@ -307,11 +321,12 @@
 
                                     <th style="width:26%; text-align: center">Role in the project</th>
                                     <th ng-hide="proposalStage" class="text-center">
-                                        <i class="fas fa-plus-circle icon" ng-click="addRow($index)" style="width:3%;"></i>
+                                        <i class="fas fa-plus-circle icon" ng-click="addRow()" style="width:3%;"></i>
                                     </th>
                                 </tr>
                             </thead>
 
+                            <!--
                             <tbody>
                                 <tr class="font-tbl" ng-repeat="applicnt in appli.Existing_Grants__r">
                                     <td>{{$index+1}}</td>
@@ -349,9 +364,56 @@
                                     </td>
                                 </tr>
                             </tbody>
+                            -->
+                            <tbody>
+                                <tr class="font-tbl" ng-repeat="applicnt in existingGrants track by $index">
+                                    <td>{{$index + 1}}</td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.Title__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.Funding_Agency__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td>
+                                        <select ng-model="applicnt.Currency__c" class="form-control">
+                                            <option ng-repeat="item in pickListCurrency" value="{{item}}">
+                                                {{item}}
+                                            </option>
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.Budget__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.Starting_Date__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.End_Date__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="applicnt.Role_in_the_Project__c" ng-disabled="proposalStage" />
+                                    </td>
+
+                                    <td ng-if="!proposalStage" class="text-center">
+                                        <i class="fa-solid fa-circle-xmark fa-2x text-danger" style="cursor:pointer;" ng-click="deleteRow($index)">
+                                        </i>
+                                    </td>
+                                </tr>
+                            </tbody>
+
                         </table>
                     </div>
+                </div>
 
+                <!-- Buttons Section - Always visible -->
+                <div class="row mt-4 mx-5">
                     <div class="col-md-12 my-4" ng-if="!proposalStage">
                         <button class="blue-btn float-end" ng-click="submitExistingGrants()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Save and Next</button>

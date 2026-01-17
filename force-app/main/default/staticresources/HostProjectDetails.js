@@ -249,7 +249,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     if (event.status) {
                          swal({
                               title: "SUCCESS",
-                              text: 'Pair Project Details have been saved successfully.',
+                              text: 'Paired Project Details have been saved successfully.',
                               icon: "success",
                               button: "ok!",
                          });

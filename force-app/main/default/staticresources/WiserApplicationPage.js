@@ -61,6 +61,11 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 	if (localStorage.getItem('proposalId')) {
 		$rootScope.proposalId = localStorage.getItem('proposalId');
 	}
+
+	if (localStorage.getItem('apaId')) {
+		$rootScope.apaId = localStorage.getItem('apaId');
+	}
+
 	$scope.getDependentPicklistValues();
 
 	$scope.onCountryChange = function () {

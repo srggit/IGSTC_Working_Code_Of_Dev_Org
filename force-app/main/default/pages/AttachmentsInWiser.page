@@ -60,7 +60,7 @@
                                 <!-- Applicant Details -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('WiserApplicationPage')">
-                                        <div c-lass="icon-circle">
+                                        <div class="icon-circle">
                                             <i class="fas fa-user-alt"></i>
                                         </div>
                                         <span>Applicant Details</span>
@@ -205,7 +205,7 @@
                                         <div class="icon-circle">
                                             <i class="fas fa-money-bill"></i>
                                         </div>
-                                        <span>Grant Details</span>
+                                        <span>Other Grants</span>
                                     </a>
                                 </li>
 
@@ -346,7 +346,7 @@
                                 <div class="input-group input-group-lg">
                                     <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{doc.userDocument.Name}}" class="form-control " />
                                     <span class="input-group-btn" ng-hide="proposalStage">
-                                        <button class="btn btn-success" ng-click="uploadFile(doc.userDocument.Name,doc.userDocument.Id,'','1048576','1048576')" type="button">Upload</button>
+                                        <button class="btn btn-success" ng-click="uploadFile(doc.userDocument.Name,doc.userDocument.Id,'','1048576','')" type="button">Upload</button>
                                     </span>
                                 </div>
                             </div>
@@ -367,7 +367,7 @@
                                     <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{noObjection.userDocument.Name}}" class="form-control "
                                     />
                                     <span class="input-group-btn" ng-hide="proposalStage">
-                                        <button class="btn btn-success" ng-click="uploadFile(noObjection.userDocument.Name,noObjection.userDocument.Id,'','1048576','1048576')"
+                                        <button class="btn btn-success" ng-click="uploadFile(noObjection.userDocument.Name,noObjection.userDocument.Id,'','1048576','')"
                                             type="button">Upload</button>
                                     </span>
                                 </div>
@@ -376,6 +376,26 @@
                             <div class="col-md-3" ng-show="noObjection.userDocument.Status__c=='Uploaded'">
                                 <a class="blue-btn float-end mt-4 py-3" ng-click="filePreviewHandler(noObjection)">View</a>
                                 <!-- <a class="blue-btn float-end mt-4 py-3" href="{{noObjection.ContentDistribution.DistributionPublicUrl}}" target="_blank">View</a> -->
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3 mt-5">
+                            <label class="font-if">Upload the project proposal in a PDF format with a min of 30Kb and max 1Mb.
+                                <span class="text-danger me-2">*</span>
+                            </label>
+                            <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
+                                <div class="input-group input-group-lg">
+                                    <input type="file" accept=".pdf" ng-disabled="proposalStage" id="{{projectProposal.userDocument.Name}}" class="form-control "
+                                    />
+                                    <span class="input-group-btn" ng-hide="proposalStage">
+                                        <button class="btn btn-success" ng-click="uploadFile(projectProposal.userDocument.Name,projectProposal.userDocument.Id,'','1048576','30720')"
+                                            type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3" ng-show="projectProposal.userDocument.Status__c=='Uploaded'">
+                                <a class="blue-btn float-end mt-4 py-3" ng-click="filePreviewHandler(projectProposal)">View</a>
                             </div>
                         </div>
                     </div>

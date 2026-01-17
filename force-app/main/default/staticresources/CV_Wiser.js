@@ -91,6 +91,76 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                         }
                     }
                 }
+
+                // ============================== CODE TO POPULATE EMPLOYMENT DETAILS =============================
+                if (!$scope.contactData.Employment_Details__r ||
+                    $scope.contactData.Employment_Details__r.length === 0) {
+
+                    // ✅ Create fallback record using Contact data
+                    var emprec = {
+                        Applicant_Proposal_Association__c: $rootScope.apaId,
+                        Organization_Name__c: $scope.contactData.Account ? $scope.contactData.Account.Name : '',
+                        Position__c: $scope.contactData.Designation__c || '',
+                        Contact__c: $scope.contactData.Id,
+                        current_employement__c: true
+                    };
+
+                    $scope.contactData.Employment_Details__r = [emprec];
+
+                } else {
+
+                    // ✅ Records exist – clean values only
+                    for (var i = 0; i < $scope.contactData.Employment_Details__r.length; i++) {
+
+                        if (!$scope.contactData.Employment_Details__r[i].Organization_Name__c) {
+                            $scope.contactData.Employment_Details__r[i].Organization_Name__c =
+                                $scope.contactData.Account
+                                    ? $scope.contactData.Account.Name
+                                    : '';
+                        }
+
+                        if (!$scope.contactData.Employment_Details__r[i].Position__c) {
+                            $scope.contactData.Employment_Details__r[i].Position__c =
+                                $scope.contactData.Designation__c || '';
+                        }
+                    }
+                }
+
+                /*
+                if (!$scope.contactData.Employment_Details__r ||
+    $scope.contactData.Employment_Details__r.length === 0) {
+
+    // No employment record → show Contact data
+    $scope.contactData.Employment_Details__r = [{
+        Applicant_Proposal_Association__c: $rootScope.apaId,
+        Organization_Name__c: $scope.contactData.Account
+                                ? $scope.contactData.Account.Name
+                                : '',
+        Position__c: $scope.contactData.Designation__c || '',
+        Contact__c: $scope.contactData.Id
+    }];
+
+} else {
+
+    // Employment exists → override only EMPTY fields
+    for (var i = 0; i < $scope.contactData.Employment_Details__r.length; i++) {
+
+        var emp = $scope.contactData.Employment_Details__r[i];
+
+        if (!emp.Organization_Name__c || emp.Organization_Name__c.trim() === '') {
+            emp.Organization_Name__c = $scope.contactData.Account
+                                        ? $scope.contactData.Account.Name
+                                        : '';
+        }
+
+        if (!emp.Position__c || emp.Position__c.trim() === '') {
+            emp.Position__c = $scope.contactData.Designation__c || '';
+        }
+    }
+}
+*/
+
+                /*
                 if ($scope.contactData.Employment_Details__r == undefined) {
                     var emprec = {
                         'Applicant_Proposal_Association__c': $scope.apaId,
@@ -103,13 +173,17 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                 } else {
                     for (var i = 0; i < $scope.contactData.Employment_Details__r.length; i++) {
                         if ($scope.contactData.Employment_Details__r[i].Organization_Name__c != undefined || $scope.contactData.Employment_Details__r[i].Organization_Name__c != "") {
-                            $scope.contactData.Employment_Details__r[i].Organization_Name__c = $scope.contactData.Employment_Details__r[i].Organization_Name__c ? $scope.contactData.Employment_Details__r[i].Organization_Name__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Employment_Details__r[i].Organization_Name__c;
+                            //$scope.contactData.Employment_Details__r[i].Organization_Name__c = $scope.contactData.Employment_Details__r[i].Organization_Name__c ? $scope.contactData.Employment_Details__r[i].Organization_Name__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Employment_Details__r[i].Organization_Name__c;
+                            $scope.contactData.Employment_Details__r[i].Organization_Name__c = $scope.contactData.Employment_Details__r[i].Organization_Name__c ? $scope.contactData.Employment_Details__r[i].Organization_Name__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Account.Name;
+
                         }
                         if ($scope.contactData.Employment_Details__r[i].Position__c != undefined || $scope.contactData.Employment_Details__r[i].Position__c != "") {
-                            $scope.contactData.Employment_Details__r[i].Position__c = $scope.contactData.Employment_Details__r[i].Position__c ? $scope.contactData.Employment_Details__r[i].Position__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Employment_Details__r[i].Position__c;
+                            //$scope.contactData.Employment_Details__r[i].Position__c = $scope.contactData.Employment_Details__r[i].Position__c ? $scope.contactData.Employment_Details__r[i].Position__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Employment_Details__r[i].Position__c;
+                            $scope.contactData.Employment_Details__r[i].Position__c = $scope.contactData.Employment_Details__r[i].Position__c ? $scope.contactData.Employment_Details__r[i].Position__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : $scope.contactData.Designation__c;
                         }
                     }
                 }
+                */
                 $scope.$apply();
             }
         })
@@ -204,11 +278,17 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
             debugger;
             if (event.status) {
                 debugger;
-                Swal.fire(
-                    'Success',
-                    'your CV Details has been Saved successfully.',
-                    'success'
-                );
+                swal({
+                    title: "SUCCESS",
+                    text: 'Your CV Details has been Saved successfully.',
+                    icon: "success",
+                    button: "ok!",
+                });
+                // Swal.fire(
+                //     'Success',
+                //     'your CV Details has been Saved successfully.',
+                //     'success'
+                // );
                 // $scope.redirectPageURL('Declaration_Wiser');
                 $scope.redirectPageURL('FinancialOverview_wiser');
                 $scope.$apply();
