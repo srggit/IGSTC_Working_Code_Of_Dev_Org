@@ -112,7 +112,12 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		$scope.pairingDetails = [];
 		IndustrialFellowshipController.getContactWiser($rootScope.contactId, function (result, event) {
 			debugger;
+
 			console.log("result ::", result);
+
+			localStorage.setItem('accountId', result.Account.Id);
+			localStorage.setItem('accountName', result.Account.Name);
+
 			if (event.status && result) {
 				if (result.Birthdate != undefined) {
 					result.Birthdate = new Date(result.Birthdate);

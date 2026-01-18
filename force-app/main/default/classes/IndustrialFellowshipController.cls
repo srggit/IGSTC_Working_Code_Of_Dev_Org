@@ -525,4 +525,7 @@ public static String saveApplicantPortalSingh(String loginHashCode,Contact con,A
         throw new CalloutException('API failed: ' + res.getStatus());
     }
 
+
+    
+
 }

@@ -2412,11 +2412,45 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
         delete New References__c(Id=partcpntId);
     }
     
+    // @RemoteAction
+    // public Static string insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId){
+    //     try{
+    //         upsert insertParticipantsList;
+    //         return 'success';
+    //     }catch(Exception e){
+    //         return e.getMessage()+e.getLineNumber();
+    //     }
+    // }
+
+    // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ALSO ------------ //
     @RemoteAction
-    public Static string insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId){
+    public Static string insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, Contact signatoryContact, String accountId){
         try{
             upsert insertParticipantsList;
-            return 'success';
+
+            System.debug('Contact : ' + signatoryContact);
+            System.debug('Account Id : ' + accountId);
+            System.debug('Proposal Id : ' + proposalId);
+
+            signatoryContact.AccountId = accountId;
+            signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
+            insert signatoryContact;
+            System.debug('Contact Inserted Successfully : ' + signatoryContact.Id);
+
+            Applicant_Proposal_Association__c signatoryAPA = new Applicant_Proposal_Association__c(
+                Contact__c = signatoryContact.Id,
+                Proposals__c = proposalId,
+                Is_Signatory__c = true
+            );
+            insert signatoryAPA;
+            System.debug('APA Inserted Successfully : ' + signatoryAPA.Id);
+            
+            
+
+
+            return 'success --> Signatory APA Id: ' + signatoryAPA.Id;
+        }catch(DmlException e){
+            return e.getMessage()+e.getLineNumber();
         }catch(Exception e){
             return e.getMessage()+e.getLineNumber();
         }
@@ -2988,6 +3022,23 @@ public static void updateProposalStage(Id proposalId) {
     @RemoteAction
     public static string deleteWorkPackageDetails(string workPackageId){
         return IndustrialFellowshipHelper.deleteWorkPackageDetails(workPackageId);
+    }
+
+    
+    @RemoteAction
+    public static Contact getSignatoryContactDetails (String conId){
+        Contact conRec = [SELECT Id, Salutation, FirstName, Institution_Name__c, 
+            LastName, Country__c, MailingCity, MailingState, MailingCountry, 
+            MailingPostalCode, MailingStreet, Nationality__c, Institute_Name__c,
+            Department, Country_Code__c, Designation__c, Phone, Email, Homepage_URL__c,
+            Gender__c, Birthdate, Proposals__c, Profile_Pic_Attachment_Id__c, Account.Name,
+            Uploaded__c, PassportNo__c, 
+            Signatory_First_Name__c, Signatory_Last_Name__c,
+            Signatory_Institution__c, Signatory_Designation__c
+            FROM Contact 
+            WHERE Id =: conId
+        ];
+        return conRec;
     }
     
 }
