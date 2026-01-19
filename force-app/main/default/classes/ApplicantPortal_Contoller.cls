@@ -2422,9 +2422,9 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
     //     }
     // }
 
-    // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ALSO ------------ //
+    // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
-    public Static string insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, Contact signatoryContact, String accountId){
+    public static String insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, Contact signatoryContact, String signatoryAPAId, String accountId){
         try{
             upsert insertParticipantsList;
 
@@ -2433,27 +2433,56 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
             System.debug('Proposal Id : ' + proposalId);
 
             signatoryContact.AccountId = accountId;
+            signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
             signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
-            insert signatoryContact;
+            upsert signatoryContact;
             System.debug('Contact Inserted Successfully : ' + signatoryContact.Id);
 
             Applicant_Proposal_Association__c signatoryAPA = new Applicant_Proposal_Association__c(
+                Id = signatoryAPAId,
                 Contact__c = signatoryContact.Id,
                 Proposals__c = proposalId,
                 Is_Signatory__c = true
             );
-            insert signatoryAPA;
+            upsert signatoryAPA;
             System.debug('APA Inserted Successfully : ' + signatoryAPA.Id);
             
-            
-
-
-            return 'success --> Signatory APA Id: ' + signatoryAPA.Id;
+            return signatoryAPA.Id;
         }catch(DmlException e){
             return e.getMessage()+e.getLineNumber();
         }catch(Exception e){
             return e.getMessage()+e.getLineNumber();
         }
+    }
+
+    // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
+    @RemoteAction
+    public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId){
+        Applicant_Proposal_Association__c signatoryAPA = [
+            SELECT Id, Contact__r.Salutation, Contact__r.Signatory_Salutation__c, Contact__r.Institution_Name__c, Contact__r.LastName, 
+            Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Email, 
+            Contact__r.Account.Name, Contact__r.AccountId, Contact__r.Signatory_First_Name__c, Contact__r.Signatory_Last_Name__c, 
+            Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c
+            FROM Applicant_Proposal_Association__c 
+            WHERE Is_Signatory__c = true
+            AND Proposals__c =: proposalId
+        ];
+        return signatoryAPA;
+    }
+
+    // -------------- METHOD TO GET THE SIGNATORY SALUTATION PICKLIST VALUES --------------- //
+    @RemoteAction
+    public static List<String> getSignatorySalutationPicklist() {
+        List<String> values = new List<String>();
+
+        Schema.DescribeFieldResult dfr =
+            Contact.Signatory_Salutation__c.getDescribe();
+
+        for (Schema.PicklistEntry ple : dfr.getPicklistValues()) {
+            values.add(ple.getValue());
+        }
+
+        return values;
     }
     
     @RemoteAction

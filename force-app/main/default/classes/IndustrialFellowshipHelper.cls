@@ -1168,6 +1168,8 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                 proposalRec.Duration_In_Months_Max_36__c = hostDetails.Duration_In_Months_Max_36__c;
                 proposalRec.Layman_title_of_project__c = hostDetails.Layman_title_of_project__c;
                 proposalRec.Layman_abstract_of_proposed_work__c = hostDetails.Layman_abstract_of_proposed_work__c;
+                proposalRec.Non_Technical_Title_Of_Project__c = hostDetails.Non_Technical_Title_Of_Project__c;
+                proposalRec.Non_Technical_Abstract_Of_Proposed_Work__c = hostDetails.Non_Technical_Abstract_Of_Proposed_Work__c;
                 proposalRec.KeyWords__c = hostDetails.KeyWords__c;
                 upsert proposalRec;
  

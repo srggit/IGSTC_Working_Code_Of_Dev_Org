@@ -46,6 +46,12 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     if (result.Broad_area_of_research__c != undefined || result.Broad_area_of_research__c != "") {
                          result.Broad_area_of_research__c = result.Broad_area_of_research__c ? result.Broad_area_of_research__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Broad_area_of_research__c;
                     }
+                    if (result.Non_Technical_Title_Of_Project__c != undefined || result.Non_Technical_Title_Of_Project__c != "") {
+                         result.Non_Technical_Title_Of_Project__c = result.Non_Technical_Title_Of_Project__c ? result.Non_Technical_Title_Of_Project__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Non_Technical_Title_Of_Project__c;
+                    }
+                    if (result.Non_Technical_Abstract_Of_Proposed_Work__c != undefined || result.Non_Technical_Abstract_Of_Proposed_Work__c != "") {
+                         result.Non_Technical_Abstract_Of_Proposed_Work__c = result.Non_Technical_Abstract_Of_Proposed_Work__c ? result.Non_Technical_Abstract_Of_Proposed_Work__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Non_Technical_Abstract_Of_Proposed_Work__c;
+                    }
                     // ------------------------- Keyword Functionality ------------------------------ //
                     if (result.KeyWords__c != undefined && result.KeyWords__c != '') {
                          var keyword = result.KeyWords__c.split(';');
