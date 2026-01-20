@@ -413,7 +413,10 @@
                                                 <th class="pb-3 color-theme">End Year
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th ng-hide="proposalStage" class="text-center">
+                                                <!-- <th ng-hide="proposalStage || isCurrentUserSubmitted" class="text-center">
+                                                    <i class="fas fa-plus-circle icon" ng-click="addEducationRow()"></i>
+                                                </th> -->
+                                                <th ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
                                                     <i class="fas fa-plus-circle icon" ng-click="addEducationRow()"></i>
                                                 </th>
                                             </tr>
@@ -452,7 +455,11 @@
                                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                                 </td>
 
-                                                <td ng-show="!proposalStage || !isCurrentUserSubmitted" class="text-center">
+                                                <!-- <td ng-show="!proposalStage && !isCurrentUserSubmitted" class="text-center">
+                                                    <i class="fa-sharp fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeEducationRow($index)"></i>
+                                                </td> -->
+
+                                                <td ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
                                                     <i class="fa-sharp fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeEducationRow($index)"></i>
                                                 </td>
                                             </tr>
@@ -491,7 +498,10 @@
                                                 <th class="pb-3 color-theme">End Year
                                                     <span class="required-asterisk" style="color:red;">*</span>
                                                 </th>
-                                                <th ng-hide="proposalStage" class="text-center">
+                                                <!-- <th ng-hide="proposalStage || isCurrentUserSubmitted" class="text-center">
+                                                    <i class="fas fa-plus-circle icon" ng-click="addEmploymentRow()"></i>
+                                                </th> -->
+                                                <th ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
                                                     <i class="fas fa-plus-circle icon" ng-click="addEmploymentRow()"></i>
                                                 </th>
                                             </tr>
@@ -514,9 +524,13 @@
                                                     <input type="text" ng-focus="removeClass('zipCode22',$index)" ng-model="row.End_Year__c" id="zipCode22{{$index}}" class="form-control"
                                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                                 </td>
-                                                <td ng-show="!proposalStage || !isCurrentUserSubmitted" class="text-center">
+                                                <!-- <td ng-show="!proposalStage || !isCurrentUserSubmitted" class="text-center">
+                                                    <i class="fa-sharp fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeEmploymentRow($index)"></i>
+                                                </td> -->
+                                                <td ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
                                                     <i class="fa-sharp fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeEmploymentRow($index)"></i>
                                                 </td>
+
                                             </tr>
                                         </tbody>
                                     </table>

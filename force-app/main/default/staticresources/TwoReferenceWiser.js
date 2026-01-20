@@ -17,6 +17,12 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
           $rootScope.proposalId = localStorage.getItem('proposalId');
           console.log('Loaded proposalId from localStorage:', $rootScope.proposalId);
      }
+
+     if (localStorage.getItem('apaId')) {
+          $rootScope.apaId = localStorage.getItem('apaId');
+          console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
+     }
+
      if (localStorage.getItem('signatoryAPAId')) {
           $rootScope.signatoryAPAId = localStorage.getItem('signatoryAPAId');
           console.log('Loaded signatoryAPAId from localStorage:', $rootScope.signatoryAPAId);
@@ -31,6 +37,12 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
      if (localStorage.getItem('accountName')) {
           $rootScope.accountName = localStorage.getItem('accountName');
           console.log('Loaded accountName from localStorage:', $rootScope.accountName);
+     }
+
+
+     if (localStorage.getItem('signatoryAPAId')) {
+          $rootScope.signatoryAPAId = localStorage.getItem('signatoryAPAId');
+          console.log('Loaded signatoryAPAId from localStorage:', $rootScope.signatoryAPAId);
      }
 
      function getKeyByValue(object, value) {
@@ -153,7 +165,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
      $scope.getTwoReferenceDetailsWiser = function () {
           // ApplicantPortal_Contoller.getProposalDetailsReferences($rootScope.projectId, function(result, event){
-          ApplicantPortal_Contoller.getProposalDetailsReferences($rootScope.proposalId, function (result, event) {
+          ApplicantPortal_Contoller.getProposalDetailsReferences($rootScope.proposalId, $rootScope.apaId, function (result, event) {
                debugger;
                if (event.status && result != null) {
                     if (result.length == 0) {
@@ -274,7 +286,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
      $scope.getContactWiser = function () {
           debugger;
 
-          ApplicantPortal_Contoller.getSignatoryContactAPADetails($rootScope.proposalId, function (result, event) {
+          ApplicantPortal_Contoller.getSignatoryContactAPADetails($rootScope.proposalId, $rootScope.apaId, $rootScope.signatoryAPAId, function (result, event) {
                debugger;
                console.log("result ::", result);
 
@@ -396,7 +408,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           var signatoryAPAId = $scope.objContact && $scope.objContact.Id ? $scope.objContact.Id : null;
 
-          ApplicantPortal_Contoller.insertParticipantsReferences($scope.ParticipantList, $rootScope.proposalId, $scope.objContact.Contact__r, signatoryAPAId, $rootScope.accountId, function (result, event) {
+          ApplicantPortal_Contoller.insertParticipantsReferences($scope.ParticipantList, $rootScope.proposalId, $rootScope.apaId, $scope.objContact.Contact__r, signatoryAPAId, $rootScope.accountId, function (result, event) {
 
                if (event.status && result != null) {
                     console.log('Result ::' + result);

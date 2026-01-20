@@ -291,7 +291,7 @@
                             <label class="form-label fw-bold">Grants Handled?
                                 <span class="text-danger">*</span>
                             </label>
-                            <select class="form-control" ng-model="grantsHandledValue" ng-change="onGrantsHandledChange()" ng-disabled="proposalStage">
+                            <select class="form-control" ng-model="grantsHandledValue" ng-change="onGrantsHandledChange()" ng-disabled="proposalStage || isCurrentUserSubmitted">
                                 <option value="">-- Select --</option>
                                 <option ng-repeat="item in grantsHandledPickList" value="{{item}}">{{item}}</option>
                             </select>
@@ -322,7 +322,10 @@
                                         <br/>(DD/MM/YYYY)</th>
 
                                     <th style="width:26%; text-align: center">Role in the project</th>
-                                    <th ng-hide="proposalStage" class="text-center">
+                                    <!-- <th ng-hide="proposalStage" class="text-center">
+                                        <i class="fas fa-plus-circle icon" ng-click="addRow()" style="width:3%;"></i>
+                                    </th> -->
+                                    <th ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
                                         <i class="fas fa-plus-circle icon" ng-click="addRow()" style="width:3%;"></i>
                                     </th>
                                 </tr>
@@ -382,7 +385,7 @@
                                     </td>
 
                                     <td>
-                                        <select ng-model="applicnt.Currency__c" class="form-control">
+                                        <select ng-model="applicnt.Currency__c" class="form-control" ng-disabled="proposalStage || isCurrentUserSubmitted">
                                             <option ng-repeat="item in pickListCurrency" value="{{item}}">
                                                 {{item}}
                                             </option>
@@ -409,9 +412,13 @@
                                         />
                                     </td>
 
-                                    <td ng-if="!proposalStage || !isCurrentUserSubmitted" class="text-center">
+                                    <!-- <td ng-if="!proposalStage || !isCurrentUserSubmitted" class="text-center">
                                         <i class="fa-solid fa-circle-xmark fa-2x text-danger" style="cursor:pointer;" ng-click="deleteRow($index)">
                                         </i>
+                                    </td> -->
+
+                                    <td ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
+                                        <i class="fa-solid fa-circle-xmark fa-2x text-danger" style="cursor:pointer;" ng-click="deleteRow($index)"></i>
                                     </td>
                                 </tr>
                             </tbody>

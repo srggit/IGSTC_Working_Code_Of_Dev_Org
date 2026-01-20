@@ -184,7 +184,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           // }
 
           if ($scope.formPrjDet.$invalid) {
-               swal("info", "Duration must be between 24 and 36 months.", "info");
+               swal("info", "Duration must be 24 or 36 months.", "info");
                $("#txtDuration").addClass('border-theme');
                return;
           }
@@ -280,6 +280,10 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     debugger;
                     console.log("Result In saveApplicationPortalHostInformation ::", result);
                     if (event.status) {
+
+                         // Saving the ProposalId in Local Storage
+                         localStorage.setItem('proposalId', result.proposalId);
+                         localStorage.setItem('apaId', result.apa.Id);
                          swal({
                               title: "SUCCESS",
                               text: 'Paired Project Details have been saved successfully.',

@@ -24,26 +24,6 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
     }
     $scope.getDataFromLocalStorage();
 
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
-        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-            debugger;
-
-            console.log('result return onload :: ');
-            console.log(result);
-            console.log('event:', event);
-
-            if (event.status) {
-                $rootScope.isCurrentUserSubmitted = result;
-                CKEDITOR.config.readOnly = true;
-            } else {
-                console.log('Error in fetchApplicantStatus:', event.message);
-            }
-        }, {
-            escape: true
-        });
-    }
-    $scope.getApplicantStatusFromAPA();
 
     /**
      * Fetches proposal stage from Apex on page load
@@ -447,4 +427,26 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
             inputQuantity[$thisIndex] = val;
         });
     });
+
+    $scope.getApplicantStatusFromAPA = function () {
+        debugger;
+        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+            debugger;
+
+            console.log('result return onload :: ');
+            console.log(result);
+            console.log('event:', event);
+
+            if (event.status) {
+                $rootScope.isCurrentUserSubmitted = result;
+                CKEDITOR.config.readOnly = true;
+            } else {
+                console.log('Error in fetchApplicantStatus:', event.message);
+            }
+        }, {
+            escape: true
+        });
+    }
+    $scope.getApplicantStatusFromAPA();
+
 });

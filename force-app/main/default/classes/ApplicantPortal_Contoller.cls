@@ -2400,18 +2400,34 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
         // Integer startingyear;
     }
     
+    // @RemoteAction
+    // public Static List<References__c> getProposalDetailsReferences(String proposalId){
+    //     try{
+    //         List<References__c> getParticipantList = [SELECT Id,Name,Email__c,Phone__c,Proposals__c,Organisation_Institute__c,Designation__c FROM References__c WHERE Proposals__c =:proposalId];
+    //         System.debug('getParticipantList ::'+getParticipantList);
+    //         return getParticipantList;
+    //     }catch(Exception e){
+    //         System.debug('The Error '+e.getMessage()+' Line'+e.getLineNumber());
+    //         return null;
+    //     }
+    // }
+    
     @RemoteAction
-    public Static List<References__c> getProposalDetailsReferences(String proposalId){
+    public Static List<References__c> getProposalDetailsReferences(String proposalId, String apaId){
         try{
-            List<References__c> getParticipantList = [SELECT Id,Name,Email__c,Phone__c,Proposals__c,Organisation_Institute__c,Designation__c FROM References__c WHERE Proposals__c =:proposalId];
-            System.debug('getParticipantList ::'+getParticipantList);
+            List<References__c> getParticipantList = [
+                SELECT Id, Name, Email__c, Phone__c, Proposals__c, Organisation_Institute__c, Designation__c, Applicant_Proposal_Association__c
+                FROM References__c 
+                WHERE Applicant_Proposal_Association__c =: apaId];
+
+            System.debug('getParticipantList ::' + getParticipantList);
             return getParticipantList;
         }catch(Exception e){
             System.debug('The Error '+e.getMessage()+' Line'+e.getLineNumber());
             return null;
         }
     }
-    
+
     @RemoteAction
     public static void deleteParticipantsReferences(string partcpntId){
         delete New References__c(Id=partcpntId);
@@ -2429,14 +2445,22 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
 
     // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
-    public static String insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, Contact signatoryContact, String signatoryAPAId, String accountId){
+    public static String insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, String apaId, Contact signatoryContact, String signatoryAPAId, String accountId){
         try{
-            upsert insertParticipantsList;
+            if(! insertParticipantsList.isEmpty()){
 
+                for(References__c ref : insertParticipantsList){
+                    if(ref.Applicant_Proposal_Association__c == null)
+                        ref.Applicant_Proposal_Association__c = apaId;
+                }
+                upsert insertParticipantsList;
+            }
+            
             System.debug('Contact : ' + signatoryContact);
             System.debug('Account Id : ' + accountId);
             System.debug('Contact Account Id : '+ signatoryContact.AccountId);
             System.debug('Proposal Id : ' + proposalId);
+            System.debug('APA Id : ' + apaId);
 
             signatoryContact.AccountId = signatoryContact.AccountId;
             signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
@@ -2447,7 +2471,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
             Applicant_Proposal_Association__c signatoryAPA = new Applicant_Proposal_Association__c(
                 Id = signatoryAPAId,
                 Contact__c = signatoryContact.Id,
-                Proposals__c = proposalId,
+                // Proposals__c = proposalId,
                 Is_Signatory__c = true
             );
             upsert signatoryAPA;
@@ -2463,7 +2487,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
 
     // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
-    public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId){
+    public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId, String apaId, String signatoryAPAId){
         Applicant_Proposal_Association__c signatoryAPA = [
             SELECT Id, Contact__r.Salutation, Contact__r.Signatory_Salutation__c, Contact__r.Institution_Name__c, Contact__r.LastName, 
             Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Email, 
@@ -2471,7 +2495,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
             Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c
             FROM Applicant_Proposal_Association__c 
             WHERE Is_Signatory__c = true
-            AND Proposals__c =: proposalId
+            AND Id =: signatoryAPAId
         ];
         return signatoryAPA;
     }

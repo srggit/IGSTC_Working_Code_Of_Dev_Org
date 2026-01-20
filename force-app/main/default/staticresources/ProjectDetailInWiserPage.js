@@ -70,7 +70,6 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         }
         if (localStorage.getItem('apaId')) {
             $rootScope.apaId = localStorage.getItem('apaId');
-            $scope.apaId = $rootScope.apaId;
         }
         if (localStorage.getItem('proposalId')) {
             $rootScope.proposalId = localStorage.getItem('proposalId');
@@ -82,27 +81,6 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         }
     }
     $scope.getDataFromLocalStorage();
-
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
-        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-            debugger;
-
-            console.log('result return onload :: ');
-            console.log(result);
-            console.log('event:', event);
-
-            if (event.status) {
-                $rootScope.isCurrentUserSubmitted = result;
-                CKEDITOR.config.readOnly = true;
-            } else {
-                console.log('Error in fetchApplicantStatus:', event.message);
-            }
-        }, {
-            escape: true
-        });
-    }
-    $scope.getApplicantStatusFromAPA();
 
     $scope.getProposalStage = function () {
         debugger;
@@ -587,9 +565,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, function (result, event) {
                 if (event.status) {
                     debugger;
-                    // Saving the ProposalId in Local Storage
-                    localStorage.setItem('proposalId', result.proposalId);
-                    localStorage.setItem('apaId', result.apa.Id);
+
                     swal({
                         title: "Pairing Details",
                         text: 'Pairing details have been successfully saved.',
@@ -912,6 +888,26 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         $scope.dobErrors[fieldName] = !(age > 26 && age < 55);
     };
 
+    $scope.getApplicantStatusFromAPA = function () {
+        debugger;
+        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+            debugger;
+
+            console.log('result return onload :: ');
+            console.log(result);
+            console.log('event:', event);
+
+            if (event.status) {
+                $rootScope.isCurrentUserSubmitted = result;
+                CKEDITOR.config.readOnly = true;
+            } else {
+                console.log('Error in fetchApplicantStatus:', event.message);
+            }
+        }, {
+            escape: true
+        });
+    }
+    $scope.getApplicantStatusFromAPA();
 
 
 })

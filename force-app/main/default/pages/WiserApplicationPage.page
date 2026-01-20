@@ -397,9 +397,9 @@ roup' )
                             </small>
                             <div class="custom-file-upload">
                                 <div class="input-group input-group-lg">
-                                    <input class="form-control" type="file" accept=".jpg,.jpeg" id="profilePic" ng-disabled="proposalStage" ng-file-select="onFileSelect($files)"
-                                        ng-model="imageSrc" />
-                                    <span class="input-group-btn" ng-hide="proposalStage">
+                                    <input class="form-control" type="file" accept=".jpg,.jpeg" id="profilePic" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        ng-file-select="onFileSelect($files)" ng-model="imageSrc" />
+                                    <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
                                         <button type="button" class="btn btn-success" ng-click="uploadFile(docU.userDocument.Name,docU.userDocument.Id,'','512000','30720')">Upload</button>
                                     </span>
                                 </div>

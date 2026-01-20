@@ -1174,17 +1174,25 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                 upsert proposalRec;
  
                 // Find Primary APA
-                for(Applicant_Proposal_Association__c apa : [
-                    SELECT Id, Contact__c, Contact__r.Is_Primary__c
-                    FROM Applicant_Proposal_Association__c
-                    WHERE Proposals__c = :proposalId
-                    AND Contact__c IN :conIds
-                ]){
-                    if(apa.Contact__r.Is_Primary__c == true){
-                        primaryAPA = apa;
-                        break;
-                    }
-                }
+                // for(Applicant_Proposal_Association__c apa : [
+                //     SELECT Id, Contact__c, Contact__r.Is_Primary__c
+                //     FROM Applicant_Proposal_Association__c
+                //     WHERE Proposals__c = :proposalId
+                //     AND Contact__c IN :conIds
+                // ]){
+                //     if(apa.Contact__r.Is_Primary__c == true){
+                //         primaryAPA = apa;
+                //         break;
+                //     }
+                // }
+                Applicant_Proposal_Association__c apa = [
+                    SELECT Id, Contact__c, Contact__r.Name, Contact__r.Login_Hash_Code__c, Proposals__c, Proposals__r.Name 
+                    FROM Applicant_Proposal_Association__c 
+                    WHERE Proposals__c =: proposalId 
+                    AND Contact__r.Login_Hash_Code__c =: candidateId
+                ];
+
+                primaryAPA = apa;
             }
             // =================================================
             // CASE 2: PROPOSAL DOES NOT EXIST
@@ -1233,19 +1241,20 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                         Proposals__c = proposalRec.Id
                     ));
                 }
-                insert apaList;
- 
+                upsert apaList;
+                primaryAPA = apaList[0];
+
                 // Find Primary APA
-                for(Applicant_Proposal_Association__c apa : [
-                    SELECT Id, Contact__r.Is_Primary__c
-                    FROM Applicant_Proposal_Association__c
-                    WHERE Proposals__c = :proposalRec.Id
-                ]){
-                    if(apa.Contact__r.Is_Primary__c == true){
-                        primaryAPA = apa;
-                        break;
-                    }
-                }
+                // for(Applicant_Proposal_Association__c apa : [
+                //     SELECT Id, Contact__r.Is_Primary__c
+                //     FROM Applicant_Proposal_Association__c
+                //     WHERE Proposals__c = :proposalRec.Id
+                // ]){
+                //     if(apa.Contact__r.Is_Primary__c == true){
+                //         primaryAPA = apa;
+                //         break;
+                //     }
+                // }
             }
  
             // ---------------- WRAPPER RESPONSE ----------------
