@@ -21,3 +21,6 @@ System.debug('Result :::::::: ' + IndustrialFellowshipController.getEduQualifica
 List<String> ciites = IndustrialFellowshipController.getCitiesByState('India', 'Maharashtra');
 
 System.debug('cities >>>>>> : ' + ciites);
+
+
+List<Contact> result = Proposal_Controller.getPairingDetailsinWiser('dIfB32MkoT1768795496527', 'a04e1000000MWIzAAO');

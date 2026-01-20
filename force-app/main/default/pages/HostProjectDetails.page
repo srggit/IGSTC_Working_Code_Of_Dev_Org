@@ -20,7 +20,7 @@
                 <div class="row mx-5">
                     <div class="col-md-12">
 
-                        <div class="tab-link" ng-show="proposalStage">
+                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -90,7 +90,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage">
+                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
                             <div class="progress">
                                 <div class="progress-success wp-1"></div>
                             </div>
@@ -266,7 +266,7 @@
 
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage">
+                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -321,7 +321,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage">
+                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
                             <div class="progress">
                                 <div class="progress-success wp-0"></div>
                             </div>
@@ -424,8 +424,8 @@
                                     <b>Title of project</b> (Max. characters 600)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage" id="titleOfProposal"
-                                    ng-change="checkCharLimit(objContact, 'Title_Of__c', 600)" />
+                                <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    id="titleOfProposal" ng-change="checkCharLimit(objContact, 'Title_Of__c', 600)" />
 
                                 <small class="text-danger" ng-if="objContact._charLimitMap &&
                                         objContact._charLimitMap.Title_Of__c">
@@ -438,8 +438,9 @@
                                     <b>Broad area of research</b> (Max. characters 255)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Broad_area_of_research__c" ng-disabled="proposalStage" id="areaOfResearch"
-                                    ng-change="checkCharLimit(objContact, 'Broad_area_of_research__c', 255)" />
+                                <input class="form-control" type="text" ng-model="objContact.Broad_area_of_research__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    id="areaOfResearch" ng-change="checkCharLimit(objContact, 'Broad_area_of_research__c', 255)"
+                                />
 
                                 <small class="text-danger" ng-if="objContact._charLimitMap &&
                                         objContact._charLimitMap.Broad_area_of_research__c">
@@ -458,8 +459,9 @@
                                     <b>Layman title of project</b> (Max. 600 chars)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Layman_title_of_project__c" ng-disabled="proposalStage" id="laymanTitle"
-                                    ng-change="checkCharLimit(objContact, 'Layman_title_of_project__c', 600)" />
+                                <input class="form-control" type="text" ng-model="objContact.Layman_title_of_project__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    id="laymanTitle" ng-change="checkCharLimit(objContact, 'Layman_title_of_project__c', 600)"
+                                />
 
                                 <small class="text-danger" ng-if="objContact._charLimitMap &&
                                         objContact._charLimitMap.Layman_title_of_project__c">
@@ -472,7 +474,7 @@
                                     <b>Layman abstract of proposed work</b> (Max. 600 chars)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Layman_abstract_of_proposed_work__c" ng-disabled="proposalStage"
+                                <input class="form-control" type="text" ng-model="objContact.Layman_abstract_of_proposed_work__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     id="laymanabstract" ng-change="checkCharLimit(objContact, 'Layman_abstract_of_proposed_work__c', 600)"
                                 />
 
@@ -493,7 +495,7 @@
                                     <b>Non Technical Title Of Project</b> (Max. 300 chars)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Non_Technical_Title_Of_Project__c" ng-disabled="proposalStage"
+                                <input class="form-control" type="text" ng-model="objContact.Non_Technical_Title_Of_Project__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     id="nonTechnicalTitle" ng-change="checkCharLimit(objContact, 'Non_Technical_Title_Of_Project__c', 300)"
                                 />
 
@@ -508,7 +510,7 @@
                                     <b>Non Technical Abstract Of Proposed Work</b> (Max. 300 chars)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Non_Technical_Abstract_Of_Proposed_Work__c" ng-disabled="proposalStage"
+                                <input class="form-control" type="text" ng-model="objContact.Non_Technical_Abstract_Of_Proposed_Work__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     id="nonTechnicalAbstract" ng-change="checkCharLimit(objContact, 'Non_Technical_Abstract_Of_Proposed_Work__c', 300)"
                                 />
 
@@ -533,8 +535,8 @@
 
                                 <form name="formPrjDet">
                                     <input name="duration" type="number" class="form-control" placeholder="Min 24 months and Max 36 months" ng-model="objContact.Duration_In_Months_Max_36__c"
-                                        ng-disabled="proposalStage" min="24" max="36" id="txtDuration" ng-focus="removeClass2('txtDuration')"
-                                    />
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" min="24" max="36" id="txtDuration"
+                                        ng-focus="removeClass2('txtDuration')" />
 
                                     <span class="text-danger" ng-show="formPrjDet.duration.$error.min || formPrjDet.duration.$error.max">
                                         Duration must be between 24 and 36 months
@@ -554,19 +556,21 @@
                                         </b>
                                     </label>
 
-                                    <i class="fa-solid fa-circle-plus fa-2x text-primary ms-3" ng-click="addKeyword()" ng-if="!proposalStage" style="cursor:pointer;"></i>
+                                    <i class="fa-solid fa-circle-plus fa-2x text-primary ms-3" ng-click="addKeyword()" ng-if="!proposalStage && !isCurrentUserSubmitted"
+                                        style="cursor:pointer;"></i>
                                 </div>
 
                                 <!-- Keywords inputs -->
                                 <div ng-repeat="item in objKeyword track by $index" class="row mb-2">
 
                                     <div class="col-md-10">
-                                        <input type="text" ng-model="item.keyword" class="form-control" maxlength="255" ng-disabled="proposalStage" ng-focus="removeClass2('keywords')"
-                                            id="keywords" />
+                                        <input type="text" ng-model="item.keyword" class="form-control" maxlength="255" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                            ng-focus="removeClass2('keywords')" id="keywords" />
                                     </div>
 
                                     <div class="col-md-2 d-flex align-items-center">
-                                        <i class="fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeKeyword($index)" ng-if="!proposalStage" style="cursor:pointer;"></i>
+                                        <i class="fa-solid fa-circle-xmark fa-2x text-danger" ng-click="removeKeyword($index)" ng-if="!proposalStage && !isCurrentUserSubmitted"
+                                            style="cursor:pointer;"></i>
                                     </div>
 
                                 </div>
@@ -652,7 +656,8 @@
 
 
 
-                <div class="row m-5" ng-if="!proposalStage">
+                <!-- <div class="row m-5" ng-if="!proposalStage || !isCurrentUserSubmitted"> -->
+                <div class="row m-5" ng-if="!proposalStage && !isCurrentUserSubmitted">
                     <div class="col-md-12">
                         <button class="blue-btn float-end" ng-click="saveApplicationPortalHostInformation()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Save and Next</button>

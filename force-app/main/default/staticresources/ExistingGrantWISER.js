@@ -27,8 +27,28 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
             $scope.proposalId = $rootScope.proposalId;
         }
     }
-
     $scope.getDataFromLocalStorage();
+
+    $scope.getApplicantStatusFromAPA = function () {
+        debugger;
+        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+            debugger;
+
+            console.log('result return onload :: ');
+            console.log(result);
+            console.log('event:', event);
+
+            if (event.status) {
+                $rootScope.isCurrentUserSubmitted = result;
+                CKEDITOR.config.readOnly = true;
+            } else {
+                console.log('Error in fetchApplicantStatus:', event.message);
+            }
+        }, {
+            escape: true
+        });
+    }
+    $scope.getApplicantStatusFromAPA();
 
     /**
      * Fetches proposal stage from Apex on page load

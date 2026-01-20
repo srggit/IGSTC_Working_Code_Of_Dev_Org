@@ -18,6 +18,27 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
     console.log('$rootScope.candidateId ===>>' + $rootScope.candidateId);
 
+    $scope.getApplicantStatusFromAPA = function () {
+        debugger;
+        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+            debugger;
+
+            console.log('result return onload :: ');
+            console.log(result);
+            console.log('event:', event);
+
+            if (event.status) {
+                $rootScope.isCurrentUserSubmitted = result;
+                CKEDITOR.config.readOnly = true;
+            } else {
+                console.log('Error in fetchApplicantStatus:', event.message);
+            }
+        }, {
+            escape: true
+        });
+    }
+    $scope.getApplicantStatusFromAPA();
+
     $scope.getAccounts = function () {
         debugger;
         IndustrialFellowshipController.getProposalAccounts($rootScope.proposalId, $rootScope.candidateId, function (result, event) {
@@ -32,9 +53,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 $scope.durationMonths = result.durationInMonths;
                 if ($scope.durationMonths > 12 && $scope.durationMonths < 25) {
                     $scope.Showyear2 = true;
+                    $scope.numberOfYears = 2;
                 } else if ($scope.durationMonths > 24) {
                     $scope.Showyear2 = true;
                     $scope.Showyear3 = true;
+                    $scope.numberOfYears = 3;
+                } else {
+                    $scope.numberOfYears = 1;
                 }
                 console.log($scope.durationMonths);
                 $scope.getExpenseRecords();
@@ -70,6 +95,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         }
                     }
                     $scope.expenseList = result;
+                    // Process expense records to populate expense table arrays
+                    $scope.processExpenseRecordsForTable();
                     $scope.calculateOtherField();
                     $scope.calculateOtherField2();
                     $scope.calculateOtherField3();
@@ -81,6 +108,180 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         },
             { escape: true }
         )
+    }
+
+    // Process expense records to populate expense table arrays - Matching ExpenseDeclaration.js logic
+    $scope.processExpenseRecordsForTable = function () {
+        // Reset arrays
+        $scope.manPowerRecords = [];
+        $scope.consumables = [];
+        $scope.Equipment = [];
+        $scope.travel = [];
+        $scope.outsourcing = [];
+        $scope.contingency = [];
+        $scope.overhead = [];
+
+        // Reset totals
+        $scope.manPower = {};
+        $scope.equipmentTotals = {};
+        $scope.consumableTotal = {};
+        $scope.travelTotal = {};
+        $scope.outsourcingTotal = {};
+        $scope.contingencyTotal = {};
+        $scope.overheadCharges = {};
+
+        if ($scope.expenseList && $scope.expenseList.length > 0) {
+            for (var i = 0; i < $scope.expenseList.length; i++) {
+                var expenseHead = $scope.expenseList[i];
+                var headName = expenseHead.Name;
+
+                if (expenseHead.Expense_Line_Items__r && expenseHead.Expense_Line_Items__r.length > 0) {
+                    for (var j = 0; j < expenseHead.Expense_Line_Items__r.length; j++) {
+                        var lineItem = expenseHead.Expense_Line_Items__r[j];
+
+                        var record = {
+                            Id: lineItem.Id,
+                            Description__c: lineItem.Description__c || '',
+                            Position__c: lineItem.Position__c || '',
+                            Number__c: lineItem.Number__c || '',
+                            Person_Month__c: lineItem.Person_Month__c || '',
+                            Salary_Month__c: lineItem.Salary_Month__c || '',
+                            Unit_Price__c: lineItem.Unit_Price__c || '',
+                            Multiplier__c: lineItem.Multiplier__c || '',
+                            Year1_Expense__c: lineItem.Year1_Expense__c || 0,
+                            Year2_Expense__c: lineItem.Year2_Expense__c || 0,
+                            Year3_Expense__c: lineItem.Year3_Expense__c || 0,
+                            Total_Expense__c: lineItem.Total_Expense__c || 0,
+                            Expense_Head__c: expenseHead.Id,
+                            Expense_Type__c: headName
+                        };
+
+                        // Categorize by expense head name - Matching ExpenseDeclaration.js
+                        if (headName === 'Research staff' || headName === 'Manpower') {
+                            $scope.manPowerRecords.push(record);
+                            $scope.manPower.Total_Year1_Expense__c = Number((($scope.manPower.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.manPower.Total_Year2_Expense__c = Number((($scope.manPower.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.manPower.Total_Year3_Expense__c = Number((($scope.manPower.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.manPower.Overall_Expense = Number(($scope.manPower.Total_Year1_Expense__c + $scope.manPower.Total_Year2_Expense__c + $scope.manPower.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Consumables' || headName === 'Consumables/Materials') {
+                            $scope.consumables.push(record);
+                            $scope.consumableTotal.Total_Year1_Expense__c = Number((($scope.consumableTotal.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.consumableTotal.Total_Year2_Expense__c = Number((($scope.consumableTotal.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.consumableTotal.Total_Year3_Expense__c = Number((($scope.consumableTotal.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.consumableTotal.Overall_Expense = Number(($scope.consumableTotal.Total_Year1_Expense__c + $scope.consumableTotal.Total_Year2_Expense__c + $scope.consumableTotal.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Equipment' || headName === 'Equipment & Accessories') {
+                            $scope.Equipment.push(record);
+                            $scope.equipmentTotals.Total_Year1_Expense__c = Number((($scope.equipmentTotals.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.equipmentTotals.Total_Year2_Expense__c = Number((($scope.equipmentTotals.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.equipmentTotals.Total_Year3_Expense__c = Number((($scope.equipmentTotals.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.equipmentTotals.Overall_Expense = Number(($scope.equipmentTotals.Total_Year1_Expense__c + $scope.equipmentTotals.Total_Year2_Expense__c + $scope.equipmentTotals.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Travel' || headName === 'Travel & Networking') {
+                            $scope.travel.push(record);
+                            $scope.travelTotal.Total_Year1_Expense__c = Number((($scope.travelTotal.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.travelTotal.Total_Year2_Expense__c = Number((($scope.travelTotal.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.travelTotal.Total_Year3_Expense__c = Number((($scope.travelTotal.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.travelTotal.Overall_Expense = Number(($scope.travelTotal.Total_Year1_Expense__c + $scope.travelTotal.Total_Year2_Expense__c + $scope.travelTotal.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Overhead' || headName === 'Projektpauschale') {
+                            $scope.overhead.push(record);
+                            $scope.overheadCharges.Total_Year1_Expense__c = Number((($scope.overheadCharges.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.overheadCharges.Total_Year2_Expense__c = Number((($scope.overheadCharges.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.overheadCharges.Total_Year3_Expense__c = Number((($scope.overheadCharges.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.overheadCharges.Overall_Expense = Number(($scope.overheadCharges.Total_Year1_Expense__c + $scope.overheadCharges.Total_Year2_Expense__c + $scope.overheadCharges.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Contingency') {
+                            $scope.contingency.push(record);
+                            $scope.contingencyTotal.Total_Year1_Expense__c = Number((($scope.contingencyTotal.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.contingencyTotal.Total_Year2_Expense__c = Number((($scope.contingencyTotal.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.contingencyTotal.Total_Year3_Expense__c = Number((($scope.contingencyTotal.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.contingencyTotal.Overall_Expense = Number(($scope.contingencyTotal.Total_Year1_Expense__c + $scope.contingencyTotal.Total_Year2_Expense__c + $scope.contingencyTotal.Total_Year3_Expense__c).toFixed(2));
+                        } else if (headName === 'Subcontract/Outsourcing' || headName === 'Miscellaneous and Others') {
+                            $scope.outsourcing.push(record);
+                            $scope.outsourcingTotal.Total_Year1_Expense__c = Number((($scope.outsourcingTotal.Total_Year1_Expense__c || 0) + (lineItem.Year1_Expense__c || 0)).toFixed(2));
+                            $scope.outsourcingTotal.Total_Year2_Expense__c = Number((($scope.outsourcingTotal.Total_Year2_Expense__c || 0) + (lineItem.Year2_Expense__c || 0)).toFixed(2));
+                            $scope.outsourcingTotal.Total_Year3_Expense__c = Number((($scope.outsourcingTotal.Total_Year3_Expense__c || 0) + (lineItem.Year3_Expense__c || 0)).toFixed(2));
+                            $scope.outsourcingTotal.Overall_Expense = Number(($scope.outsourcingTotal.Total_Year1_Expense__c + $scope.outsourcingTotal.Total_Year2_Expense__c + $scope.outsourcingTotal.Total_Year3_Expense__c).toFixed(2));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ensure arrays have at least one empty record if they're empty
+        if ($scope.manPowerRecords.length === 0) {
+            $scope.manPowerRecords.push({
+                "Position__c": "",
+                "Person_Month__c": "",
+                "Salary_Month__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.consumables.length === 0) {
+            $scope.consumables.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Number__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.Equipment.length === 0) {
+            $scope.Equipment.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Number__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.travel.length === 0) {
+            $scope.travel.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Number__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.overhead.length === 0) {
+            $scope.overhead.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.contingency.length === 0) {
+            $scope.contingency.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+        if ($scope.outsourcing.length === 0) {
+            $scope.outsourcing.push({
+                "Description__c": "",
+                "Unit_Price__c": "",
+                "Year1_Expense__c": undefined,
+                "Year2_Expense__c": undefined,
+                "Year3_Expense__c": undefined,
+                "Total_Expense__c": undefined
+            });
+        }
+
+        $scope.updateTotals();
     }
 
     $scope.createExpenceHead = function () {
@@ -463,4 +664,312 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         link.href = "#/" + pageName;
         link.click();
     }
+
+    // Expense Table Variables - Matching ExpenseDeclaration.js
+    $scope.numberOfYears = 1;
+    $scope.outsourcing = [];
+    $scope.contingency = [];
+    $scope.overhead = [];
+    $scope.manPower = {};
+    $scope.equipmentTotals = {};
+    $scope.consumableTotal = {};
+    $scope.travelTotal = {};
+    $scope.outsourcingTotal = {};
+    $scope.contingencyTotal = {};
+    $scope.overheadCharges = {};
+    $scope.subTotal = {};
+    $scope.totals = {};
+    $scope.igstcFunding = {};
+    $scope.industryContr = {};
+
+    // Add row methods - Matching ExpenseDeclaration.js
+    $scope.addRow = function (param1, param2) {
+        $scope.manPowerRecords.push({
+            "Position__c": "",
+            "Person_Month__c": "",
+            "Salary_Month__c": "",
+            "Year1_Expense__c": undefined,
+            "Year2_Expense__c": undefined,
+            "Year3_Expense__c": undefined,
+            "Total_Expense__c": undefined
+        });
+        $scope.$apply();
+    }
+    $scope.addRowCon = function (param1, param2) {
+        $scope.consumables.push({
+            "Description__c": "",
+            "Unit_Price__c": "",
+            "Number__c": "",
+            "Year1_Expense__c": undefined,
+            "Year2_Expense__c": undefined,
+            "Year3_Expense__c": undefined,
+            "Total_Expense__c": undefined
+        });
+    }
+    $scope.addRowEquip = function (param1, param2) {
+        $scope.Equipment.push({
+            "Description__c": "",
+            "Unit_Price__c": "",
+            "Number__c": "",
+            "Year1_Expense__c": undefined,
+            "Year2_Expense__c": undefined,
+            "Year3_Expense__c": undefined,
+            "Total_Expense__c": undefined
+        });
+    }
+    $scope.addRowOutsourcing = function (param1, param2) {
+        $scope.outsourcing.push({
+            "Description__c": "",
+            "Unit_Price__c": "",
+            "Year1_Expense__c": undefined,
+            "Year2_Expense__c": undefined,
+            "Year3_Expense__c": undefined,
+            "Total_Expense__c": undefined
+        });
+    }
+
+    // Delete row methods - Matching ExpenseDeclaration.js
+    $scope.deleteRow = function (param1, param2, Id) {
+        if ($scope.manPowerRecords.length > 1) {
+            $scope.manPowerRecords.splice(param2, 1);
+        }
+        $scope.manPower.Total_Year1_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.manPower.Total_Year2_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.manPower.Total_Year3_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.manPower.Overall_Expense = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+    $scope.deleteRowConsumables = function (param1, param2, Id) {
+        if ($scope.consumables.length > 1) {
+            $scope.consumables.splice(param2, 1);
+        }
+        $scope.consumableTotal.Total_Year1_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.consumableTotal.Total_Year2_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.consumableTotal.Total_Year3_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.consumableTotal.Overall_Expense = $scope.consumables.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+    $scope.deleteRowEquipment = function (param1, param2, Id) {
+        if ($scope.Equipment.length > 1) {
+            $scope.Equipment.splice(param2, 1);
+        }
+        $scope.equipmentTotals.Total_Year1_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.equipmentTotals.Total_Year2_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.equipmentTotals.Total_Year3_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.equipmentTotals.Overall_Expense = $scope.Equipment.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+    $scope.deleteRowOutsourcing = function (param1, param2, Id) {
+        if ($scope.outsourcing.length > 1) {
+            $scope.outsourcing.splice(param2, 1);
+        }
+        $scope.outsourcingTotal.Total_Year1_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.outsourcingTotal.Total_Year2_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.outsourcingTotal.Total_Year3_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.outsourcingTotal.Overall_Expense = $scope.outsourcing.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+    $scope.deleteRowContingency = function (param1, param2, Id) {
+        if ($scope.contingency.length > 1) {
+            $scope.contingency.splice(param2, 1);
+        }
+        $scope.contingencyTotal.Total_Year1_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.contingencyTotal.Total_Year2_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.contingencyTotal.Total_Year3_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.contingencyTotal.Overall_Expense = $scope.contingency.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+    $scope.deleteRowOverhead = function (param1, param2, Id) {
+        if ($scope.overhead.length > 1) {
+            $scope.overhead.splice(param2, 1);
+        }
+        $scope.overheadCharges.Total_Year1_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year1_Expense__c || 0);
+        }, 0);
+        $scope.overheadCharges.Total_Year2_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year2_Expense__c || 0);
+        }, 0);
+        $scope.overheadCharges.Total_Year3_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Year3_Expense__c || 0);
+        }, 0);
+        $scope.overheadCharges.Overall_Expense = $scope.overhead.reduce(function (accumulator, currentValue) {
+            return accumulator + (currentValue.Total_Expense__c || 0);
+        }, 0);
+        $scope.updateTotals();
+    }
+
+    // Calculate Other Field - Matching ExpenseDeclaration.js
+    $scope.calculateOtherField = function (exType) {
+        function toNum(val) {
+            return val != null && val !== '' && !isNaN(val)
+                ? Number(parseFloat(val).toFixed(2))
+                : 0;
+        }
+
+        function round2(val) {
+            return Number(parseFloat(val).toFixed(2));
+        }
+
+        function sum(arr, field) {
+            return round2(arr.reduce((acc, cur) => acc + toNum(cur[field]), 0));
+        }
+
+        function calcTotals(list, totalObj) {
+            for (let i = 0; i < list.length; i++) {
+                const r = list[i];
+                r.Total_Expense__c = round2(toNum(r.Year1_Expense__c) + toNum(r.Year2_Expense__c) + toNum(r.Year3_Expense__c));
+            }
+            totalObj.Total_Year1_Expense__c = sum(list, 'Year1_Expense__c');
+            totalObj.Total_Year2_Expense__c = sum(list, 'Year2_Expense__c');
+            totalObj.Total_Year3_Expense__c = sum(list, 'Year3_Expense__c');
+            totalObj.Overall_Expense = round2(list.reduce((acc, cur) => acc + toNum(cur.Total_Expense__c), 0));
+        }
+
+        if (exType === 'man') {
+            calcTotals($scope.manPowerRecords, $scope.manPower);
+        }
+        else if (exType === 'cons') {
+            calcTotals($scope.consumables, $scope.consumableTotal);
+        }
+        else if (exType === 'equi') {
+            calcTotals($scope.Equipment, $scope.equipmentTotals);
+        }
+        else if (exType === 'travel') {
+            calcTotals($scope.travel, $scope.travelTotal);
+        }
+        else if (exType === 'outsourcing') {
+            calcTotals($scope.outsourcing, $scope.outsourcingTotal);
+        }
+        else if (exType === 'contingency') {
+            calcTotals($scope.contingency, $scope.contingencyTotal);
+        }
+        else if (exType === 'overhead') {
+            calcTotals($scope.overhead, $scope.overheadCharges);
+        }
+        else if (exType === 'igstc') {
+            $scope.igstcFunding.Total_Expense__c = round2(
+                toNum($scope.igstcFunding.Year1_Expense__c) +
+                toNum($scope.igstcFunding.Year2_Expense__c) +
+                toNum($scope.igstcFunding.Year3_Expense__c)
+            );
+        }
+        else if (exType === 'ic') {
+            $scope.industryContr.Total_Expense__c = round2(
+                toNum($scope.industryContr.Year1_Expense__c) +
+                toNum($scope.industryContr.Year2_Expense__c) +
+                toNum($scope.industryContr.Year3_Expense__c)
+            );
+        }
+        $scope.updateTotals();
+    };
+
+    // Update Totals - Matching ExpenseDeclaration.js
+    $scope.updateTotals = function () {
+        function toNum(val) {
+            return val != null && val !== '' && !isNaN(val)
+                ? Number(parseFloat(val).toFixed(2))
+                : 0;
+        }
+
+        function round2(val) {
+            return Number(parseFloat(val).toFixed(2));
+        }
+
+        $scope.subTotal.Total_Year1_Expense__c = round2(
+            toNum($scope.manPower.Total_Year1_Expense__c) +
+            toNum($scope.consumableTotal.Total_Year1_Expense__c) +
+            toNum($scope.equipmentTotals.Total_Year1_Expense__c) +
+            toNum($scope.travelTotal.Total_Year1_Expense__c) +
+            toNum($scope.outsourcingTotal.Total_Year1_Expense__c) +
+            toNum($scope.contingencyTotal.Total_Year1_Expense__c)
+        );
+
+        $scope.subTotal.Total_Year2_Expense__c = round2(
+            toNum($scope.manPower.Total_Year2_Expense__c) +
+            toNum($scope.consumableTotal.Total_Year2_Expense__c) +
+            toNum($scope.equipmentTotals.Total_Year2_Expense__c) +
+            toNum($scope.travelTotal.Total_Year2_Expense__c) +
+            toNum($scope.outsourcingTotal.Total_Year2_Expense__c) +
+            toNum($scope.contingencyTotal.Total_Year2_Expense__c)
+        );
+
+        $scope.subTotal.Total_Year3_Expense__c = round2(
+            toNum($scope.manPower.Total_Year3_Expense__c) +
+            toNum($scope.consumableTotal.Total_Year3_Expense__c) +
+            toNum($scope.equipmentTotals.Total_Year3_Expense__c) +
+            toNum($scope.travelTotal.Total_Year3_Expense__c) +
+            toNum($scope.outsourcingTotal.Total_Year3_Expense__c) +
+            toNum($scope.contingencyTotal.Total_Year3_Expense__c)
+        );
+
+        $scope.subTotal.Overall_Expense = round2(
+            toNum($scope.manPower.Overall_Expense) +
+            toNum($scope.consumableTotal.Overall_Expense) +
+            toNum($scope.equipmentTotals.Overall_Expense) +
+            toNum($scope.travelTotal.Overall_Expense) +
+            toNum($scope.outsourcingTotal.Overall_Expense) +
+            toNum($scope.contingencyTotal.Overall_Expense)
+        );
+
+        $scope.totals.Total_Year1_Expense__c = round2(
+            toNum($scope.subTotal.Total_Year1_Expense__c) +
+            toNum($scope.overheadCharges.Total_Year1_Expense__c)
+        );
+
+        $scope.totals.Total_Year2_Expense__c = round2(
+            toNum($scope.subTotal.Total_Year2_Expense__c) +
+            toNum($scope.overheadCharges.Total_Year2_Expense__c)
+        );
+
+        $scope.totals.Total_Year3_Expense__c = round2(
+            toNum($scope.subTotal.Total_Year3_Expense__c) +
+            toNum($scope.overheadCharges.Total_Year3_Expense__c)
+        );
+
+        $scope.totals.Overall_Expense = round2(
+            toNum($scope.subTotal.Overall_Expense) +
+            toNum($scope.overheadCharges.Overall_Expense)
+        );
+    };
+
 })

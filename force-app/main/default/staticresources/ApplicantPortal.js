@@ -10,6 +10,8 @@ var profilePicURL;
 var isCoordinator;
 var partnerSubmission;
 
+
+
 var app = angular.module('cp_app');
 debugger;
 var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/ApplicantDashboard';    // ======================>
@@ -147,6 +149,8 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
     $rootScope.states = states;
     $rootScope.signDate = signDate;
     $rootScope.secondStage = false;
+    $rootScope.isCurrentUserSubmitted = false;
+    $rootScope.apaSubmittedFromAPA;
 
     $scope.applicantAssociationListData;
     $scope.contactName;
@@ -586,7 +590,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                     name: item?.Proposals__r?.Campaign__r?.Name ?? "",
                     PropName: item?.Proposals__r?.Name ?? "",
                     desc: item?.Proposals__r?.Campaign__r?.Description ?? "",
-                   // titleOfProject: item?.Contact__r?.Title_Of_Project__c ?? "",
+                    // titleOfProject: item?.Contact__r?.Title_Of_Project__c ?? "",
                     titleOfProject: item?.Proposals__r?.Title_Of__c ?? "",
                     deadline: item.Proposals__r?.yearly_Call__r?.Campaign_End_Date__c ?
                         new Date(item.Proposals__r?.yearly_Call__r?.Campaign_End_Date__c).toLocaleDateString('en-GB', {
@@ -602,7 +606,7 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
                     yearlyCallId: item?.Proposals__r?.yearly_Call__c ?? "",
                     proposalStage: item?.Proposals__r?.Proposal_Stages__c ?? "",
                     category: 'applied'
-                 
+
                 })) : [];
 
                 // Simple helper for YearlyCall__c → Campaign data              
@@ -788,8 +792,8 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
             }
             $scope.$apply();
         });
-    };
-   */
+     };
+     */
         $scope.isLoading = true;
         ApplicantPortal_Contoller.LogoutApplicant($rootScope.candidateId, function (result, event) {
             debugger;
@@ -808,6 +812,28 @@ app.controller('cp_dashboard_ctrl', function ($scope, $rootScope, $timeout, $win
             $scope.$apply();
         });
     };
+
+    // if (localStorage.getItem('apaId')) {
+    //     $rootScope.apaId = localStorage.getItem('apaId');
+    //     console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
+    // }
+
+    // $scope.init = function () {
+    //     ApplicantPortal_Contoller.fetchApplicantStatus(
+    //         $rootScope.apaId,
+    //         function (result, event) {
+    //             if (event.status) {
+    //                 $scope.isCurrentUserSubmitted = result;
+    //                 localStorage.setItem('apaSubmitted', $scope.isCurrentUserSubmitted);
+    //                 $scope.$apply();
+    //             }
+    //         },
+    //         { escape: true }
+    //     );
+    // };
+
+    // // Call on load
+    // $scope.init();
 
 
 });

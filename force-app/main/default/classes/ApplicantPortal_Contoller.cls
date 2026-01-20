@@ -1376,9 +1376,14 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
         return Proposal_Controller.insertWiserDraft(projectId, day, month, year);
     }
     
+    // @RemoteAction
+    // public static string finalSubmitWiser(string projectId, string conId, integer day, integer month, integer year){
+    //     return Proposal_Controller.finalSubmitWiser(projectId, conId, day, month, year);
+    // }
+
     @RemoteAction
-    public static string finalSubmitWiser(string projectId, string conId, integer day, integer month, integer year){
-        return Proposal_Controller.finalSubmitWiser(projectId, conId, day, month, year);
+    public static Proposal_Controller.FinalSubmitResponse finalSubmitWiser(String proposalId, String conId, String apaId, Integer day, Integer month, Integer year){
+        return Proposal_Controller.finalSubmitWiser(proposalId, conId, apaId, day, month, year);
     }
     
     @RemoteAction
@@ -2430,9 +2435,10 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
 
             System.debug('Contact : ' + signatoryContact);
             System.debug('Account Id : ' + accountId);
+            System.debug('Contact Account Id : '+ signatoryContact.AccountId);
             System.debug('Proposal Id : ' + proposalId);
 
-            signatoryContact.AccountId = accountId;
+            signatoryContact.AccountId = signatoryContact.AccountId;
             signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
             signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
             upsert signatoryContact;
@@ -3070,4 +3076,20 @@ public static void updateProposalStage(Id proposalId) {
         return conRec;
     }
     
+    @RemoteAction
+    public static Boolean fetchApplicantStatus(String apaId){
+        List<Applicant_Proposal_Association__c> apaList = [
+            SELECT Applicant_Status__c
+            FROM Applicant_Proposal_Association__c
+            WHERE Id = :apaId
+            AND Is_Signatory__c = false
+            LIMIT 1
+        ];
+
+        if (!apaList.isEmpty() && apaList[0].Applicant_Status__c == 'Submitted') {
+            return true;
+        }
+        return false;
+    }
+
 }

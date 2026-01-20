@@ -6,6 +6,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $scope.objRtf = [{ charCount: 0, maxCharLimit: 700, errorStatus: false }];
 
      $rootScope.proposalStage;
+     $rootScope.isCurrentUserSubmitted;
      $rootScope.candidateId;
      $scope.objKeyword = [];
 
@@ -20,6 +21,32 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           $rootScope.yearlyCallId = localStorage.getItem('yearlyCallId');
           console.log('Loaded yearlyCallId from localStorage:', $rootScope.yearlyCallId);
      }
+
+     if (localStorage.getItem('apaId')) {
+          $rootScope.apaId = localStorage.getItem('apaId');
+          console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
+     }
+
+     $scope.getApplicantStatusFromAPA = function () {
+          debugger;
+          ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+               debugger;
+
+               console.log('result return onload :: ');
+               console.log(result);
+               console.log('event:', event);
+
+               if (event.status) {
+                    $rootScope.isCurrentUserSubmitted = result;
+                    CKEDITOR.config.readOnly = true;
+               } else {
+                    console.log('Error in fetchApplicantStatus:', event.message);
+               }
+          }, {
+               escape: true
+          });
+     }
+     $scope.getApplicantStatusFromAPA();
 
      $scope.getContactHostInfo = function () {
           debugger;
@@ -657,6 +684,8 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
 
           //.ContentDistribution.DistributionPublicUrl
      }
+
+
 
      // $scope.filePreviewHandler = function (fileContent) {
      //      debugger;
