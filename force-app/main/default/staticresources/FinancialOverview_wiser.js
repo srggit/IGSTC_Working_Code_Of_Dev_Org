@@ -2,6 +2,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     console.log('Intiated::');
     $scope.siteURL = siteURL;
     $rootScope.projectId;
+    $rootScope.proposalId;
+    $rootScope.contactId;
+    $rootScope.apaId = '';
     $scope.expenseDetails = false;
     $scope.accList = [];
     $scope.expenseList = [];
@@ -14,7 +17,96 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     $scope.Showyear2 = false;
     $scope.Showyear3 = false;
     $scope.durationMonths = 0;
-    $rootScope.candidateId
+    $rootScope.candidateId;
+
+    // Budget table variables (using different names to avoid conflicts with expense arrays)
+    $scope.budgetResearchStay = {
+        daysYear1: 30,
+        daysYear2: 50,
+        daysYear3: 10,
+        costYear1: 2300,
+        costYear2: 3833,
+        costYear3: 767,
+        totalDays: 90,
+        totalCost: 6900
+    };
+    $scope.budgetTravel = {
+        costYear1: 1500,
+        costYear2: 1500,
+        costYear3: 1500,
+        totalCost: 4500
+    };
+    $scope.researchStayTravelTotal = {
+        year1: 3800,
+        year2: 5333,
+        year3: 2267,
+        total: 11400
+    };
+    $scope.totalResearchAmount = {
+        year1: 12200,
+        year2: 10667,
+        year3: 13733,
+        total: 36600
+    };
+    $scope.budgetOverhead = {
+        percentageYear1: 5,
+        percentageYear2: 5,
+        percentageYear3: 5,
+        amountYear1: 610,
+        amountYear2: 533,
+        amountYear3: 687,
+        totalAmount: 1830
+    };
+    $scope.remainingForResearch = {
+        year1: 11590,
+        year2: 10133,
+        year3: 13047,
+        total: 34770
+    };
+    $scope.budgetResearchStaff = {
+        positionsYear1: 1,
+        positionsYear2: 1,
+        positionsYear3: 1,
+        costYear1: 90,
+        costYear2: 90,
+        costYear3: 90,
+        hoursYear1: 12,
+        hoursYear2: 6,
+        hoursYear3: 4,
+        totalYear1: 2520,
+        totalYear2: 1620,
+        totalYear3: 1380,
+        totalAmount: 5520
+    };
+    $scope.budgetConsumables = {
+        year1: 3000,
+        year2: 3000,
+        year3: 2000,
+        total: 8000
+    };
+    $scope.minorEquipment = {
+        year1: 1000,
+        year2: 0,
+        year3: 0,
+        total: 1000
+    };
+    $scope.budgetContingency = {
+        year1: 5000,
+        year2: 5000,
+        year3: 5000,
+        total: 15000
+    };
+    $scope.grandTotal = {
+        year1: 15930,
+        year2: 15487,
+        year3: 11333,
+        total: 42750
+    };
+
+    if (localStorage.getItem('apaId')) {
+        $rootScope.apaId = localStorage.getItem('apaId');
+        console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
+    }
 
     console.log('$rootScope.candidateId ===>>' + $rootScope.candidateId);
 
@@ -63,6 +155,15 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 }
                 console.log($scope.durationMonths);
                 $scope.getExpenseRecords();
+
+                // Try to get expense records from ApplicantPortal_Contoller if contactId is available
+                if ($rootScope.proposalId && $rootScope.contactId) {
+                    $scope.getExpenseRecordsFromApex();
+                } else {
+                    // Initialize budget table calculations even if we don't have contactId
+                    $scope.recalculateAll();
+                }
+
                 $scope.$apply();
             }
         })
@@ -386,6 +487,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     }
 
     $scope.saveExpenceLineitems = function () {
+        // Use new budget table save method if apaId is available
+        if ($rootScope.apaId) {
+            $scope.saveBudgetTableData();
+            return;
+        }
+
+        // Otherwise use existing method
         $scope.expLineItem = [];
         debugger;
 
@@ -971,5 +1079,321 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             toNum($scope.overheadCharges.Overall_Expense)
         );
     };
+
+    // ========== BUDGET TABLE CALCULATION METHODS ==========
+    // Flag to prevent infinite loops during calculations
+    $scope.isCalculating = false;
+
+    // Master calculation method - calls all calculations in correct order without circular dependencies
+    $scope.recalculateAll = function () {
+        if ($scope.isCalculating) {
+            return; // Prevent infinite loops
+        }
+        $scope.isCalculating = true;
+
+        try {
+            // Step 1: Calculate individual component totals
+            $scope.budgetResearchStay.totalDays = ($scope.budgetResearchStay.daysYear1 || 0) + ($scope.budgetResearchStay.daysYear2 || 0) + ($scope.budgetResearchStay.daysYear3 || 0);
+            $scope.budgetResearchStay.totalCost = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetResearchStay.costYear3 || 0);
+
+            $scope.budgetTravel.totalCost = ($scope.budgetTravel.costYear1 || 0) + ($scope.budgetTravel.costYear2 || 0) + ($scope.budgetTravel.costYear3 || 0);
+
+            $scope.budgetResearchStaff.totalYear1 = ($scope.budgetResearchStaff.positionsYear1 || 0) * ($scope.budgetResearchStaff.costYear1 || 0) * ($scope.budgetResearchStaff.hoursYear1 || 0);
+            $scope.budgetResearchStaff.totalYear2 = ($scope.budgetResearchStaff.positionsYear2 || 0) * ($scope.budgetResearchStaff.costYear2 || 0) * ($scope.budgetResearchStaff.hoursYear2 || 0);
+            $scope.budgetResearchStaff.totalYear3 = ($scope.budgetResearchStaff.positionsYear3 || 0) * ($scope.budgetResearchStaff.costYear3 || 0) * ($scope.budgetResearchStaff.hoursYear3 || 0);
+            $scope.budgetResearchStaff.totalAmount = $scope.budgetResearchStaff.totalYear1 + $scope.budgetResearchStaff.totalYear2 + $scope.budgetResearchStaff.totalYear3;
+
+            $scope.budgetConsumables.total = ($scope.budgetConsumables.year1 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.budgetConsumables.year3 || 0);
+            $scope.minorEquipment.total = ($scope.minorEquipment.year1 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.minorEquipment.year3 || 0);
+            $scope.budgetContingency.total = ($scope.budgetContingency.year1 || 0) + ($scope.budgetContingency.year2 || 0) + ($scope.budgetContingency.year3 || 0);
+
+            // Step 2: Calculate Research Stay + Travel totals
+            $scope.researchStayTravelTotal.year1 = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetTravel.costYear1 || 0);
+            $scope.researchStayTravelTotal.year2 = ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetTravel.costYear2 || 0);
+            $scope.researchStayTravelTotal.year3 = ($scope.budgetResearchStay.costYear3 || 0) + ($scope.budgetTravel.costYear3 || 0);
+            $scope.researchStayTravelTotal.total = $scope.researchStayTravelTotal.year1 + $scope.researchStayTravelTotal.year2 + $scope.researchStayTravelTotal.year3;
+
+            // Step 3: Calculate Total Research Amount (before overhead)
+            $scope.totalResearchAmount.year1 = ($scope.researchStayTravelTotal.year1 || 0) + ($scope.budgetResearchStaff.totalYear1 || 0) + ($scope.budgetConsumables.year1 || 0) + ($scope.minorEquipment.year1 || 0) + ($scope.budgetContingency.year1 || 0);
+            $scope.totalResearchAmount.year2 = ($scope.researchStayTravelTotal.year2 || 0) + ($scope.budgetResearchStaff.totalYear2 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.budgetContingency.year2 || 0);
+            $scope.totalResearchAmount.year3 = ($scope.researchStayTravelTotal.year3 || 0) + ($scope.budgetResearchStaff.totalYear3 || 0) + ($scope.budgetConsumables.year3 || 0) + ($scope.minorEquipment.year3 || 0) + ($scope.budgetContingency.year3 || 0);
+            $scope.totalResearchAmount.total = $scope.totalResearchAmount.year1 + $scope.totalResearchAmount.year2 + $scope.totalResearchAmount.year3;
+
+            // Step 4: Calculate Overhead amounts based on Total Research Amount
+            var baseYear1 = $scope.totalResearchAmount.year1 || 0;
+            var baseYear2 = $scope.totalResearchAmount.year2 || 0;
+            var baseYear3 = $scope.totalResearchAmount.year3 || 0;
+
+            $scope.budgetOverhead.amountYear1 = Math.round((baseYear1 * ($scope.budgetOverhead.percentageYear1 || 0) / 100) * 100) / 100;
+            $scope.budgetOverhead.amountYear2 = Math.round((baseYear2 * ($scope.budgetOverhead.percentageYear2 || 0) / 100) * 100) / 100;
+            $scope.budgetOverhead.amountYear3 = Math.round((baseYear3 * ($scope.budgetOverhead.percentageYear3 || 0) / 100) * 100) / 100;
+            $scope.budgetOverhead.totalAmount = $scope.budgetOverhead.amountYear1 + $scope.budgetOverhead.amountYear2 + $scope.budgetOverhead.amountYear3;
+
+            // Step 5: Calculate Remaining Amount for Research Heads
+            $scope.remainingForResearch.year1 = baseYear1 - $scope.budgetOverhead.amountYear1;
+            $scope.remainingForResearch.year2 = baseYear2 - $scope.budgetOverhead.amountYear2;
+            $scope.remainingForResearch.year3 = baseYear3 - $scope.budgetOverhead.amountYear3;
+            $scope.remainingForResearch.total = $scope.remainingForResearch.year1 + $scope.remainingForResearch.year2 + $scope.remainingForResearch.year3;
+
+            // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
+            $scope.grandTotal.year1 = ($scope.totalResearchAmount.year1 || 0) + ($scope.budgetOverhead.amountYear1 || 0);
+            $scope.grandTotal.year2 = ($scope.totalResearchAmount.year2 || 0) + ($scope.budgetOverhead.amountYear2 || 0);
+            $scope.grandTotal.year3 = ($scope.totalResearchAmount.year3 || 0) + ($scope.budgetOverhead.amountYear3 || 0);
+            $scope.grandTotal.total = $scope.grandTotal.year1 + $scope.grandTotal.year2 + $scope.grandTotal.year3;
+        } finally {
+            $scope.isCalculating = false;
+        }
+    };
+
+    // Individual calculation methods - they only update their own values and call recalculateAll
+    $scope.calculateResearchStay = function () {
+        $scope.recalculateAll();
+    };
+
+    $scope.calculateTravel = function () {
+        $scope.recalculateAll();
+    };
+
+    $scope.calculateResearchStaff = function () {
+        $scope.recalculateAll();
+    };
+
+    $scope.calculateTotals = function () {
+        $scope.recalculateAll();
+    };
+
+    // ========== FETCH AND SAVE METHODS (Similar to ExpenseDeclaration.js) ==========
+    // Get expense records from Apex using ApplicantPortal_Contoller
+    $scope.getExpenseRecordsFromApex = function () {
+        debugger;
+        if (!$rootScope.proposalId || !$rootScope.contactId) {
+            console.log('ProposalId or ContactId not available for expense records');
+            return;
+        }
+        ApplicantPortal_Contoller.getExpenseRecords($rootScope.proposalId, $rootScope.contactId, function (result, event) {
+            debugger;
+            console.log("expense records result");
+            console.log(result);
+            if (event.status && result != null) {
+                debugger;
+                $scope.accList = result?.conList[0]?.Account;
+                $scope.applicantProposalAsscocition = result.apa[0];
+                $rootScope.apaId = $scope.applicantProposalAsscocition.Id;
+
+                if ($rootScope.apaId) {
+                    $scope.getExpenseHeadLineItemsFromApex();
+                }
+
+                $scope.$apply();
+            }
+        },
+            { escape: true }
+        )
+    };
+
+    // Get expense head line items and populate budget table
+    $scope.getExpenseHeadLineItemsFromApex = function () {
+        if (!$rootScope.apaId) {
+            console.log('APA Id not available yet');
+            return;
+        }
+
+        ApplicantPortal_Contoller.getExpenseHeadLineItems($rootScope.apaId, function (result, event) {
+            console.log('getExpenseHeadLineItems result:', result);
+            if (event.status && result != null && result.lineItems != null) {
+                // Process line items and populate budget table variables
+                for (let i = 0; i < result.lineItems.length; i++) {
+                    let item = result.lineItems[i];
+                    let expenseType = item.Expense_Type__c || '';
+
+                    // Decode special characters
+                    if (item.Description__c) {
+                        item.Description__c = item.Description__c
+                            .replace(/&amp;/g, '&')
+                            .replace(/&#39;/g, '\'')
+                            .replaceAll('&amp;amp;', '&')
+                            .replaceAll('&lt;', '<')
+                            .replaceAll('&gt;', '>')
+                            .replaceAll('&quot;', '\'');
+                    }
+
+                    // Map expense types to budget table fields
+                    if (expenseType === 'Research stay' || expenseType === 'Research Stay') {
+                        // Assuming first item is days, second is cost
+                        if (item.Description__c && item.Description__c.toLowerCase().includes('day')) {
+                            $scope.budgetResearchStay.daysYear1 = item.Year1_Expense__c || 0;
+                            $scope.budgetResearchStay.daysYear2 = item.Year2_Expense__c || 0;
+                            $scope.budgetResearchStay.daysYear3 = item.Year3_Expense__c || 0;
+                        } else {
+                            $scope.budgetResearchStay.costYear1 = item.Year1_Expense__c || 0;
+                            $scope.budgetResearchStay.costYear2 = item.Year2_Expense__c || 0;
+                            $scope.budgetResearchStay.costYear3 = item.Year3_Expense__c || 0;
+                        }
+                    } else if (expenseType === 'Travel' || expenseType === 'Travel & Networking') {
+                        $scope.budgetTravel.costYear1 = item.Year1_Expense__c || 0;
+                        $scope.budgetTravel.costYear2 = item.Year2_Expense__c || 0;
+                        $scope.budgetTravel.costYear3 = item.Year3_Expense__c || 0;
+                    } else if (expenseType === 'Research staff' || expenseType === 'Manpower') {
+                        if (item.Position__c) {
+                            $scope.budgetResearchStaff.positionsYear1 = item.Number__c || 0;
+                            $scope.budgetResearchStaff.positionsYear2 = item.Number__c || 0;
+                            $scope.budgetResearchStaff.positionsYear3 = item.Number__c || 0;
+                        }
+                        if (item.Salary_Month__c) {
+                            $scope.budgetResearchStaff.costYear1 = item.Salary_Month__c || 0;
+                            $scope.budgetResearchStaff.costYear2 = item.Salary_Month__c || 0;
+                            $scope.budgetResearchStaff.costYear3 = item.Salary_Month__c || 0;
+                        }
+                        if (item.Person_Month__c) {
+                            $scope.budgetResearchStaff.hoursYear1 = item.Person_Month__c || 0;
+                            $scope.budgetResearchStaff.hoursYear2 = item.Person_Month__c || 0;
+                            $scope.budgetResearchStaff.hoursYear3 = item.Person_Month__c || 0;
+                        }
+                    } else if (expenseType === 'Consumables' || expenseType === 'Consumables/Materials') {
+                        $scope.budgetConsumables.year1 = item.Year1_Expense__c || 0;
+                        $scope.budgetConsumables.year2 = item.Year2_Expense__c || 0;
+                        $scope.budgetConsumables.year3 = item.Year3_Expense__c || 0;
+                    } else if (expenseType === 'Equipment' || expenseType === 'Equipment & Accessories' || expenseType === 'Minor equipment') {
+                        $scope.minorEquipment.year1 = item.Year1_Expense__c || 0;
+                        $scope.minorEquipment.year2 = item.Year2_Expense__c || 0;
+                        $scope.minorEquipment.year3 = item.Year3_Expense__c || 0;
+                    } else if (expenseType === 'Contingency') {
+                        $scope.budgetContingency.year1 = item.Year1_Expense__c || 0;
+                        $scope.budgetContingency.year2 = item.Year2_Expense__c || 0;
+                        $scope.budgetContingency.year3 = item.Year3_Expense__c || 0;
+                    } else if (expenseType === 'Overhead' || expenseType === 'Projektpauschale') {
+                        // Overhead percentage might be stored differently
+                        $scope.budgetOverhead.percentageYear1 = item.Year1_Expense__c || 0;
+                        $scope.budgetOverhead.percentageYear2 = item.Year2_Expense__c || 0;
+                        $scope.budgetOverhead.percentageYear3 = item.Year3_Expense__c || 0;
+                    }
+                }
+
+                // Recalculate all totals after populating data
+                $scope.recalculateAll();
+
+                $scope.$apply();
+            }
+        }, { escape: true });
+    };
+
+    // Save expense details using ApplicantPortal_Contoller
+    $scope.saveBudgetTableData = function () {
+        debugger;
+
+        // Prepare line items for saving
+        var allExpenseLineItems = [];
+
+        // Research Stay - days
+        allExpenseLineItems.push({
+            Description__c: 'Research Stay - No. of days',
+            Year1_Expense__c: $scope.budgetResearchStay.daysYear1 || 0,
+            Year2_Expense__c: $scope.budgetResearchStay.daysYear2 || 0,
+            Year3_Expense__c: $scope.budgetResearchStay.daysYear3 || 0,
+            Total_Expense__c: $scope.budgetResearchStay.totalDays || 0,
+            Expense_Type__c: 'Research stay'
+        });
+
+        // Research Stay - cost
+        allExpenseLineItems.push({
+            Description__c: 'Research Stay Per diem cost',
+            Year1_Expense__c: $scope.budgetResearchStay.costYear1 || 0,
+            Year2_Expense__c: $scope.budgetResearchStay.costYear2 || 0,
+            Year3_Expense__c: $scope.budgetResearchStay.costYear3 || 0,
+            Total_Expense__c: $scope.budgetResearchStay.totalCost || 0,
+            Expense_Type__c: 'Research stay'
+        });
+
+        // Travel
+        allExpenseLineItems.push({
+            Description__c: 'Travel cost per visit',
+            Year1_Expense__c: $scope.budgetTravel.costYear1 || 0,
+            Year2_Expense__c: $scope.budgetTravel.costYear2 || 0,
+            Year3_Expense__c: $scope.budgetTravel.costYear3 || 0,
+            Total_Expense__c: $scope.budgetTravel.totalCost || 0,
+            Expense_Type__c: 'Travel'
+        });
+
+        // Research Staff
+        allExpenseLineItems.push({
+            Description__c: 'Research Staff',
+            Number__c: $scope.budgetResearchStaff.positionsYear1 || 0,
+            Salary_Month__c: $scope.budgetResearchStaff.costYear1 || 0,
+            Person_Month__c: $scope.budgetResearchStaff.hoursYear1 || 0,
+            Year1_Expense__c: $scope.budgetResearchStaff.totalYear1 || 0,
+            Year2_Expense__c: $scope.budgetResearchStaff.totalYear2 || 0,
+            Year3_Expense__c: $scope.budgetResearchStaff.totalYear3 || 0,
+            Total_Expense__c: $scope.budgetResearchStaff.totalAmount || 0,
+            Expense_Type__c: 'Research staff'
+        });
+
+        // Consumables
+        allExpenseLineItems.push({
+            Description__c: 'Consumables',
+            Year1_Expense__c: $scope.budgetConsumables.year1 || 0,
+            Year2_Expense__c: $scope.budgetConsumables.year2 || 0,
+            Year3_Expense__c: $scope.budgetConsumables.year3 || 0,
+            Total_Expense__c: $scope.budgetConsumables.total || 0,
+            Expense_Type__c: 'Consumables'
+        });
+
+        // Minor Equipment
+        allExpenseLineItems.push({
+            Description__c: 'Minor equipment',
+            Year1_Expense__c: $scope.minorEquipment.year1 || 0,
+            Year2_Expense__c: $scope.minorEquipment.year2 || 0,
+            Year3_Expense__c: $scope.minorEquipment.year3 || 0,
+            Total_Expense__c: $scope.minorEquipment.total || 0,
+            Expense_Type__c: 'Minor equipment'
+        });
+
+        // Contingency
+        allExpenseLineItems.push({
+            Description__c: 'Contingency and Miscellaneous',
+            Year1_Expense__c: $scope.budgetContingency.year1 || 0,
+            Year2_Expense__c: $scope.budgetContingency.year2 || 0,
+            Year3_Expense__c: $scope.budgetContingency.year3 || 0,
+            Total_Expense__c: $scope.budgetContingency.total || 0,
+            Expense_Type__c: 'Contingency'
+        });
+
+        // Overhead
+        allExpenseLineItems.push({
+            Description__c: 'Overheads Percentage',
+            Year1_Expense__c: $scope.budgetOverhead.percentageYear1 || 0,
+            Year2_Expense__c: $scope.budgetOverhead.percentageYear2 || 0,
+            Year3_Expense__c: $scope.budgetOverhead.percentageYear3 || 0,
+            Total_Expense__c: $scope.budgetOverhead.totalAmount || 0,
+            Expense_Type__c: 'Overhead'
+        });
+
+        // Prepare APA update object
+        var updatedApa = {
+            'Id': $rootScope.apaId
+        };
+
+        // Save using ApplicantPortal_Contoller
+        ApplicantPortal_Contoller.createExpenseWithHeadAndLineItems(
+            allExpenseLineItems, $rootScope.apaId, updatedApa,
+            function (result, event) {
+                if (event.status && result != null) {
+                    debugger;
+                    if (result.startsWith && result.startsWith('error')) {
+                        swal("Error", "Error saving budget details: " + result, "error");
+                        return;
+                    }
+
+                    swal("Success", "Budget details have been saved successfully.", "success");
+                    $scope.redirectPageURL('ExistingGrantWISER');
+                    $scope.$apply();
+                }
+            },
+            { escape: true }
+        );
+    };
+
+    // Initialize: Try to get expense records using ApplicantPortal_Contoller if available
+    // This will be called after getAccounts() sets up proposalId and contactId
+    // We'll call it from getAccounts() callback if needed
 
 })

@@ -444,15 +444,15 @@
                                 <td></td>
                                 <td class="orange-text">No. of days</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="30" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="50" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="10" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td class="orange-text">90</td>
+                                <td class="orange-text">{{budgetResearchStay.totalDays}}</td>
                             </tr>
 
                             <tr>
@@ -460,15 +460,15 @@
                                 <td></td>
                                 <td class="orange-text">Research Stay Per diem cost</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="2300" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="3833" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="767" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td class="orange-text">6900</td>
+                                <td class="orange-text">{{budgetResearchStay.totalCost}}</td>
                             </tr>
 
                             <tr>
@@ -476,35 +476,35 @@
                                 <td></td>
                                 <td class="orange-text">Travel cost per visit</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1500" />
+                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1500" />
+                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1500" />
+                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td class="orange-text">4500</td>
+                                <td class="orange-text">{{budgetTravel.totalCost}}</td>
                             </tr>
 
                             <tr class="subtotal">
                                 <td class="bold">Total Research stay and Travel to host</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">3800</td>
-                                <td class="orange-text">5333</td>
-                                <td class="orange-text">2267</td>
-                                <td class="orange-text">11400</td>
+                                <td class="orange-text">{{researchStayTravelTotal.year1}}</td>
+                                <td class="orange-text">{{researchStayTravelTotal.year2}}</td>
+                                <td class="orange-text">{{researchStayTravelTotal.year3}}</td>
+                                <td class="orange-text">{{researchStayTravelTotal.total}}</td>
                             </tr>
 
                             <tr class="gray-row">
                                 <td class="bold">Total Research Amount</td>
                                 <td></td>
                                 <td></td>
-                                <td>12200</td>
-                                <td>10667</td>
-                                <td>13733</td>
-                                <td>36600</td>
+                                <td>{{totalResearchAmount.year1}}</td>
+                                <td>{{totalResearchAmount.year2}}</td>
+                                <td>{{totalResearchAmount.year3}}</td>
+                                <td>{{totalResearchAmount.total}}</td>
                             </tr>
 
                             <!-- Overheads -->
@@ -513,13 +513,13 @@
                                 <td></td>
                                 <td>Percentage of Overheads</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5" />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5" />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5" />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td></td>
                             </tr>
@@ -528,20 +528,20 @@
                                 <td></td>
                                 <td></td>
                                 <td class="orange-text">Overheads Amount</td>
-                                <td class="orange-text">610</td>
-                                <td class="orange-text">533</td>
-                                <td class="orange-text">687</td>
-                                <td class="orange-text">1830</td>
+                                <td class="orange-text">{{budgetOverhead.amountYear1}}</td>
+                                <td class="orange-text">{{budgetOverhead.amountYear2}}</td>
+                                <td class="orange-text">{{budgetOverhead.amountYear3}}</td>
+                                <td class="orange-text">{{budgetOverhead.totalAmount}}</td>
                             </tr>
 
                             <tr class="bold">
                                 <td>Remaining Amount for Research Heads</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">11590</td>
-                                <td class="orange-text">10133</td>
-                                <td class="orange-text">13047</td>
-                                <td class="orange-text">34770</td>
+                                <td class="orange-text">{{remainingForResearch.year1}}</td>
+                                <td class="orange-text">{{remainingForResearch.year2}}</td>
+                                <td class="orange-text">{{remainingForResearch.year3}}</td>
+                                <td class="orange-text">{{remainingForResearch.total}}</td>
                             </tr>
 
                             <!-- Research Staff (FIXED using rowspan) -->
@@ -550,13 +550,13 @@
                                 <td></td>
                                 <td>No. of positions</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td></td>
                             </tr>
@@ -565,13 +565,13 @@
                                 <td></td>
                                 <td>Cost</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="90" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="90" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="90" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td></td>
                             </tr>
@@ -580,13 +580,13 @@
                                 <td></td>
                                 <td>Number of hour/week/days/month</td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="12" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="6" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="4" />
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td></td>
                             </tr>
@@ -594,10 +594,10 @@
                             <tr>
                                 <td></td>
                                 <td class="orange-text bold">Total Amount for Research Staff</td>
-                                <td class="orange-text">2520</td>
-                                <td class="orange-text">1620</td>
-                                <td class="orange-text">1380</td>
-                                <td class="orange-text">5520</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear1}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear2}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear3}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalAmount}}</td>
                             </tr>
 
                             <!-- Other Heads -->
@@ -606,15 +606,15 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="3000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="3000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="2000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td>8000</td>
+                                <td>{{budgetConsumables.total}}</td>
                             </tr>
 
                             <tr>
@@ -622,15 +622,15 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="1000" />
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="0" />
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="0" />
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td>1000</td>
+                                <td>{{minorEquipment.total}}</td>
                             </tr>
 
                             <tr>
@@ -638,25 +638,25 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" value="5000" />
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                 </td>
-                                <td>15000</td>
+                                <td>{{budgetContingency.total}}</td>
                             </tr>
 
                             <tr class="final-total">
                                 <td class="bold">Total</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">15930</td>
-                                <td class="orange-text">15487</td>
-                                <td class="orange-text">11333</td>
-                                <td class="orange-text">107040</td>
+                                <td class="orange-text">{{grandTotal.year1}}</td>
+                                <td class="orange-text">{{grandTotal.year2}}</td>
+                                <td class="orange-text">{{grandTotal.year3}}</td>
+                                <td class="orange-text">{{grandTotal.total}}</td>
                             </tr>
 
                             <tr class="note-row">
