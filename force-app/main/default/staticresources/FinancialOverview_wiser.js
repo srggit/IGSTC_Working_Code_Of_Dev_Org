@@ -22,9 +22,10 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     const PER_DIEM_MONTHLY = 2300;
     const DAYS_IN_MONTH = 30;
     const PER_DAY_COST = PER_DIEM_MONTHLY / DAYS_IN_MONTH;
-
+    const MAX_RESEARCH_AMOUNT = 16000;
 
     // Budget table variables (using different names to avoid conflicts with expense arrays)
+    // ===== INITIALIZE MODELS =====
     $scope.budgetResearchStay = {
         daysYear1: 0,
         daysYear2: 0,
@@ -35,39 +36,14 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         totalDays: 0,
         totalCost: 0
     };
+
     $scope.budgetTravel = {
         costYear1: 0,
         costYear2: 0,
         costYear3: 0,
         totalCost: 0
     };
-    $scope.researchStayTravelTotal = {
-        year1: 0,
-        year2: 0,
-        year3: 0,
-        total: 0
-    };
-    $scope.totalResearchAmount = {
-        year1: 0,
-        year2: 0,
-        year3: 0,
-        total: 0
-    };
-    $scope.budgetOverhead = {
-        percentageYear1: 0,
-        percentageYear2: 0,
-        percentageYear3: 0,
-        amountYear1: 0,
-        amountYear2: 0,
-        amountYear3: 0,
-        totalAmount: 0
-    };
-    $scope.remainingForResearch = {
-        year1: 0,
-        year2: 0,
-        year3: 0,
-        total: 0
-    };
+
     $scope.budgetResearchStaff = {
         positionsYear1: 0,
         positionsYear2: 0,
@@ -83,43 +59,73 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         totalYear3: 0,
         totalAmount: 0
     };
+
     $scope.budgetConsumables = {
         year1: 0,
         year2: 0,
         year3: 0,
         total: 0
     };
+
     $scope.minorEquipment = {
         year1: 0,
         year2: 0,
         year3: 0,
         total: 0
     };
+
     $scope.budgetContingency = {
         year1: 0,
         year2: 0,
         year3: 0,
         total: 0
     };
-    $scope.grandTotal = {
-        year1: 0,
-        year2: 0,
-        year3: 0,
-        total: 0
+
+    $scope.budgetOverhead = {
+        percentageYear1: 0,
+        percentageYear2: 0,
+        percentageYear3: 0,
+        amountYear1: 0,
+        amountYear2: 0,
+        amountYear3: 0,
+        totalAmount: 0
     };
-    $scope.finalTotalExcludingTravel = {
+
+    $scope.researchStayTravelTotal = {
         year1: 0,
         year2: 0,
         year3: 0,
         total: 0
     };
 
-    $scope.originalResearchAmount = {
+    $scope.totalResearchHeads = {
         year1: 0,
         year2: 0,
         year3: 0,
         total: 0
     };
+
+    $scope.totalResearchAmount = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+
+    $scope.remainingForResearch = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+
+    $scope.grandTotal = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+
 
     //     $scope.budgetResearchStay = {
     //     daysYear1,
@@ -1181,135 +1187,460 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         );
     };
 
+    // // ========== BUDGET TABLE CALCULATION METHODS ==========
+    // // Flag to prevent infinite loops during calculations
+    // $scope.isCalculating = false;
+
+    // // Master calculation method - calls all calculations in correct order without circular dependencies
+    // $scope.recalculateAll = function () {
+    //     if ($scope.isCalculating) {
+    //         return; // Prevent infinite loops
+    //     }
+    //     $scope.isCalculating = true;
+
+    //     try {
+
+    //         // --- CALCULATION : Research Stay Per diem cost --- //
+    //         const perDay = 2300 / 30;
+
+    //         // --- Research Stay Days ---
+    //         const d1 = Number($scope.budgetResearchStay.daysYear1) || 0;
+    //         const d2 = Number($scope.budgetResearchStay.daysYear2) || 0;
+    //         const d3 = Number($scope.budgetResearchStay.daysYear3) || 0;
+
+    //         $scope.budgetResearchStay.totalDays = d1 + d2 + d3;
+
+    //         // --- Research Stay Per Diem Cost (AUTO CALCULATED) ---
+    //         $scope.budgetResearchStay.costYear1 = Math.round(d1 * perDay * 100) / 100;
+    //         $scope.budgetResearchStay.costYear2 = Math.round(d2 * perDay * 100) / 100;
+    //         $scope.budgetResearchStay.costYear3 = Math.round(d3 * perDay * 100) / 100;
+
+    //         $scope.budgetResearchStay.totalCost =
+    //             $scope.budgetResearchStay.costYear1 +
+    //             $scope.budgetResearchStay.costYear2 +
+    //             $scope.budgetResearchStay.costYear3;
+
+    //         // --- CALCULATION : Travel Cost per Visit (AUTO CALCULATED) ---
+    //         $scope.budgetTravel.costYear1 =
+    //             $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
+
+    //         $scope.budgetTravel.costYear2 =
+    //             $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
+
+    //         $scope.budgetTravel.costYear3 =
+    //             $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
+
+    //         $scope.budgetTravel.totalCost =
+    //             $scope.budgetTravel.costYear1 +
+    //             $scope.budgetTravel.costYear2 +
+    //             $scope.budgetTravel.costYear3;
+
+
+    //         // Step 1: Calculate individual component totals
+    //         $scope.budgetResearchStay.totalDays = ($scope.budgetResearchStay.daysYear1 || 0) + ($scope.budgetResearchStay.daysYear2 || 0) + ($scope.budgetResearchStay.daysYear3 || 0);
+    //         $scope.budgetResearchStay.totalCost = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetResearchStay.costYear3 || 0);
+
+    //         $scope.budgetTravel.totalCost = ($scope.budgetTravel.costYear1 || 0) + ($scope.budgetTravel.costYear2 || 0) + ($scope.budgetTravel.costYear3 || 0);
+
+    //         $scope.budgetResearchStaff.totalYear1 = ($scope.budgetResearchStaff.positionsYear1 || 0) * ($scope.budgetResearchStaff.costYear1 || 0) * ($scope.budgetResearchStaff.hoursYear1 || 0);
+    //         $scope.budgetResearchStaff.totalYear2 = ($scope.budgetResearchStaff.positionsYear2 || 0) * ($scope.budgetResearchStaff.costYear2 || 0) * ($scope.budgetResearchStaff.hoursYear2 || 0);
+    //         $scope.budgetResearchStaff.totalYear3 = ($scope.budgetResearchStaff.positionsYear3 || 0) * ($scope.budgetResearchStaff.costYear3 || 0) * ($scope.budgetResearchStaff.hoursYear3 || 0);
+    //         $scope.budgetResearchStaff.totalAmount = $scope.budgetResearchStaff.totalYear1 + $scope.budgetResearchStaff.totalYear2 + $scope.budgetResearchStaff.totalYear3;
+
+    //         $scope.budgetConsumables.total = ($scope.budgetConsumables.year1 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.budgetConsumables.year3 || 0);
+    //         $scope.minorEquipment.total = ($scope.minorEquipment.year1 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.minorEquipment.year3 || 0);
+    //         $scope.budgetContingency.total = ($scope.budgetContingency.year1 || 0) + ($scope.budgetContingency.year2 || 0) + ($scope.budgetContingency.year3 || 0);
+
+    //         // Step 2: Calculate Research Stay + Travel totals
+    //         // $scope.researchStayTravelTotal.year1 = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetTravel.costYear1 || 0);
+    //         // $scope.researchStayTravelTotal.year2 = ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetTravel.costYear2 || 0);
+    //         // $scope.researchStayTravelTotal.year3 = ($scope.budgetResearchStay.costYear3 || 0) + ($scope.budgetTravel.costYear3 || 0);
+    //         // $scope.researchStayTravelTotal.total = $scope.researchStayTravelTotal.year1 + $scope.researchStayTravelTotal.year2 + $scope.researchStayTravelTotal.year3;
+
+    //         // Step 2: Calculate Research Stay + Travel totals
+    //         $scope.researchStayTravelTotal.year1 =
+    //             ($scope.budgetResearchStay.costYear1 || 0) +
+    //             ($scope.budgetTravel.costYear1 || 0);
+
+    //         $scope.researchStayTravelTotal.year2 =
+    //             ($scope.budgetResearchStay.costYear2 || 0) +
+    //             ($scope.budgetTravel.costYear2 || 0);
+
+    //         $scope.researchStayTravelTotal.year3 =
+    //             ($scope.budgetResearchStay.costYear3 || 0) +
+    //             ($scope.budgetTravel.costYear3 || 0);
+
+    //         $scope.researchStayTravelTotal.total =
+    //             $scope.researchStayTravelTotal.year1 +
+    //             $scope.researchStayTravelTotal.year2 +
+    //             $scope.researchStayTravelTotal.year3;
+
+    //         // Step 2.1: Total Research Heads = (Staff + Consumables + Minor Equipment + Contingency)
+    //         $scope.totalResearchHeads.year1 =
+    //             ($scope.budgetResearchStaff.totalYear1 || 0) +
+    //             ($scope.budgetConsumables.year1 || 0) +
+    //             ($scope.minorEquipment.year1 || 0) +
+    //             ($scope.budgetContingency.year1 || 0);
+
+    //         $scope.totalResearchHeads.year2 =
+    //             ($scope.budgetResearchStaff.totalYear2 || 0) +
+    //             ($scope.budgetConsumables.year2 || 0) +
+    //             ($scope.minorEquipment.year2 || 0) +
+    //             ($scope.budgetContingency.year2 || 0);
+
+    //         $scope.totalResearchHeads.year3 =
+    //             ($scope.budgetResearchStaff.totalYear3 || 0) +
+    //             ($scope.budgetConsumables.year3 || 0) +
+    //             ($scope.minorEquipment.year3 || 0) +
+    //             ($scope.budgetContingency.year3 || 0);
+
+    //         $scope.totalResearchHeads.total =
+    //             $scope.totalResearchHeads.year1 +
+    //             $scope.totalResearchHeads.year2 +
+    //             $scope.totalResearchHeads.year3;
+
+
+    //         // Step 3: Calculate Total Research Amount (before overhead)
+    //         // $scope.totalResearchAmount.year1 = ($scope.researchStayTravelTotal.year1 || 0) + ($scope.budgetResearchStaff.totalYear1 || 0) + ($scope.budgetConsumables.year1 || 0) + ($scope.minorEquipment.year1 || 0) + ($scope.budgetContingency.year1 || 0);
+    //         // $scope.totalResearchAmount.year2 = ($scope.researchStayTravelTotal.year2 || 0) + ($scope.budgetResearchStaff.totalYear2 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.budgetContingency.year2 || 0);
+    //         // $scope.totalResearchAmount.year3 = ($scope.researchStayTravelTotal.year3 || 0) + ($scope.budgetResearchStaff.totalYear3 || 0) + ($scope.budgetConsumables.year3 || 0) + ($scope.minorEquipment.year3 || 0) + ($scope.budgetContingency.year3 || 0);
+    //         // $scope.totalResearchAmount.total = $scope.totalResearchAmount.year1 + $scope.totalResearchAmount.year2 + $scope.totalResearchAmount.year3;
+
+    //         // Step 3: Calculate Total Research Amount (before overhead)
+    //         $scope.totalResearchAmount.year1 =
+    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year1 || 0);
+
+    //         $scope.totalResearchAmount.year2 =
+    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year2 || 0);
+
+    //         $scope.totalResearchAmount.year3 =
+    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year3 || 0);
+
+    //         $scope.totalResearchAmount.total =
+    //             $scope.totalResearchAmount.year1 +
+    //             $scope.totalResearchAmount.year2 +
+    //             $scope.totalResearchAmount.year3;
+
+    //         // Preserve original Total Research Amount for overhead calculation
+    //         $scope.originalResearchAmount.year1 = $scope.totalResearchAmount.year1;
+    //         $scope.originalResearchAmount.year2 = $scope.totalResearchAmount.year2;
+    //         $scope.originalResearchAmount.year3 = $scope.totalResearchAmount.year3;
+    //         $scope.originalResearchAmount.total = $scope.totalResearchAmount.total;
+
+
+    //         // Step 4: Calculate Overhead amounts based on Total Research Amount
+    //         var baseYear1 = $scope.totalResearchAmount.year1 || 0;
+    //         var baseYear2 = $scope.totalResearchAmount.year2 || 0;
+    //         var baseYear3 = $scope.totalResearchAmount.year3 || 0;
+
+    //         // $scope.budgetOverhead.amountYear1 = Math.round((baseYear1 * ($scope.budgetOverhead.percentageYear1 || 0) / 100) * 100) / 100;
+    //         // $scope.budgetOverhead.amountYear2 = Math.round((baseYear2 * ($scope.budgetOverhead.percentageYear2 || 0) / 100) * 100) / 100;
+    //         // $scope.budgetOverhead.amountYear3 = Math.round((baseYear3 * ($scope.budgetOverhead.percentageYear3 || 0) / 100) * 100) / 100;
+    //         // $scope.budgetOverhead.totalAmount = $scope.budgetOverhead.amountYear1 + $scope.budgetOverhead.amountYear2 + $scope.budgetOverhead.amountYear3;
+
+    //         $scope.budgetOverhead.amountYear1 =
+    //             Math.round(($scope.totalResearchAmount.year1 *
+    //                 ($scope.budgetOverhead.percentageYear1 || 0))) / 100;
+
+    //         $scope.budgetOverhead.amountYear2 =
+    //             Math.round(($scope.totalResearchAmount.year2 *
+    //                 ($scope.budgetOverhead.percentageYear2 || 0))) / 100;
+
+    //         $scope.budgetOverhead.amountYear3 =
+    //             Math.round(($scope.totalResearchAmount.year3 *
+    //                 ($scope.budgetOverhead.percentageYear3 || 0))) / 100;
+
+    //         $scope.budgetOverhead.totalAmount =
+    //             $scope.budgetOverhead.amountYear1 +
+    //             $scope.budgetOverhead.amountYear2 +
+    //             $scope.budgetOverhead.amountYear3;
+
+
+    //         // Step 5: Calculate Remaining Amount for Research Heads
+    //         $scope.remainingForResearch.year1 = baseYear1 - $scope.budgetOverhead.amountYear1;
+    //         $scope.remainingForResearch.year2 = baseYear2 - $scope.budgetOverhead.amountYear2;
+    //         $scope.remainingForResearch.year3 = baseYear3 - $scope.budgetOverhead.amountYear3;
+    //         $scope.remainingForResearch.total = $scope.remainingForResearch.year1 + $scope.remainingForResearch.year2 + $scope.remainingForResearch.year3;
+
+    //         // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
+    //         // $scope.grandTotal.year1 = ($scope.totalResearchAmount.year1 || 0) + ($scope.budgetOverhead.amountYear1 || 0);
+    //         // $scope.grandTotal.year2 = ($scope.totalResearchAmount.year2 || 0) + ($scope.budgetOverhead.amountYear2 || 0);
+    //         // $scope.grandTotal.year3 = ($scope.totalResearchAmount.year3 || 0) + ($scope.budgetOverhead.amountYear3 || 0);
+    //         // $scope.grandTotal.total = $scope.grandTotal.year1 + $scope.grandTotal.year2 + $scope.grandTotal.year3;
+
+    //         // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
+    //         $scope.grandTotal.year1 =
+    //             $scope.researchStayTravelTotal.year1 +
+    //             $scope.budgetOverhead.amountYear1 +
+    //             $scope.totalResearchHeads.year1;
+
+    //         $scope.grandTotal.year2 =
+    //             $scope.researchStayTravelTotal.year2 +
+    //             $scope.budgetOverhead.amountYear2 +
+    //             $scope.totalResearchHeads.year2;
+
+    //         $scope.grandTotal.year3 =
+    //             $scope.researchStayTravelTotal.year3 +
+    //             $scope.budgetOverhead.amountYear3 +
+    //             $scope.totalResearchHeads.year3;
+
+    //         $scope.grandTotal.total =
+    //             $scope.grandTotal.year1 +
+    //             $scope.grandTotal.year2 +
+    //             $scope.grandTotal.year3;
+
+
+    //         // Step 7: Adjust Total Research Amount (Grand Total - Travel)
+    //         $scope.totalResearchAmount.year1 =
+    //             ($scope.grandTotal.year1 || 0) -
+    //             ($scope.researchStayTravelTotal.year1 || 0);
+
+    //         $scope.totalResearchAmount.year2 =
+    //             ($scope.grandTotal.year2 || 0) -
+    //             ($scope.researchStayTravelTotal.year2 || 0);
+
+    //         $scope.totalResearchAmount.year3 =
+    //             ($scope.grandTotal.year3 || 0) -
+    //             ($scope.researchStayTravelTotal.year3 || 0);
+
+    //         $scope.totalResearchAmount.total =
+    //             $scope.totalResearchAmount.year1 +
+    //             $scope.totalResearchAmount.year2 +
+    //             $scope.totalResearchAmount.year3;
+
+    //     } finally {
+    //         $scope.isCalculating = false;
+    //     }
+    // };
+
+    // Individual calculation methods - they only update their own values and call recalculateAll
+
     // ========== BUDGET TABLE CALCULATION METHODS ==========
-    // Flag to prevent infinite loops during calculations
     $scope.isCalculating = false;
 
-    // Master calculation method - calls all calculations in correct order without circular dependencies
     $scope.recalculateAll = function () {
         if ($scope.isCalculating) {
-            return; // Prevent infinite loops
+            return;
         }
         $scope.isCalculating = true;
 
         try {
 
-            // --- CALCULATION : Research Stay Per diem cost --- //
-            const perDay = 2300 / 30;
+            /* =====================================================
+               1️⃣ RESEARCH STAY (Per diem calculation)
+            ===================================================== */
+            const PER_DAY_RATE = 2300 / 30;
 
-            // --- Research Stay Days ---
             const d1 = Number($scope.budgetResearchStay.daysYear1) || 0;
             const d2 = Number($scope.budgetResearchStay.daysYear2) || 0;
             const d3 = Number($scope.budgetResearchStay.daysYear3) || 0;
 
             $scope.budgetResearchStay.totalDays = d1 + d2 + d3;
 
-            // --- Research Stay Per Diem Cost (AUTO CALCULATED) ---
-            $scope.budgetResearchStay.costYear1 = Math.round(d1 * perDay * 100) / 100;
-            $scope.budgetResearchStay.costYear2 = Math.round(d2 * perDay * 100) / 100;
-            $scope.budgetResearchStay.costYear3 = Math.round(d3 * perDay * 100) / 100;
+            $scope.budgetResearchStay.costYear1 = Math.round(d1 * PER_DAY_RATE * 100) / 100;
+            $scope.budgetResearchStay.costYear2 = Math.round(d2 * PER_DAY_RATE * 100) / 100;
+            $scope.budgetResearchStay.costYear3 = Math.round(d3 * PER_DAY_RATE * 100) / 100;
 
             $scope.budgetResearchStay.totalCost =
                 $scope.budgetResearchStay.costYear1 +
                 $scope.budgetResearchStay.costYear2 +
                 $scope.budgetResearchStay.costYear3;
 
-            // --- CALCULATION : Travel Cost per Visit (AUTO CALCULATED) ---
-            $scope.budgetTravel.costYear1 =
-                $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
-
-            $scope.budgetTravel.costYear2 =
-                $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
-
-            $scope.budgetTravel.costYear3 =
-                $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
+            /* =====================================================
+               2️⃣ TRAVEL COST (AUTO)
+               IF research stay exists → 1500
+            ===================================================== */
+            $scope.budgetTravel.costYear1 = $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
+            $scope.budgetTravel.costYear2 = $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
+            $scope.budgetTravel.costYear3 = $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
 
             $scope.budgetTravel.totalCost =
                 $scope.budgetTravel.costYear1 +
                 $scope.budgetTravel.costYear2 +
                 $scope.budgetTravel.costYear3;
 
+            /* =====================================================
+               3️⃣ RESEARCH STAY + TRAVEL TOTAL
+            ===================================================== */
+            $scope.researchStayTravelTotal.year1 =
+                $scope.budgetResearchStay.costYear1 +
+                $scope.budgetTravel.costYear1;
 
-            // Step 1: Calculate individual component totals
-            $scope.budgetResearchStay.totalDays = ($scope.budgetResearchStay.daysYear1 || 0) + ($scope.budgetResearchStay.daysYear2 || 0) + ($scope.budgetResearchStay.daysYear3 || 0);
-            $scope.budgetResearchStay.totalCost = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetResearchStay.costYear3 || 0);
+            $scope.researchStayTravelTotal.year2 =
+                $scope.budgetResearchStay.costYear2 +
+                $scope.budgetTravel.costYear2;
 
-            $scope.budgetTravel.totalCost = ($scope.budgetTravel.costYear1 || 0) + ($scope.budgetTravel.costYear2 || 0) + ($scope.budgetTravel.costYear3 || 0);
+            $scope.researchStayTravelTotal.year3 =
+                $scope.budgetResearchStay.costYear3 +
+                $scope.budgetTravel.costYear3;
 
-            $scope.budgetResearchStaff.totalYear1 = ($scope.budgetResearchStaff.positionsYear1 || 0) * ($scope.budgetResearchStaff.costYear1 || 0) * ($scope.budgetResearchStaff.hoursYear1 || 0);
-            $scope.budgetResearchStaff.totalYear2 = ($scope.budgetResearchStaff.positionsYear2 || 0) * ($scope.budgetResearchStaff.costYear2 || 0) * ($scope.budgetResearchStaff.hoursYear2 || 0);
-            $scope.budgetResearchStaff.totalYear3 = ($scope.budgetResearchStaff.positionsYear3 || 0) * ($scope.budgetResearchStaff.costYear3 || 0) * ($scope.budgetResearchStaff.hoursYear3 || 0);
-            $scope.budgetResearchStaff.totalAmount = $scope.budgetResearchStaff.totalYear1 + $scope.budgetResearchStaff.totalYear2 + $scope.budgetResearchStaff.totalYear3;
+            $scope.researchStayTravelTotal.total =
+                $scope.researchStayTravelTotal.year1 +
+                $scope.researchStayTravelTotal.year2 +
+                $scope.researchStayTravelTotal.year3;
 
-            $scope.budgetConsumables.total = ($scope.budgetConsumables.year1 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.budgetConsumables.year3 || 0);
-            $scope.minorEquipment.total = ($scope.minorEquipment.year1 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.minorEquipment.year3 || 0);
-            $scope.budgetContingency.total = ($scope.budgetContingency.year1 || 0) + ($scope.budgetContingency.year2 || 0) + ($scope.budgetContingency.year3 || 0);
+            /* =====================================================
+               4️⃣ RESEARCH STAFF
+            ===================================================== */
+            $scope.budgetResearchStaff.totalYear1 =
+                (Number($scope.budgetResearchStaff.positionsYear1) || 0) *
+                (Number($scope.budgetResearchStaff.costYear1) || 0) *
+                (Number($scope.budgetResearchStaff.hoursYear1) || 0);
 
-            // Step 2: Calculate Research Stay + Travel totals
-            $scope.researchStayTravelTotal.year1 = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetTravel.costYear1 || 0);
-            $scope.researchStayTravelTotal.year2 = ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetTravel.costYear2 || 0);
-            $scope.researchStayTravelTotal.year3 = ($scope.budgetResearchStay.costYear3 || 0) + ($scope.budgetTravel.costYear3 || 0);
-            $scope.researchStayTravelTotal.total = $scope.researchStayTravelTotal.year1 + $scope.researchStayTravelTotal.year2 + $scope.researchStayTravelTotal.year3;
+            $scope.budgetResearchStaff.totalYear2 =
+                (Number($scope.budgetResearchStaff.positionsYear2) || 0) *
+                (Number($scope.budgetResearchStaff.costYear2) || 0) *
+                (Number($scope.budgetResearchStaff.hoursYear2) || 0);
 
-            // Step 3: Calculate Total Research Amount (before overhead)
-            $scope.totalResearchAmount.year1 = ($scope.researchStayTravelTotal.year1 || 0) + ($scope.budgetResearchStaff.totalYear1 || 0) + ($scope.budgetConsumables.year1 || 0) + ($scope.minorEquipment.year1 || 0) + ($scope.budgetContingency.year1 || 0);
-            $scope.totalResearchAmount.year2 = ($scope.researchStayTravelTotal.year2 || 0) + ($scope.budgetResearchStaff.totalYear2 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.budgetContingency.year2 || 0);
-            $scope.totalResearchAmount.year3 = ($scope.researchStayTravelTotal.year3 || 0) + ($scope.budgetResearchStaff.totalYear3 || 0) + ($scope.budgetConsumables.year3 || 0) + ($scope.minorEquipment.year3 || 0) + ($scope.budgetContingency.year3 || 0);
-            $scope.totalResearchAmount.total = $scope.totalResearchAmount.year1 + $scope.totalResearchAmount.year2 + $scope.totalResearchAmount.year3;
+            $scope.budgetResearchStaff.totalYear3 =
+                (Number($scope.budgetResearchStaff.positionsYear3) || 0) *
+                (Number($scope.budgetResearchStaff.costYear3) || 0) *
+                (Number($scope.budgetResearchStaff.hoursYear3) || 0);
 
-            // Preserve original Total Research Amount for overhead calculation
-            $scope.originalResearchAmount.year1 = $scope.totalResearchAmount.year1;
-            $scope.originalResearchAmount.year2 = $scope.totalResearchAmount.year2;
-            $scope.originalResearchAmount.year3 = $scope.totalResearchAmount.year3;
-            $scope.originalResearchAmount.total = $scope.totalResearchAmount.total;
+            $scope.budgetResearchStaff.totalAmount =
+                $scope.budgetResearchStaff.totalYear1 +
+                $scope.budgetResearchStaff.totalYear2 +
+                $scope.budgetResearchStaff.totalYear3;
 
-
-            // Step 4: Calculate Overhead amounts based on Total Research Amount
-            var baseYear1 = $scope.totalResearchAmount.year1 || 0;
-            var baseYear2 = $scope.totalResearchAmount.year2 || 0;
-            var baseYear3 = $scope.totalResearchAmount.year3 || 0;
-
-            $scope.budgetOverhead.amountYear1 = Math.round((baseYear1 * ($scope.budgetOverhead.percentageYear1 || 0) / 100) * 100) / 100;
-            $scope.budgetOverhead.amountYear2 = Math.round((baseYear2 * ($scope.budgetOverhead.percentageYear2 || 0) / 100) * 100) / 100;
-            $scope.budgetOverhead.amountYear3 = Math.round((baseYear3 * ($scope.budgetOverhead.percentageYear3 || 0) / 100) * 100) / 100;
-            $scope.budgetOverhead.totalAmount = $scope.budgetOverhead.amountYear1 + $scope.budgetOverhead.amountYear2 + $scope.budgetOverhead.amountYear3;
-
-            // Step 5: Calculate Remaining Amount for Research Heads
-            $scope.remainingForResearch.year1 = baseYear1 - $scope.budgetOverhead.amountYear1;
-            $scope.remainingForResearch.year2 = baseYear2 - $scope.budgetOverhead.amountYear2;
-            $scope.remainingForResearch.year3 = baseYear3 - $scope.budgetOverhead.amountYear3;
-            $scope.remainingForResearch.total = $scope.remainingForResearch.year1 + $scope.remainingForResearch.year2 + $scope.remainingForResearch.year3;
-
-            // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
-            $scope.grandTotal.year1 = ($scope.totalResearchAmount.year1 || 0) + ($scope.budgetOverhead.amountYear1 || 0);
-            $scope.grandTotal.year2 = ($scope.totalResearchAmount.year2 || 0) + ($scope.budgetOverhead.amountYear2 || 0);
-            $scope.grandTotal.year3 = ($scope.totalResearchAmount.year3 || 0) + ($scope.budgetOverhead.amountYear3 || 0);
-            $scope.grandTotal.total = $scope.grandTotal.year1 + $scope.grandTotal.year2 + $scope.grandTotal.year3;
-
-            // Step 7: Adjust Total Research Amount (Grand Total - Travel)
+            /* =====================================================
+              5️⃣ TOTAL RESEARCH AMOUNT (Remaining Balance)
+               = 16000 − (Research Stay + Travel)
+            ===================================================== */
             $scope.totalResearchAmount.year1 =
-                ($scope.grandTotal.year1 || 0) -
-                ($scope.researchStayTravelTotal.year1 || 0);
+                Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year1);
 
             $scope.totalResearchAmount.year2 =
-                ($scope.grandTotal.year2 || 0) -
-                ($scope.researchStayTravelTotal.year2 || 0);
+                Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year2);
 
             $scope.totalResearchAmount.year3 =
-                ($scope.grandTotal.year3 || 0) -
-                ($scope.researchStayTravelTotal.year3 || 0);
+                Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year3);
 
             $scope.totalResearchAmount.total =
                 $scope.totalResearchAmount.year1 +
                 $scope.totalResearchAmount.year2 +
                 $scope.totalResearchAmount.year3;
 
+            /* =====================================================
+               6️⃣ OVERHEAD (Based on Total Research Amount)
+            ===================================================== */
+            $scope.budgetOverhead.amountYear1 =
+                Math.round(
+                    $scope.totalResearchAmount.year1 *
+                    (Number($scope.budgetOverhead.percentageYear1) || 0)
+                ) / 100;
+
+            $scope.budgetOverhead.amountYear2 =
+                Math.round(
+                    $scope.totalResearchAmount.year2 *
+                    (Number($scope.budgetOverhead.percentageYear2) || 0)
+                ) / 100;
+
+            $scope.budgetOverhead.amountYear3 =
+                Math.round(
+                    $scope.totalResearchAmount.year3 *
+                    (Number($scope.budgetOverhead.percentageYear3) || 0)
+                ) / 100;
+
+            $scope.budgetOverhead.totalAmount =
+                $scope.budgetOverhead.amountYear1 +
+                $scope.budgetOverhead.amountYear2 +
+                $scope.budgetOverhead.amountYear3;
+
+            /* =====================================================
+               7️⃣ TOTAL RESEARCH HEADS
+               (Overheads Amount + Staff + Consumables + Minor Equipment + Contingency)
+            ===================================================== */
+            $scope.totalResearchHeads.year1 =
+                ($scope.budgetOverhead.amountYear1 || 0) +
+                ($scope.budgetResearchStaff.totalYear1 || 0) +
+                ($scope.budgetConsumables.year1 || 0) +
+                ($scope.minorEquipment.year1 || 0) +
+                ($scope.budgetContingency.year1 || 0);
+
+            $scope.totalResearchHeads.year2 =
+                ($scope.budgetOverhead.amountYear2 || 0) +
+                ($scope.budgetResearchStaff.totalYear2 || 0) +
+                ($scope.budgetConsumables.year2 || 0) +
+                ($scope.minorEquipment.year2 || 0) +
+                ($scope.budgetContingency.year2 || 0);
+
+            $scope.totalResearchHeads.year3 =
+                ($scope.budgetOverhead.amountYear3 || 0) +
+                ($scope.budgetResearchStaff.totalYear3 || 0) +
+                ($scope.budgetConsumables.year3 || 0) +
+                ($scope.minorEquipment.year3 || 0) +
+                ($scope.budgetContingency.year3 || 0);
+
+            $scope.totalResearchHeads.total =
+                $scope.totalResearchHeads.year1 +
+                $scope.totalResearchHeads.year2 +
+                $scope.totalResearchHeads.year3;
+
+            console.log('$scope.totalResearchHeads.year1 :', $scope.totalResearchHeads.year1);
+
+            // =====================================================
+            // Remaining Amount for Research Heads
+            // = 16000 - (Research Stay + Travel) - Overheads
+            // =====================================================
+            $scope.remainingForResearch.year1 =
+                Math.max(
+                    0,
+                    MAX_RESEARCH_AMOUNT -
+                    ($scope.researchStayTravelTotal.year1 || 0) -
+                    ($scope.budgetOverhead.amountYear1 || 0)
+                );
+
+            $scope.remainingForResearch.year2 =
+                Math.max(
+                    0,
+                    MAX_RESEARCH_AMOUNT -
+                    ($scope.researchStayTravelTotal.year2 || 0) -
+                    ($scope.budgetOverhead.amountYear2 || 0)
+                );
+
+            $scope.remainingForResearch.year3 =
+                Math.max(
+                    0,
+                    MAX_RESEARCH_AMOUNT -
+                    ($scope.researchStayTravelTotal.year3 || 0) -
+                    ($scope.budgetOverhead.amountYear3 || 0)
+                );
+
+            $scope.remainingForResearch.total =
+                $scope.remainingForResearch.year1 +
+                $scope.remainingForResearch.year2 +
+                $scope.remainingForResearch.year3;
+
+
+
+            /* =====================================================
+               8️⃣ GRAND TOTAL (FINAL)
+            ===================================================== */
+            $scope.grandTotal.year1 =
+                $scope.researchStayTravelTotal.year1 +
+                $scope.totalResearchHeads.year1;
+
+            $scope.grandTotal.year2 =
+                $scope.researchStayTravelTotal.year2 +
+                $scope.totalResearchHeads.year2;
+
+            $scope.grandTotal.year3 =
+                $scope.researchStayTravelTotal.year3 +
+                $scope.totalResearchHeads.year3;
+
+            $scope.grandTotal.total =
+                $scope.grandTotal.year1 +
+                $scope.grandTotal.year2 +
+                $scope.grandTotal.year3;
+
+            console.log('$scope.grandTotal.year1', $scope.grandTotal.year1);
+
         } finally {
             $scope.isCalculating = false;
         }
     };
+    $scope.recalculateAll();
 
-    // Individual calculation methods - they only update their own values and call recalculateAll
     $scope.calculateResearchStay = function () {
         $scope.recalculateAll();
     };

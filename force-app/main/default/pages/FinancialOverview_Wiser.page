@@ -704,6 +704,16 @@
                             </tr>
 
                             <tr class="final-total">
+                                <td class="bold">Total Research Heads</td>
+                                <td></td>
+                                <td></td>
+                                <td class="orange-text">{{totalResearchHeads.year1}}</td>
+                                <td class="orange-text">{{totalResearchHeads.year2}}</td>
+                                <td class="orange-text">{{totalResearchHeads.year3}}</td>
+                                <td class="orange-text">{{totalResearchHeads.total}}</td>
+                            </tr>
+
+                            <tr class="final-total">
                                 <td class="bold">Total</td>
                                 <td></td>
                                 <td></td>

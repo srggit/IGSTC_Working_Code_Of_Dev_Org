@@ -2115,7 +2115,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             WHERE Id = :apa.Contact__r.AccountId
         ];
         
-        return new ProposalAccountWrapper(acc[0], apa.Proposals__r.Duration_In_Months_Max_36__c);
+        return new ProposalAccountWrapper(acc[0], apa.Proposals__r.Duration_In_Months_Max_36__c, apa.Id);
     }
     
     public class ProposalAccountWrapper {
@@ -2125,9 +2125,13 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
         @AuraEnabled
         public Decimal durationInMonths { get; set; }
         
-        public ProposalAccountWrapper(Account acc, Decimal duration) {
+        @AuraEnabled
+        public String apaId { get; set; }
+        
+        public ProposalAccountWrapper(Account acc, Decimal duration, String apaIdValue) {
             this.accountDetail = acc;
             this.durationInMonths = duration;
+            this.apaId = apaIdValue;
         }
     }
 
