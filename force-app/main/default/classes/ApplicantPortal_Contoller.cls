@@ -1081,6 +1081,11 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     public static String createExpenseWithHeadAndLineItems(List<Expense_Line_Item__c> expenseLineItems, String apaId, Applicant_Proposal_Association__c updatedApa) {
         return Proposal_Controller.createExpenseWithHeadAndLineItems(expenseLineItems, apaId, updatedApa);
     }
+
+    @RemoteAction
+    public static String createExpenseWithHeadAndLineItemsForWiser(List<Expense_Line_Item__c> expenseLineItems, String apaId, Applicant_Proposal_Association__c updatedApa) {
+        return Proposal_Controller.createExpenseWithHeadAndLineItemsForWiser(expenseLineItems, apaId, updatedApa);
+    }
     
     // NEW METHOD: Get expense records from Expense_Head__c and Expense_Line_Item__c
     @RemoteAction
@@ -3103,7 +3108,7 @@ public static void updateProposalStage(Id proposalId) {
     @RemoteAction
     public static Boolean fetchApplicantStatus(String apaId){
         List<Applicant_Proposal_Association__c> apaList = [
-            SELECT Applicant_Status__c
+            SELECT Applicant_Status__c, Contact__c, Contact__r.Is_Primary__c
             FROM Applicant_Proposal_Association__c
             WHERE Id = :apaId
             AND Is_Signatory__c = false

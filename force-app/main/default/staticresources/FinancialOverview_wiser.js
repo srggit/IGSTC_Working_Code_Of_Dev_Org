@@ -19,89 +19,190 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     $scope.durationMonths = 0;
     $rootScope.candidateId;
 
+    const PER_DIEM_MONTHLY = 2300;
+    const DAYS_IN_MONTH = 30;
+    const PER_DAY_COST = PER_DIEM_MONTHLY / DAYS_IN_MONTH;
+
+
     // Budget table variables (using different names to avoid conflicts with expense arrays)
     $scope.budgetResearchStay = {
-        daysYear1: 30,
-        daysYear2: 50,
-        daysYear3: 10,
-        costYear1: 2300,
-        costYear2: 3833,
-        costYear3: 767,
-        totalDays: 90,
-        totalCost: 6900
+        daysYear1: 0,
+        daysYear2: 0,
+        daysYear3: 0,
+        costYear1: 0,
+        costYear2: 0,
+        costYear3: 0,
+        totalDays: 0,
+        totalCost: 0
     };
     $scope.budgetTravel = {
-        costYear1: 1500,
-        costYear2: 1500,
-        costYear3: 1500,
-        totalCost: 4500
+        costYear1: 0,
+        costYear2: 0,
+        costYear3: 0,
+        totalCost: 0
     };
     $scope.researchStayTravelTotal = {
-        year1: 3800,
-        year2: 5333,
-        year3: 2267,
-        total: 11400
-    };
-    $scope.totalResearchAmount = {
-        year1: 12200,
-        year2: 10667,
-        year3: 13733,
-        total: 36600
-    };
-    $scope.budgetOverhead = {
-        percentageYear1: 5,
-        percentageYear2: 5,
-        percentageYear3: 5,
-        amountYear1: 610,
-        amountYear2: 533,
-        amountYear3: 687,
-        totalAmount: 1830
-    };
-    $scope.remainingForResearch = {
-        year1: 11590,
-        year2: 10133,
-        year3: 13047,
-        total: 34770
-    };
-    $scope.budgetResearchStaff = {
-        positionsYear1: 1,
-        positionsYear2: 1,
-        positionsYear3: 1,
-        costYear1: 90,
-        costYear2: 90,
-        costYear3: 90,
-        hoursYear1: 12,
-        hoursYear2: 6,
-        hoursYear3: 4,
-        totalYear1: 2520,
-        totalYear2: 1620,
-        totalYear3: 1380,
-        totalAmount: 5520
-    };
-    $scope.budgetConsumables = {
-        year1: 3000,
-        year2: 3000,
-        year3: 2000,
-        total: 8000
-    };
-    $scope.minorEquipment = {
-        year1: 1000,
+        year1: 0,
         year2: 0,
         year3: 0,
-        total: 1000
+        total: 0
+    };
+    $scope.totalResearchAmount = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+    $scope.budgetOverhead = {
+        percentageYear1: 0,
+        percentageYear2: 0,
+        percentageYear3: 0,
+        amountYear1: 0,
+        amountYear2: 0,
+        amountYear3: 0,
+        totalAmount: 0
+    };
+    $scope.remainingForResearch = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+    $scope.budgetResearchStaff = {
+        positionsYear1: 0,
+        positionsYear2: 0,
+        positionsYear3: 0,
+        costYear1: 0,
+        costYear2: 0,
+        costYear3: 0,
+        hoursYear1: 0,
+        hoursYear2: 0,
+        hoursYear3: 0,
+        totalYear1: 0,
+        totalYear2: 0,
+        totalYear3: 0,
+        totalAmount: 0
+    };
+    $scope.budgetConsumables = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+    $scope.minorEquipment = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
     };
     $scope.budgetContingency = {
-        year1: 5000,
-        year2: 5000,
-        year3: 5000,
-        total: 15000
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
     };
     $scope.grandTotal = {
-        year1: 15930,
-        year2: 15487,
-        year3: 11333,
-        total: 42750
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
     };
+    $scope.finalTotalExcludingTravel = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+
+    $scope.originalResearchAmount = {
+        year1: 0,
+        year2: 0,
+        year3: 0,
+        total: 0
+    };
+
+    //     $scope.budgetResearchStay = {
+    //     daysYear1,
+    //     daysYear2,
+    //     daysYear3,
+    //     costYear1,
+    //     costYear2,
+    //     costYear3,
+    //     totalDays,
+    //     totalCost
+    // };
+    // $scope.budgetTravel = {
+    //     costYear1,
+    //     costYear2,
+    //     costYear3,
+    //     totalCost
+    // };
+    // $scope.researchStayTravelTotal = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.totalResearchAmount = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.budgetOverhead = {
+    //     percentageYear1,
+    //     percentageYear2,
+    //     percentageYear3,
+    //     amountYear1,
+    //     amountYear2,
+    //     amountYear3,
+    //     totalAmount
+    // };
+    // $scope.remainingForResearch = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.budgetResearchStaff = {
+    //     positionsYear1,
+    //     positionsYear2,
+    //     positionsYear3,
+    //     costYear1,
+    //     costYear2,
+    //     costYear3,
+    //     hoursYear1,
+    //     hoursYear2,
+    //     hoursYear3,
+    //     totalYear1,
+    //     totalYear2,
+    //     totalYear3,
+    //     totalAmount
+    // };
+    // $scope.budgetConsumables = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.minorEquipment = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.budgetContingency = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
+    // $scope.grandTotal = {
+    //     year1,
+    //     year2,
+    //     year3,
+    //     total
+    // };
 
     if (localStorage.getItem('apaId')) {
         $rootScope.apaId = localStorage.getItem('apaId');
@@ -1092,6 +1193,43 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         $scope.isCalculating = true;
 
         try {
+
+            // --- CALCULATION : Research Stay Per diem cost --- //
+            const perDay = 2300 / 30;
+
+            // --- Research Stay Days ---
+            const d1 = Number($scope.budgetResearchStay.daysYear1) || 0;
+            const d2 = Number($scope.budgetResearchStay.daysYear2) || 0;
+            const d3 = Number($scope.budgetResearchStay.daysYear3) || 0;
+
+            $scope.budgetResearchStay.totalDays = d1 + d2 + d3;
+
+            // --- Research Stay Per Diem Cost (AUTO CALCULATED) ---
+            $scope.budgetResearchStay.costYear1 = Math.round(d1 * perDay * 100) / 100;
+            $scope.budgetResearchStay.costYear2 = Math.round(d2 * perDay * 100) / 100;
+            $scope.budgetResearchStay.costYear3 = Math.round(d3 * perDay * 100) / 100;
+
+            $scope.budgetResearchStay.totalCost =
+                $scope.budgetResearchStay.costYear1 +
+                $scope.budgetResearchStay.costYear2 +
+                $scope.budgetResearchStay.costYear3;
+
+            // --- CALCULATION : Travel Cost per Visit (AUTO CALCULATED) ---
+            $scope.budgetTravel.costYear1 =
+                $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
+
+            $scope.budgetTravel.costYear2 =
+                $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
+
+            $scope.budgetTravel.costYear3 =
+                $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
+
+            $scope.budgetTravel.totalCost =
+                $scope.budgetTravel.costYear1 +
+                $scope.budgetTravel.costYear2 +
+                $scope.budgetTravel.costYear3;
+
+
             // Step 1: Calculate individual component totals
             $scope.budgetResearchStay.totalDays = ($scope.budgetResearchStay.daysYear1 || 0) + ($scope.budgetResearchStay.daysYear2 || 0) + ($scope.budgetResearchStay.daysYear3 || 0);
             $scope.budgetResearchStay.totalCost = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetResearchStay.costYear3 || 0);
@@ -1119,6 +1257,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             $scope.totalResearchAmount.year3 = ($scope.researchStayTravelTotal.year3 || 0) + ($scope.budgetResearchStaff.totalYear3 || 0) + ($scope.budgetConsumables.year3 || 0) + ($scope.minorEquipment.year3 || 0) + ($scope.budgetContingency.year3 || 0);
             $scope.totalResearchAmount.total = $scope.totalResearchAmount.year1 + $scope.totalResearchAmount.year2 + $scope.totalResearchAmount.year3;
 
+            // Preserve original Total Research Amount for overhead calculation
+            $scope.originalResearchAmount.year1 = $scope.totalResearchAmount.year1;
+            $scope.originalResearchAmount.year2 = $scope.totalResearchAmount.year2;
+            $scope.originalResearchAmount.year3 = $scope.totalResearchAmount.year3;
+            $scope.originalResearchAmount.total = $scope.totalResearchAmount.total;
+
+
             // Step 4: Calculate Overhead amounts based on Total Research Amount
             var baseYear1 = $scope.totalResearchAmount.year1 || 0;
             var baseYear2 = $scope.totalResearchAmount.year2 || 0;
@@ -1140,6 +1285,25 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             $scope.grandTotal.year2 = ($scope.totalResearchAmount.year2 || 0) + ($scope.budgetOverhead.amountYear2 || 0);
             $scope.grandTotal.year3 = ($scope.totalResearchAmount.year3 || 0) + ($scope.budgetOverhead.amountYear3 || 0);
             $scope.grandTotal.total = $scope.grandTotal.year1 + $scope.grandTotal.year2 + $scope.grandTotal.year3;
+
+            // Step 7: Adjust Total Research Amount (Grand Total - Travel)
+            $scope.totalResearchAmount.year1 =
+                ($scope.grandTotal.year1 || 0) -
+                ($scope.researchStayTravelTotal.year1 || 0);
+
+            $scope.totalResearchAmount.year2 =
+                ($scope.grandTotal.year2 || 0) -
+                ($scope.researchStayTravelTotal.year2 || 0);
+
+            $scope.totalResearchAmount.year3 =
+                ($scope.grandTotal.year3 || 0) -
+                ($scope.researchStayTravelTotal.year3 || 0);
+
+            $scope.totalResearchAmount.total =
+                $scope.totalResearchAmount.year1 +
+                $scope.totalResearchAmount.year2 +
+                $scope.totalResearchAmount.year3;
+
         } finally {
             $scope.isCalculating = false;
         }
@@ -1286,6 +1450,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
         // Research Stay - days
         allExpenseLineItems.push({
+            Index__c: 1,
             Description__c: 'Research Stay - No. of days',
             Year1_Expense__c: $scope.budgetResearchStay.daysYear1 || 0,
             Year2_Expense__c: $scope.budgetResearchStay.daysYear2 || 0,
@@ -1296,6 +1461,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
         // Research Stay - cost
         allExpenseLineItems.push({
+            Index__c: 2,
             Description__c: 'Research Stay Per diem cost',
             Year1_Expense__c: $scope.budgetResearchStay.costYear1 || 0,
             Year2_Expense__c: $scope.budgetResearchStay.costYear2 || 0,
@@ -1373,7 +1539,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         };
 
         // Save using ApplicantPortal_Contoller
-        ApplicantPortal_Contoller.createExpenseWithHeadAndLineItems(
+        ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
             allExpenseLineItems, $rootScope.apaId, updatedApa,
             function (result, event) {
                 if (event.status && result != null) {
