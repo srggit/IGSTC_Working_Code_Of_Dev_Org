@@ -1087,6 +1087,18 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
         return Proposal_Controller.createExpenseWithHeadAndLineItemsForWiser(expenseLineItems, apaId, updatedApa);
     }
     
+    // Wrapper class for returning save result
+    public class SaveExpenseResultWrapper {
+        public String status;
+        public Map<String, List<String>> researchStaffHeadIds;
+    }
+    
+    // NEW METHOD: Delete Research Staff records by IDs
+    @RemoteAction
+    public static String deleteResearchStaffByIds(List<String> expenseHeadIds) {
+        return Proposal_Controller.deleteResearchStaffByIds(expenseHeadIds);
+    }
+    
     // NEW METHOD: Get expense records from Expense_Head__c and Expense_Line_Item__c
     @RemoteAction
     public static Proposal_Controller.ExpenseHeadLineItemWrapper getExpenseHeadLineItems(String apaId) {

@@ -413,7 +413,7 @@
                         </tbody>
                     </table>
                 </div>
-            -->
+                -->
 
                 <div>
                     <table class="budget-table">
@@ -546,16 +546,30 @@
                                 <td></td>
                                 <td>Percentage of Overheads</td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="onOverheadChange(1)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        min="0" max="10" />
+
+                                    <small class="text-danger" ng-if="budgetOverhead.percentageYear1 > 10">
+                                        Maximum allowed overhead is 10%
+                                    </small>
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="onOverheadChange(2)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        min="0" max="10" />
+
+                                    <small class="text-danger" ng-if="budgetOverhead.percentageYear2 > 10">
+                                        Maximum allowed overhead is 10%
+                                    </small>
+
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="onOverheadChange(3)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        min="0" max="10" />
+
+                                    <small class="text-danger" ng-if="budgetOverhead.percentageYear3 > 10">
+                                        Maximum allowed overhead is 10%
+                                    </small>
+
                                 </td>
                                 <td></td>
                             </tr>
@@ -580,69 +594,74 @@
                                 <td class="orange-text">{{remainingForResearch.total}}</td>
                             </tr>
 
-                            <!-- Research Staff (FIXED using rowspan) -->
-                            <tr>
-                                <td class="section-title" rowspan="4">Research staff</td>
-                                <td></td>
-                                <td>No. of positions</td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                            <!-- Research Staff (Multiple records support) -->
+                            <!-- Add Staff Button Row -->
+                            <tr ng-if="!proposalStage && !isCurrentUserSubmitted">
+                                <td colspan="7" style="padding: 10px;">
+                                    <button type="button" class="btn btn-success" ng-click="addResearchStaff()" title="Add New Research Staff Record">
+                                        <i class="fa fa-plus"></i> Add Research Staff
+                                    </button>
                                 </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.positionsYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td></td>
                             </tr>
 
-                            <tr>
+                            <tr ng-repeat="row in researchStaffRows track by (row.index + '-' + row.rowType)">
+                                <td class="section-title" ng-if="row.index === 0 && row.rowType === 'positions'" rowspan="{{budgetResearchStaffList.length * 4}}">
+                                    Research staff
+                                </td>
+                                <!-- <td ng-if="row.index !== 0 || row.rowType !== 'positions'"></td> -->
                                 <td></td>
-                                <td>Cost</td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <span ng-if="row.rowType === 'positions'">No. of positions</span>
+                                    <span ng-if="row.rowType === 'cost'">Cost</span>
+                                    <span ng-if="row.rowType === 'hours'">Number of hour/week/days/month</span>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text bold">Total Amount for Research Staff {{row.index + 1}}</span>
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear1" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear1" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear1" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear1 | number:2}}</span>
                                 </td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
+                                    <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear2" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear2" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear2" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear2 | number:2}}</span>
                                 </td>
-                                <td></td>
+                                <td>
+                                    <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear3" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear3" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear3" ng-change="recalculateAll()"
+                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear3 | number:2}}</span>
+                                </td>
+                                <td>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalAmount | number:2}}</span>
+                                    <button ng-if="row.rowType === 'positions' && !proposalStage && !isCurrentUserSubmitted && budgetResearchStaffList.length > 1"
+                                        type="button" class="btn btn-sm btn-danger" ng-click="removeResearchStaff(row.index)"
+                                        title="Remove Research Staff" style="padding: 2px 6px;">
+                                        <i class="fa fa-times"></i> Remove
+                                    </button>
+                                </td>
                             </tr>
 
-                            <tr>
+                            <!-- Total for all Research Staff -->
+                            <tr ng-if="budgetResearchStaffList.length > 0">
                                 <td></td>
-                                <td>Number of hour/week/days/month</td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStaff.hoursYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
                                 <td></td>
-                            </tr>
-
-                            <tr>
-                                <td></td>
-                                <td class="orange-text bold">Total Amount for Research Staff</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalYear1}}</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalYear2}}</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalYear3}}</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalAmount}}</td>
+                                <td class="orange-text bold">Total Amount for All Research Staff</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear1 | number:2}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear2 | number:2}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalYear3 | number:2}}</td>
+                                <td class="orange-text">{{budgetResearchStaff.totalAmount | number:2}}</td>
                             </tr>
 
                             <!-- Other Heads -->

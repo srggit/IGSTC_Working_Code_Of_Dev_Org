@@ -3816,27 +3816,39 @@ return e.getMessage() + e.getLineNumber();
                 yearlyExpenseIds.add(ye.Id);
             }
             
-            // Get existing Expense_Head__c records
-            List<Expense_Head__c> existingHeads = [SELECT Id, Name, Yearly_Expense__c 
+            // Collect Expense_Head__c IDs that are provided in line items (for updates)
+            Set<Id> providedHeadIds = new Set<Id>();
+            for(Expense_Line_Item__c eli : expenseLineItems) {
+                if(eli.Expense_Head__c != null) {
+                    providedHeadIds.add(eli.Expense_Head__c);
+                }
+            }
+            
+            // Get existing Expense_Head__c records (including provided IDs)
+            List<Expense_Head__c> existingHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
                                                    FROM Expense_Head__c 
-                                                   WHERE Yearly_Expense__c IN :yearlyExpenseIds];
+                                                   WHERE Yearly_Expense__c IN :yearlyExpenseIds
+                                                   OR Id IN :providedHeadIds];
             
             // Map: Year + Head Name -> Expense_Head__c
             Map<String, Expense_Head__c> yearHeadMap = new Map<String, Expense_Head__c>();
+            // Map: Expense_Head__c Id -> Expense_Head__c (for direct ID lookup)
+            Map<Id, Expense_Head__c> headIdMap = new Map<Id, Expense_Head__c>();
             for(Expense_Head__c eh : existingHeads) {
                 String key = eh.Yearly_Expense__c + '_' + eh.Name;
                 yearHeadMap.put(key, eh);
+                headIdMap.put(eh.Id, eh);
             }
             
-            // Collect unique expense types from line items
+            // Collect unique expense types from line items (only for records without Expense_Head__c ID)
             Set<String> expenseTypes = new Set<String>();
             for(Expense_Line_Item__c eli : expenseLineItems) {
-                if(String.isNotBlank(eli.Expense_Type__c)) {
+                if(String.isNotBlank(eli.Expense_Type__c) && (eli.Expense_Head__c == null || String.isBlank(String.valueOf(eli.Expense_Head__c)))) {
                     expenseTypes.add(eli.Expense_Type__c);
                 }
             }
             
-            // Create Expense_Head__c records for each year and expense type
+            // Create Expense_Head__c records only for new expense types (not provided with IDs)
             List<Expense_Head__c> headsToUpsert = new List<Expense_Head__c>();
             for(String expenseType : expenseTypes) {
                 for(String year : yearToExpenseMap.keySet()) {
@@ -3852,21 +3864,39 @@ return e.getMessage() + e.getLineNumber();
             
             if(!headsToUpsert.isEmpty()) {
                 insert headsToUpsert;
+                // Re-query newly created heads with Year__c relationship
+                Set<Id> newHeadIds = new Set<Id>();
+                for(Expense_Head__c eh : headsToUpsert) {
+                    newHeadIds.add(eh.Id);
+                }
+                List<Expense_Head__c> newHeadsWithYear = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
+                                                         FROM Expense_Head__c 
+                                                         WHERE Id IN :newHeadIds];
+                // Add newly created heads to existingHeads
+                existingHeads.addAll(newHeadsWithYear);
+                for(Expense_Head__c eh : newHeadsWithYear) {
+                    String key = eh.Yearly_Expense__c + '_' + eh.Name;
+                    yearHeadMap.put(key, eh);
+                    headIdMap.put(eh.Id, eh);
+                }
             }
             
-            // Re-query all heads after insert
+            // Rebuild map with all heads (including newly created ones)
+            Map<String, Expense_Head__c> yearNumHeadMap = new Map<String, Expense_Head__c>();
+            // Re-query all heads to ensure Year__c relationship is populated
             existingHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
                             FROM Expense_Head__c 
-                            WHERE Yearly_Expense__c IN :yearlyExpenseIds];
+                            WHERE Yearly_Expense__c IN :yearlyExpenseIds
+                            OR Id IN :providedHeadIds];
             
-            // Rebuild map with all heads
-            yearHeadMap.clear();
-            Map<String, Expense_Head__c> yearNumHeadMap = new Map<String, Expense_Head__c>();
             for(Expense_Head__c eh : existingHeads) {
                 String key = eh.Yearly_Expense__c + '_' + eh.Name;
                 yearHeadMap.put(key, eh);
-                String yearKey = eh.Yearly_Expense__r.Year__c + '_' + eh.Name;
-                yearNumHeadMap.put(yearKey, eh);
+                if(eh.Yearly_Expense__r != null && eh.Yearly_Expense__r.Year__c != null) {
+                    String yearKey = eh.Yearly_Expense__r.Year__c + '_' + eh.Name;
+                    yearNumHeadMap.put(yearKey, eh);
+                }
+                headIdMap.put(eh.Id, eh);
             }
             
             // Get existing line items by head and index
@@ -3896,118 +3926,88 @@ return e.getMessage() + e.getLineNumber();
             for(Expense_Line_Item__c eli : expenseLineItems) {
                 if(String.isBlank(eli.Expense_Type__c)) continue;
                 
-                // Year 1 Line Item
-                if(eli.Year1_Expense__c != null && eli.Year1_Expense__c >= 0) {
-                    Expense_Head__c head1 = yearNumHeadMap.get('1_' + eli.Expense_Type__c);
-                    if(head1 != null) {
-                        Expense_Line_Item__c newELI = new Expense_Line_Item__c();
-                        newELI.Description__c = eli.Description__c;
-                        newELI.Position__c = eli.Position__c;
-                        newELI.Number__c = eli.Number__c;
-                        newELI.Person_Month__c = eli.Person_Month__c;
-                        newELI.Salary_Month__c = eli.Salary_Month__c;
-                        newELI.Unit_Price__c = eli.Unit_Price__c;
-                        newELI.Multiplier__c = eli.Multiplier__c;
-                        newELI.Year1_Expense__c = eli.Year1_Expense__c;
-                        newELI.Year2_Expense__c = 0;
-                        newELI.Year3_Expense__c = 0;
-                        newELI.Year1_Approved_Amount__c = eli.Year1_Approved_Amount__c;
-                        newELI.Expense_Head__c = head1.Id;
-                        newELI.Index__c = eli.Index__c;
-                        newELI.Expense_Type__c = eli.Expense_Type__c;
-                        
-                        // Check if exists for update
-                        String key = head1.Id + '_' + eli.Index__c;
-                        if(headIndexToLineItemId.containsKey(key)) {
-                            Id existingId = headIndexToLineItemId.get(key);
-                            // If this ID is already added, skip to prevent duplicate
-                            if(!addedIds.contains(existingId)) {
-                                newELI.Id = existingId;
-                                lineItemsToUpsert.add(newELI);
-                                addedIds.add(existingId);
-                            }
-                        } else {
-                            // New record - check if we already have a record for this head+index combination
-                            if(!newRecordsMap.containsKey(key)) {
-                                newRecordsMap.put(key, newELI);
-                            }
-                        }
+                // Check if Expense_Head__c ID is provided (for Research Staff updates)
+                // If provided, use it directly; otherwise, create/find by Expense_Type__c
+                Expense_Head__c targetHead = null;
+                String targetYear = null;
+                
+                if(eli.Expense_Head__c != null && String.isNotBlank(String.valueOf(eli.Expense_Head__c)) && headIdMap.containsKey(eli.Expense_Head__c)) {
+                    // Expense_Head__c ID provided - use it directly (for updates)
+                    targetHead = headIdMap.get(eli.Expense_Head__c);
+                    if(targetHead.Yearly_Expense__r != null) {
+                        targetYear = targetHead.Yearly_Expense__r.Year__c;
+                    }
+                } else {
+                    // No Expense_Head__c ID provided (null, empty, or invalid) - create/find by Expense_Type__c (for creates)
+                    // Determine which year based on which expense field has value
+                    if(eli.Year1_Expense__c != null && eli.Year1_Expense__c >= 0) {
+                        targetHead = yearNumHeadMap.get('1_' + eli.Expense_Type__c);
+                        targetYear = '1';
+                    } else if(eli.Year2_Expense__c != null && eli.Year2_Expense__c >= 0) {
+                        targetHead = yearNumHeadMap.get('2_' + eli.Expense_Type__c);
+                        targetYear = '2';
+                    } else if(eli.Year3_Expense__c != null && eli.Year3_Expense__c >= 0) {
+                        targetHead = yearNumHeadMap.get('3_' + eli.Expense_Type__c);
+                        targetYear = '3';
                     }
                 }
                 
-                // Year 2 Line Item
-                if(eli.Year2_Expense__c != null && eli.Year2_Expense__c >= 0) {
-                    Expense_Head__c head2 = yearNumHeadMap.get('2_' + eli.Expense_Type__c);
-                    if(head2 != null) {
-                        Expense_Line_Item__c newELI = new Expense_Line_Item__c();
-                        newELI.Description__c = eli.Description__c;
-                        newELI.Position__c = eli.Position__c;
-                        newELI.Number__c = eli.Number__c;
-                        newELI.Person_Month__c = eli.Person_Month__c;
-                        newELI.Salary_Month__c = eli.Salary_Month__c;
-                        newELI.Unit_Price__c = eli.Unit_Price__c;
-                        newELI.Multiplier__c = eli.Multiplier__c;
-                        newELI.Year1_Expense__c = 0;
-                        newELI.Year2_Expense__c = eli.Year2_Expense__c;
-                        newELI.Year3_Expense__c = 0;
-                        newELI.Year2_Approved_Amount__c = eli.Year2_Approved_Amount__c;
-                        newELI.Expense_Head__c = head2.Id;
-                        newELI.Index__c = eli.Index__c;
-                        newELI.Expense_Type__c = eli.Expense_Type__c;
-                        
-                        String key = head2.Id + '_' + eli.Index__c;
-                        if(headIndexToLineItemId.containsKey(key)) {
-                            Id existingId = headIndexToLineItemId.get(key);
-                            // If this ID is already added, skip to prevent duplicate
-                            if(!addedIds.contains(existingId)) {
-                                newELI.Id = existingId;
-                                lineItemsToUpsert.add(newELI);
-                                addedIds.add(existingId);
-                            }
-                        } else {
-                            // New record - check if we already have a record for this head+index combination
-                            if(!newRecordsMap.containsKey(key)) {
-                                newRecordsMap.put(key, newELI);
-                            }
-                        }
-                    }
+                if(targetHead == null) {
+                    System.debug('ERROR: Could not find or create Expense_Head__c for Expense_Type__c: ' + eli.Expense_Type__c + ', Year: ' + targetYear + ', Expense_Head__c provided: ' + eli.Expense_Head__c);
+                    System.debug('Available keys in yearNumHeadMap: ' + yearNumHeadMap.keySet());
+                    continue;
                 }
                 
-                // Year 3 Line Item
-                if(eli.Year3_Expense__c != null && eli.Year3_Expense__c >= 0) {
-                    Expense_Head__c head3 = yearNumHeadMap.get('3_' + eli.Expense_Type__c);
-                    if(head3 != null) {
-                        Expense_Line_Item__c newELI = new Expense_Line_Item__c();
-                        newELI.Description__c = eli.Description__c;
-                        newELI.Position__c = eli.Position__c;
-                        newELI.Number__c = eli.Number__c;
-                        newELI.Person_Month__c = eli.Person_Month__c;
-                        newELI.Salary_Month__c = eli.Salary_Month__c;
-                        newELI.Unit_Price__c = eli.Unit_Price__c;
-                        newELI.Multiplier__c = eli.Multiplier__c;
-                        newELI.Year1_Expense__c = 0;
-                        newELI.Year2_Expense__c = 0;
-                        newELI.Year3_Expense__c = eli.Year3_Expense__c;
-                        newELI.Year3_Approved_Amount__c = eli.Year3_Approved_Amount__c;
-                        newELI.Expense_Head__c = head3.Id;
-                        newELI.Index__c = eli.Index__c;
-                        newELI.Expense_Type__c = eli.Expense_Type__c;
-                        
-                        String key = head3.Id + '_' + eli.Index__c;
-                        if(headIndexToLineItemId.containsKey(key)) {
-                            Id existingId = headIndexToLineItemId.get(key);
-                            // If this ID is already added, skip to prevent duplicate
-                            if(!addedIds.contains(existingId)) {
-                                newELI.Id = existingId;
-                                lineItemsToUpsert.add(newELI);
-                                addedIds.add(existingId);
-                            }
-                        } else {
-                            // New record - check if we already have a record for this head+index combination
-                            if(!newRecordsMap.containsKey(key)) {
-                                newRecordsMap.put(key, newELI);
-                            }
-                        }
+                // Create/update line item
+                Expense_Line_Item__c newELI = new Expense_Line_Item__c();
+                newELI.Description__c = eli.Description__c;
+                newELI.Position__c = eli.Position__c;
+                newELI.Number__c = eli.Number__c;
+                newELI.Person_Month__c = eli.Person_Month__c;
+                newELI.Salary_Month__c = eli.Salary_Month__c;
+                newELI.Unit_Price__c = eli.Unit_Price__c;
+                newELI.Multiplier__c = eli.Multiplier__c;
+                newELI.Expense_Head__c = targetHead.Id;
+                newELI.Index__c = eli.Index__c;
+                newELI.Expense_Type__c = eli.Expense_Type__c;
+                
+                // Set year-specific expense values
+                if(targetYear == '1') {
+                    newELI.Year1_Expense__c = eli.Year1_Expense__c != null ? eli.Year1_Expense__c : 0;
+                    newELI.Year2_Expense__c = 0;
+                    newELI.Year3_Expense__c = 0;
+                    newELI.Total_Expense__c = eli.Total_Expense__c != null ? eli.Total_Expense__c : newELI.Year1_Expense__c;
+                    newELI.Year1_Approved_Amount__c = eli.Year1_Approved_Amount__c;
+                } else if(targetYear == '2') {
+                    newELI.Year1_Expense__c = 0;
+                    newELI.Year2_Expense__c = eli.Year2_Expense__c != null ? eli.Year2_Expense__c : 0;
+                    newELI.Year3_Expense__c = 0;
+                    newELI.Total_Expense__c = eli.Total_Expense__c != null ? eli.Total_Expense__c : newELI.Year2_Expense__c;
+                    newELI.Year2_Approved_Amount__c = eli.Year2_Approved_Amount__c;
+                } else if(targetYear == '3') {
+                    newELI.Year1_Expense__c = 0;
+                    newELI.Year2_Expense__c = 0;
+                    newELI.Year3_Expense__c = eli.Year3_Expense__c != null ? eli.Year3_Expense__c : 0;
+                    newELI.Total_Expense__c = eli.Total_Expense__c != null ? eli.Total_Expense__c : newELI.Year3_Expense__c;
+                    newELI.Year3_Approved_Amount__c = eli.Year3_Approved_Amount__c;
+                }
+                
+                System.debug('Creating/updating Expense Line Item: Expense_Type__c=' + newELI.Expense_Type__c + ', Index__c=' + newELI.Index__c + ', Expense_Head__c=' + newELI.Expense_Head__c + ', Year=' + targetYear);
+                
+                // Check if exists for update
+                String key = targetHead.Id + '_' + eli.Index__c;
+                if(headIndexToLineItemId.containsKey(key)) {
+                    Id existingId = headIndexToLineItemId.get(key);
+                    // If this ID is already added, skip to prevent duplicate
+                    if(!addedIds.contains(existingId)) {
+                        newELI.Id = existingId;
+                        lineItemsToUpsert.add(newELI);
+                        addedIds.add(existingId);
+                    }
+                } else {
+                    // New record - check if we already have a record for this head+index combination
+                    if(!newRecordsMap.containsKey(key)) {
+                        newRecordsMap.put(key, newELI);
                     }
                 }
             }
@@ -4019,14 +4019,199 @@ return e.getMessage() + e.getLineNumber();
                 upsert lineItemsToUpsert;
             }
             
+            // Update Expense_Head__c totals for Research Staff records
+            // Extract year-specific totals from Description field of Index 1 line items
+            // Format: "No. of Positions|Y1Total:XXX|Y2Total:YYY|Y3Total:ZZZ"
+            List<Expense_Head__c> headsToUpdate = new List<Expense_Head__c>();
+            
+            // Re-query all Research Staff heads with their line items
+            List<Expense_Head__c> researchStaffHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c, ELI__c,
+                             (SELECT Id, Index__c, Description__c
+                              FROM Expense_Line_Items__r 
+                              WHERE Index__c = 1
+                              ORDER BY Index__c ASC)
+                             FROM Expense_Head__c 
+                             WHERE Yearly_Expense__c IN :yearlyExpenseIds
+                             AND Name LIKE 'Research staff%'];
+            
+            // Group Research Staff heads by name (e.g., "Research staff 1", "Research staff 2")
+            Map<String, Map<String, Expense_Head__c>> staffHeadsByTypeAndYear = new Map<String, Map<String, Expense_Head__c>>();
+            for(Expense_Head__c head : researchStaffHeads) {
+                if(!staffHeadsByTypeAndYear.containsKey(head.Name)) {
+                    staffHeadsByTypeAndYear.put(head.Name, new Map<String, Expense_Head__c>());
+                }
+                staffHeadsByTypeAndYear.get(head.Name).put(head.Yearly_Expense__r.Year__c, head);
+            }
+            
+            // Extract totals from Description and update Expense_Head__c records
+            for(String staffType : staffHeadsByTypeAndYear.keySet()) {
+                Map<String, Expense_Head__c> staffHeadsByYear = staffHeadsByTypeAndYear.get(staffType);
+                
+                // Get the Index 1 line item from any year (they all have the same totals)
+                Expense_Head__c anyYearHead = null;
+                for(Expense_Head__c head : staffHeadsByYear.values()) {
+                    if(head.Expense_Line_Items__r != null && !head.Expense_Line_Items__r.isEmpty()) {
+                        anyYearHead = head;
+                        break;
+                    }
+                }
+                
+                if(anyYearHead != null && anyYearHead.Expense_Line_Items__r != null && !anyYearHead.Expense_Line_Items__r.isEmpty()) {
+                    Expense_Line_Item__c positionsItem = anyYearHead.Expense_Line_Items__r[0];
+                    String description = positionsItem.Description__c;
+                    
+                    if(String.isNotBlank(description) && description.contains('|Y1Total:')) {
+                        // Parse year-specific totals from Description
+                        Decimal year1Total = 0;
+                        Decimal year2Total = 0;
+                        Decimal year3Total = 0;
+                        
+                        try {
+                            // Extract Y1Total value
+                            Integer y1Start = description.indexOf('|Y1Total:');
+                            Integer y2Start = description.indexOf('|Y2Total:');
+                            if(y1Start >= 0 && y2Start > y1Start) {
+                                String y1Value = description.substring(y1Start + 9, y2Start);
+                                year1Total = Decimal.valueOf(y1Value);
+                            }
+                            
+                            // Extract Y2Total value
+                            Integer y3Start = description.indexOf('|Y3Total:');
+                            if(y2Start >= 0 && y3Start > y2Start) {
+                                String y2Value = description.substring(y2Start + 9, y3Start);
+                                year2Total = Decimal.valueOf(y2Value);
+                            }
+                            
+                            // Extract Y3Total value
+                            if(y3Start >= 0) {
+                                String y3Value = description.substring(y3Start + 9);
+                                year3Total = Decimal.valueOf(y3Value);
+                            }
+                        } catch(Exception e) {
+                            System.debug('Error parsing totals from Description: ' + e.getMessage());
+                        }
+                        
+                        // Update each Expense_Head__c with its year-specific total
+                        if(staffHeadsByYear.containsKey('1')) {
+                            Expense_Head__c headToUpdate = new Expense_Head__c();
+                            headToUpdate.Id = staffHeadsByYear.get('1').Id;
+                            headToUpdate.ELI__c = year1Total;
+                            headsToUpdate.add(headToUpdate);
+                        }
+                        
+                        if(staffHeadsByYear.containsKey('2')) {
+                            Expense_Head__c headToUpdate = new Expense_Head__c();
+                            headToUpdate.Id = staffHeadsByYear.get('2').Id;
+                            headToUpdate.ELI__c = year2Total;
+                            headsToUpdate.add(headToUpdate);
+                        }
+                        
+                        if(staffHeadsByYear.containsKey('3')) {
+                            Expense_Head__c headToUpdate = new Expense_Head__c();
+                            headToUpdate.Id = staffHeadsByYear.get('3').Id;
+                            headToUpdate.ELI__c = year3Total;
+                            headsToUpdate.add(headToUpdate);
+                        }
+                    }
+                }
+            }
+            
+            // Update Expense_Head__c records with year-specific totals
+            if(!headsToUpdate.isEmpty()) {
+                update headsToUpdate;
+            }
+            
+            // Build map of Research Staff Expense_Head__c IDs to return
+            // Map: "Research staff 1" -> ["Year1HeadId", "Year2HeadId", "Year3HeadId"]
+            Map<String, List<String>> researchStaffHeadIdsMap = new Map<String, List<String>>();
+            
+            // Re-query all Research Staff Expense_Head__c records to get their IDs (including newly created ones)
+            List<Expense_Head__c> allResearchStaffHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
+                                                           FROM Expense_Head__c 
+                                                           WHERE Yearly_Expense__c IN :yearlyExpenseIds
+                                                           AND Name LIKE 'Research staff%'
+                                                           ORDER BY Name ASC, Yearly_Expense__r.Year__c ASC];
+            
+            for(Expense_Head__c head : allResearchStaffHeads) {
+                if(!researchStaffHeadIdsMap.containsKey(head.Name)) {
+                    researchStaffHeadIdsMap.put(head.Name, new List<String>{null, null, null});
+                }
+                String year = head.Yearly_Expense__r != null ? head.Yearly_Expense__r.Year__c : null;
+                List<String> staffHeadIds = researchStaffHeadIdsMap.get(head.Name);
+                if(year == '1') {
+                    staffHeadIds[0] = head.Id;
+                } else if(year == '2') {
+                    staffHeadIds[1] = head.Id;
+                } else if(year == '3') {
+                    staffHeadIds[2] = head.Id;
+                }
+            }
+            
             // Update APA with funding details
             if(updatedApa != null && updatedApa.Id != null) {
                 update updatedApa;
             }
             
-            return 'success';
+            // Return result with Research Staff Expense_Head__c IDs
+            SaveExpenseResultWrapper result = new SaveExpenseResultWrapper();
+            result.status = 'success';
+            result.researchStaffHeadIds = researchStaffHeadIdsMap;
+            
+            return JSON.serialize(result);
         } catch(Exception e) {
             System.debug('Error creating expense head and line items ===> ' + e.getMessage() + ' at Line ===> ' + e.getLineNumber() + ' stack Trace ===> ' + e.getStackTraceString());
+            return 'error: ' + e.getMessage();
+        }
+    }
+    
+    // NEW METHOD: Delete Research Staff records (Expense_Head__c and child Expense_Line_Item__c) by IDs
+    public static String deleteResearchStaffByIds(List<String> expenseHeadIds) {
+        try {
+            if(expenseHeadIds == null || expenseHeadIds.isEmpty()) {
+                return 'error: No Expense Head IDs provided';
+            }
+            
+            // Convert string IDs to Id type
+            List<Id> headIds = new List<Id>();
+            for(String headId : expenseHeadIds) {
+                if(String.isNotBlank(headId)) {
+                    headIds.add(headId);
+                }
+            }
+            
+            if(headIds.isEmpty()) {
+                return 'error: No valid Expense Head IDs provided';
+            }
+            
+            // Get all Expense_Head__c records with their line items
+            List<Expense_Head__c> researchStaffHeads = [SELECT Id, Name, Yearly_Expense__c,
+                                                         (SELECT Id FROM Expense_Line_Items__r)
+                                                         FROM Expense_Head__c 
+                                                         WHERE Id IN :headIds];
+            
+            if(researchStaffHeads.isEmpty()) {
+                return 'success: No records found to delete';
+            }
+            
+            // Collect all line item IDs to delete
+            List<Expense_Line_Item__c> lineItemsToDelete = new List<Expense_Line_Item__c>();
+            for(Expense_Head__c head : researchStaffHeads) {
+                if(head.Expense_Line_Items__r != null && !head.Expense_Line_Items__r.isEmpty()) {
+                    lineItemsToDelete.addAll(head.Expense_Line_Items__r);
+                }
+            }
+            
+            // Delete line items first (due to master-detail relationship)
+            if(!lineItemsToDelete.isEmpty()) {
+                delete lineItemsToDelete;
+            }
+            
+            // Delete Expense_Head__c records
+            delete researchStaffHeads;
+            
+            return 'success';
+        } catch(Exception e) {
+            System.debug('Error deleting Research Staff ===> ' + e.getMessage() + ' at Line ===> ' + e.getLineNumber() + ' stack Trace ===> ' + e.getStackTraceString());
             return 'error: ' + e.getMessage();
         }
     }
@@ -4051,10 +4236,11 @@ return e.getMessage() + e.getLineNumber();
                 yearlyExpenseIds.add(ye.Id);
             }
             
-            // Get all Expense_Head__c records
+            // Get all Expense_Head__c records with Year information
             List<Expense_Head__c> expenseHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
                                                    FROM Expense_Head__c 
-                                                   WHERE Yearly_Expense__c IN :yearlyExpenseIds];
+                                                   WHERE Yearly_Expense__c IN :yearlyExpenseIds
+                                                   ORDER BY Name ASC, Yearly_Expense__r.Year__c ASC];
             
             Set<Id> headIds = new Set<Id>();
             for(Expense_Head__c eh : expenseHeads) {
@@ -4153,6 +4339,17 @@ return e.getMessage() + e.getLineNumber();
             lineItems = new List<Expense_Line_Item__c>();
             expenseHeads = new List<Expense_Head__c>();
             yearlyExpenses = new List<Yearly_Expense__c>();
+        }
+    }
+    
+    // Wrapper class to return save result with created Expense_Head__c IDs
+    public class SaveExpenseResultWrapper {
+        public String status;
+        public Map<String, List<String>> researchStaffHeadIds; // Map: "Research staff 1" -> ["Year1HeadId", "Year2HeadId", "Year3HeadId"]
+        
+        public SaveExpenseResultWrapper() {
+            status = 'success';
+            researchStaffHeadIds = new Map<String, List<String>>();
         }
     }
     
