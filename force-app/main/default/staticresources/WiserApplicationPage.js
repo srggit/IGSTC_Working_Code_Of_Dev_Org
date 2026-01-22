@@ -37,27 +37,51 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 
 
 
+	// $scope.getDependentPicklistValues = function () {
+	// 	debugger;
+	// 	ApplicantPortal_Contoller.getFieldDependencies('Contact', 'Country__c', 'States__c', function (result, event) {
+	// 		debugger;
+	// 		if (event.status && result != null) {
+	// 			debugger;
+	// 			if (result.India == undefined) {
+	// 				if (result[0].Name == "WISER" || result[0].Name == "SING" || result[0].Name == "PECFAR" || result[0].Name == "2+2 Call" || result[0].Name == "Industrial Fellowships" || result[0].Name == "Workshop") {
+	// 					$scope.getDependentPicklistValues();
+	// 				}
+	// 			} else {
+	// 				$scope.indianStates = result.India;
+	// 				$scope.germanStates = result.Germany;
+	// 				$scope.getContactWiser();
+	// 				debugger;
+	// 				$scope.$apply();
+	// 			}
+	// 		}
+	// 	}
+	// 	)
+	// }
+
+	$scope.isDependencyLoaded = false;
+
 	$scope.getDependentPicklistValues = function () {
-		debugger;
-		ApplicantPortal_Contoller.getFieldDependencies('Contact', 'Country__c', 'States__c', function (result, event) {
-			debugger;
-			if (event.status && result != null) {
-				debugger;
-				if (result.India == undefined) {
-					if (result[0].Name == "WISER" || result[0].Name == "SING" || result[0].Name == "PECFAR" || result[0].Name == "2+2 Call" || result[0].Name == "Industrial Fellowships" || result[0].Name == "Workshop") {
-						$scope.getDependentPicklistValues();
+		if ($scope.isDependencyLoaded) return;
+
+		ApplicantPortal_Contoller.getFieldDependencies(
+			'Contact',
+			'Country__c',
+			'States__c',
+			function (result, event) {
+				if (event.status && result) {
+					if (result.India) {
+						$scope.indianStates = result.India;
+						$scope.germanStates = result.Germany;
+						$scope.isDependencyLoaded = true;
+						$scope.getContactWiser();
+						$scope.$applyAsync();
 					}
-				} else {
-					$scope.indianStates = result.India;
-					$scope.germanStates = result.Germany;
-					$scope.getContactWiser();
-					debugger;
-					$scope.$apply();
 				}
 			}
-		}
-		)
-	}
+		);
+	};
+
 
 	if (localStorage.getItem('proposalId')) {
 		$rootScope.proposalId = localStorage.getItem('proposalId');
@@ -207,30 +231,30 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		$scope.detailedList = [];
 
 		if ($scope.objContact.Salutation == undefined || $scope.objContact.Salutation == "") {
-			swal("info", "Please Enter Salutation.", "info");
+			swal("Info", "Please Enter Salutation.", "info");
 			$("#salutation").addClass('border-theme');
 			return;
 		}
 		if ($scope.objContact.FirstName == undefined || $scope.objContact.FirstName == "") {
-			swal("info", "Please Enter First Name.", "info");
+			swal("Info", "Please Enter First Name.", "info");
 			$("#txtFirstName").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.LastName == undefined || $scope.objContact.LastName == "") {
-			swal("info", "Please Enter Last Name.", "info");
+			swal("Info", "Please Enter Last Name.", "info");
 			$("#txtLastName").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.Birthdate == undefined || $scope.objContact.Birthdate == "") {
-			swal("info", "Please Enter Date of Birth.", "info");
+			swal("Info", "Please Enter Date of Birth.", "info");
 			$("#txtDOB").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.Birthdate > today) {
-			swal("info", "Date of birth should not be future date.", "info");
+			swal("Info", "Date of birth should not be future date.", "info");
 			$("#txtDOB").addClass('border-theme');
 			return;
 		}
@@ -242,7 +266,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		}
 		var age = moment().diff('' + birthYear + '-' + birthMonth + '-' + birthDay + '', 'years');
 		if (age < 21) {
-			swal("info", "Age should not be less than 20 years", "info");
+			swal("Info", "Age should not be less than 20 years", "info");
 			$("#txtDOB").addClass('border-theme');
 			return;
 		}
@@ -254,7 +278,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		// }
 
 		if ($scope.objContact.Nationality__c == undefined || $scope.objContact.Nationality__c == "") {
-			swal("info", "Please Enter Nationality.", "info");
+			swal("Info", "Please Enter Nationality.", "info");
 			$("#selectNatinality").addClass('border-theme');
 			return;
 		}
@@ -266,7 +290,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		// }
 
 		if ($scope.objContact.Phone == undefined || $scope.objContact.Phone == "") {
-			swal("info", "Please Enter Phone No.", "info");
+			swal("Info", "Please Enter Phone No.", "info");
 			$("#txtPhone").addClass('border-theme');
 			return;
 		}
@@ -283,7 +307,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		//     }
 		// }
 		if ($scope.objContact.Email == undefined || $scope.objContact.Email == "") {
-			swal("info", "Please Enter Email.", "info");
+			swal("Info", "Please Enter Email.", "info");
 			$("#txtEmail1").addClass('border-theme');
 			return;
 		}
@@ -291,7 +315,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		if ($scope.objContact.Email != undefined || $scope.objContact.Email != "") {
 			if ($scope.valid($scope.objContact.Email)) {
 				swal(
-					'info',
+					'Info',
 					'Check Your Registered Email.',
 					'info'
 				)
@@ -301,55 +325,55 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		}
 
 		if ($scope.emailCheck == true) {
-			swal('info', 'Email already exists.', 'info');
+			swal('Info', 'Email already exists.', 'info');
 			$("#txtEmail1").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.Account.Name == undefined || $scope.objContact.Account.Name == "") {
-			swal("info", "Please Enter Institution / Organisation Name.", "info");
+			swal("Info", "Please Enter Institution / Organisation Name.", "info");
 			$("#txtInstitiute").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.Department == undefined || $scope.objContact.Department == "") {
-			swal("info", "Please Enter Department.", "info");
+			swal("Info", "Please Enter Department.", "info");
 			$("#txtDepartment").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.Designation__c == undefined || $scope.objContact.Designation__c == "") {
-			swal("info", "Please Enter Designation.", "info");
+			swal("Info", "Please Enter Designation.", "info");
 			$("#txtDesignation").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.MailingStreet1 == undefined || $scope.MailingStreet1 == "") {
-			swal("info", "Please Enter Line 1.", "info");
+			swal("Info", "Please Enter Line 1.", "info");
 			$("#txtStreet").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.MailingCity == undefined || $scope.objContact.MailingCity == "") {
-			swal("info", "Please Enter City.", "info");
+			swal("Info", "Please Enter City.", "info");
 			$("#txtCity").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.MailingCountry == undefined || $scope.objContact.MailingCountry == "") {
-			swal("info", "Please Enter Country.", "info");
+			swal("Info", "Please Enter Country.", "info");
 			$("#txtCountry").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.MailingState == undefined || $scope.objContact.MailingState == "") {
-			swal("info", "Please Enter State.", "info");
+			swal("Info", "Please Enter State.", "info");
 			$("#txtState").addClass('border-theme');
 			return;
 		}
 
 		if ($scope.objContact.MailingPostalCode == undefined || $scope.objContact.MailingPostalCode == "") {
-			swal("info", "Please Enter Pin code.", "info");
+			swal("Info", "Please Enter Pin code.", "info");
 			$("#txtPincode").addClass('border-theme');
 			return;
 		} else {
@@ -367,7 +391,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		$scope.objContact['State__c'] = $scope.objContact['MailingState'];
 
 		if ($scope.objContact.Uploaded__c == false) {
-			swal('info', 'Please upload image.', 'info');
+			swal('Info', 'Please upload image.', 'info');
 			return;
 		}
 		delete $scope.objContact.Birthdate;
@@ -415,7 +439,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		debugger;
 		if ($scope.objContact.MailingCountry == "India") {
 			if ($scope.objContact.MailingPostalCode.length > 6) {
-				swal('info', 'For India, pin code should be 6 digit.', 'info');
+				swal('Info', 'For India, pin code should be 6 digit.', 'info');
 				$("#txtPincode").addClass('border-theme');
 				return;
 			}
@@ -445,7 +469,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		if (typeOfFile[lengthOfType - 1] == "jpg" || typeOfFile[lengthOfType - 1] == "jpeg" || typeOfFile[lengthOfType - 1] == "JPEG" || typeOfFile[lengthOfType - 1] == "JPG") {
 
 		} else {
-			swal('info', 'Please choose jpg/jpeg file only.', 'info');
+			swal('Info', 'Please choose jpg/jpeg file only.', 'info');
 			$scope.setLostValues();
 			return;
 		}
@@ -454,7 +478,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		if (file != undefined) {
 			if (file.size <= maxFileSize) {
 				if (file.size < fileSizeMin) {
-					swal("info", "File must be between 30 to 500 kb in size.  Your file is too small.  Please try again.", "info");
+					swal("Info", "File must be between 30 to 500 kb in size.  Your file is too small.  Please try again.", "info");
 					$scope.setLostValues();
 					return;
 				}
@@ -482,12 +506,12 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 
 				}
 				fileReader.onerror = function (e) {
-					swal("info", "There was an error reading the file.  Please try again.", "info");
+					swal("Info", "There was an error reading the file.  Please try again.", "info");
 					$scope.setLostValues();
 					return;
 				}
 				fileReader.onabort = function (e) {
-					swal("info", "There was an error reading the file.  Please try again.", "info");
+					swal("Info", "There was an error reading the file.  Please try again.", "info");
 					$scope.setLostValues();
 					return;
 				}
@@ -495,13 +519,13 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 				fileReader.readAsBinaryString(file);  //Read the body of the file
 
 			} else {
-				swal("info", "File must be under 500 kb in size.  Your file is too large.  Please try again.", "info");
+				swal("Info", "File must be under 500 kb in size.  Your file is too large.  Please try again.", "info");
 				$scope.setLostValues();
 				return;
 				$scope.showSpinnereditProf = false;
 			}
 		} else {
-			swal("info", "You must choose a file before trying to upload it", "info");
+			swal("Info", "You must choose a file before trying to upload it", "info");
 			$scope.setLostValues();
 			return;
 			$scope.showSpinnereditProf = false;

@@ -2462,7 +2462,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
 
     // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
-    public static String insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, String apaId, Contact signatoryContact, String signatoryAPAId, String accountId){
+    public static String insertParticipantsReferences(List<References__c> insertParticipantsList, String proposalId, String apaId, Contact signatoryContact, Applicant_Proposal_Association__c apaRecord, String signatoryAPAId, String accountId){
         try{
             if(! insertParticipantsList.isEmpty()){
 
@@ -2479,9 +2479,10 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
             System.debug('Proposal Id : ' + proposalId);
             System.debug('APA Id : ' + apaId);
 
-            signatoryContact.AccountId = signatoryContact.AccountId;
+            signatoryContact.AccountId = accountId;
             signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
             signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
+            // signatoryContact.Signatory_Emailist_Name__c = signatoryContact.Signatory_Emailist_Name__c;
             upsert signatoryContact;
             System.debug('Contact Inserted Successfully : ' + signatoryContact.Id);
 
@@ -2489,7 +2490,8 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
                 Id = signatoryAPAId,
                 Contact__c = signatoryContact.Id,
                 // Proposals__c = proposalId,
-                Is_Signatory__c = true
+                Is_Signatory__c = true,
+                Signatory_Emailist_Name__c = apaRecord.Signatory_Emailist_Name__c
             );
             upsert signatoryAPA;
             System.debug('APA Inserted Successfully : ' + signatoryAPA.Id);
@@ -2504,15 +2506,16 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
 
     // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
-    public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId, String apaId, String signatoryAPAId){
+    public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId, String apaId, String accountId){
         Applicant_Proposal_Association__c signatoryAPA = [
             SELECT Id, Contact__r.Salutation, Contact__r.Signatory_Salutation__c, Contact__r.Institution_Name__c, Contact__r.LastName, 
             Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Email, 
             Contact__r.Account.Name, Contact__r.AccountId, Contact__r.Signatory_First_Name__c, Contact__r.Signatory_Last_Name__c, 
-            Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c
+            Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c, Signatory_Emailist_Name__c
             FROM Applicant_Proposal_Association__c 
             WHERE Is_Signatory__c = true
-            AND Id =: signatoryAPAId
+            AND  Contact__r.AccountId =: accountId
+            LIMIT 1
         ];
         return signatoryAPA;
     }

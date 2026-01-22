@@ -409,7 +409,7 @@
                                 <select class="form-control" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Signatory_Salutation__c"
                                     ng-options="item for item in signatorySalutationList"
-                                    ng-focus="removeClass('signatorySalutation')">
+                                    ng-focus="removeClass('signSalutation')" id="signSalutation">
 
                                     <option value="">-- Select Salutation --</option>
                                 </select>
@@ -422,7 +422,7 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Signatory_First_Name__c"
-                                    ng-focus="removeClass('signatoryFirstName')" id="signFirstName" />
+                                    ng-focus="removeClass('signFirstName')" id="signFirstName" />
                             </div>
                             <div class="col-md-4">
                                 <label class="font-if" for="txtName">Signatory Last Name
@@ -431,7 +431,7 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Signatory_Last_Name__c"
-                                    ng-focus="removeClass('signatoryLastName')" id="signLastName" />
+                                    ng-focus="removeClass('signLastName')" id="signLastName" />
                             </div>
                         </div>
 
@@ -443,7 +443,7 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Signatory_Institution__c"
-                                    ng-focus="removeClass('signatoryInstitution')" id="signInstitution" />
+                                    ng-focus="removeClass('signInstitution')" id="signInstitution" />
                             </div>
 
                             <div class="col-md-4 mt-3">
@@ -453,7 +453,7 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Signatory_Designation__c"
-                                    ng-focus="removeClass('signatoryDesignation')" id="signDesignation" />
+                                    ng-focus="removeClass('signDesignation')" id="signDesignation" />
                             </div>
 
                             <div class="col-md-4 mt-3">
@@ -462,7 +462,7 @@
                                 </label>
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    ng-model="objContact.Contact__r.Email" ng-focus="removeClass('signatoryEmail')"
+                                    ng-model="objContact.Contact__r.Email" ng-focus="removeClass('signEmail')"
                                     id="signEmail" />
                             </div>
                         </div>
@@ -475,7 +475,7 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Institution_Name__c"
-                                    ng-focus="removeClass('signatoryInstitution2')" id="signInstitution2" />
+                                    ng-focus="removeClass('signInstitution2')" id="signInstitution2" />
                             </div>
 
                             <div class="col-md-4 mt-3">
@@ -485,16 +485,16 @@
                                 <input type="text" class="form-control"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-model="objContact.Contact__r.Designation__c"
-                                    ng-focus="removeClass('signatoryDesignation')" id="signDesignation" />
+                                    ng-focus="removeClass('signDesignation2')" id="signDesignation2" />
                             </div>
 
                             <div class="col-md-4 mt-3">
                                 <label class="font-if">Signatory Emailst Name
                                     <span class="text-danger me-2">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="" id="signEmailistName"
+                                <input class="form-control" type="text" ng-model="objContact.Signatory_Emailist_Name__c" id="signEmailistName"
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    ng-focus="removeClass('signatoryEmailistName')" />
+                                    ng-focus="removeClass('signEmailistName')" />
                             </div>
                         </div>
 

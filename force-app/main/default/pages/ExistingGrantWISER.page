@@ -292,9 +292,15 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <select class="form-control" ng-model="grantsHandledValue" ng-change="onGrantsHandledChange()" ng-disabled="proposalStage || isCurrentUserSubmitted">
-                                <option value="">-- Select --</option>
+                                <option value="" disabled selected>-- Select --</option>
                                 <option ng-repeat="item in grantsHandledPickList" value="{{item}}">{{item}}</option>
                             </select>
+
+                            <!-- Error message -->
+                            <span class="text-danger" ng-show="proposalForm.grantsHandled.$touched &&
+                   proposalForm.grantsHandled.$invalid">
+                                Grants Handled selection is mandatory
+                            </span>
                         </div>
                     </div>
                 </div>

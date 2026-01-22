@@ -127,33 +127,33 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $scope.saveApplicationPortalHostInformation = function () {
 
           debugger;
-          if ($scope.objContact.Host_Project_Title__c == undefined || $scope.objContact.Host_Project_Title__c == "") {
-               swal("info", "Please Enter Project Title.", "info");
-               $("#txtTitle").addClass('border-theme');
-               return;
-          }
+          // if ($scope.objContact.Host_Project_Title__c == undefined || $scope.objContact.Host_Project_Title__c == "") {
+          //      swal("Info", "Please Enter Project Title.", "info");
+          //      $("#txtTitle").addClass('border-theme');
+          //      return;
+          // }
 
           if ($scope.objContact.Title_Of__c == undefined || $scope.objContact.Title_Of__c == "") {
-               swal("info", "Please Enter Title Of Project.", "info");
+               swal("Info", "Please Enter Title Of Project.", "info");
                $("#titleOfProposal").addClass('border-theme');
                return;
           }
 
           if ($scope.objContact.Broad_area_of_research__c == undefined || $scope.objContact.Broad_area_of_research__c == "") {
-               swal("info", "Please Enter Area Of Research.", "info");
+               swal("Info", "Please Enter Area Of Research.", "info");
                $("#areaOfResearch").addClass('border-theme');
                return;
           }
 
           if ($scope.objContact.Layman_title_of_project__c == undefined || $scope.objContact.Layman_title_of_project__c == "") {
-               swal("info", "Please Enter Layman Title Of Project.", "info");
+               swal("Info", "Please Enter Layman Title Of Project.", "info");
                $("#laymanTitle").addClass('border-theme');
                return;
           }
 
           if ($scope.objContact.Layman_title_of_project__c.length > 600) {
                swal(
-                    "info",
+                    "Info",
                     "Please Enter Layman Title Of Proposal.",
                     "info");
                //$("#laymanTitle").addClass('border-theme');
@@ -161,15 +161,45 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           }
 
           if ($scope.objContact.Layman_abstract_of_proposed_work__c == undefined || $scope.objContact.Layman_abstract_of_proposed_work__c == "") {
-               swal("info", "Please Enter Layman Abstract Of Proposed Work.", "info");
+               swal("Info", "Please Enter Layman Abstract Of Proposed Work.", "info");
                $("#laymanabstract").addClass('border-theme');
                return;
           }
 
           if ($scope.objContact.Layman_abstract_of_proposed_work__c.length > 600) {
                swal(
-                    "info",
+                    "Info",
                     "Please Enter Layman Abstract Of Proposed Work.",
+                    "info");
+               //$("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Non_Technical_Title_Of_Project__c == undefined || $scope.objContact.Non_Technical_Title_Of_Project__c == "") {
+               swal("Info", "Please Enter Non Technical Title of Project.", "info");
+               $("#nonTechnicalTitle").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Non_Technical_Title_Of_Project__c.length > 300) {
+               swal(
+                    "Info",
+                    "Please Enter Non Technical Title of Project.",
+                    "info");
+               //$("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Non_Technical_Abstract_Of_Proposed_Work__c == undefined || $scope.objContact.Non_Technical_Abstract_Of_Proposed_Work__c == "") {
+               swal("Info", "Please Enter Non Technical Abstract of Proposed Work.", "info");
+               $("#nonTechnicalAbstract").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Non_Technical_Abstract_Of_Proposed_Work__c.length > 300) {
+               swal(
+                    "Info",
+                    "Please Enter Non Technical Abstract of Proposed Work.",
                     "info");
                //$("#laymanabstract").addClass('border-theme');
                return;
@@ -178,20 +208,16 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           // if (
           //      $scope.objContact.Duration_In_Months_Max_36__c === null || $scope.objContact.Duration_In_Months_Max_36__c === undefined
           // ) {
-          //      swal("info", "Please Enter Project Duration.", "info");
+          //      swal("Info", "Please Enter Project Duration.", "info");
           //      //$("#txtDuration").addClass('border-theme');
           //      return;
           // }
 
           if ($scope.formPrjDet.$invalid) {
-               swal("info", "Duration must be 24 or 36 months.", "info");
+               swal("Info", "Duration must be 24 or 36 months.", "info");
                $("#txtDuration").addClass('border-theme');
                return;
           }
-
-
-
-
 
           var keyword = ""; startDay
           for (var i = 0; i < $scope.objKeyword.length; i++) {
@@ -341,10 +367,6 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           link.click();
      }
 
-     $scope.removeClass = function (controlid) {
-          $("#" + controlid + "").removeClass('border-theme');
-     }
-
      // ----------------- Add and Remove Keyword Functionality ------------------ //
      $scope.objKeyword = [];
 
@@ -359,10 +381,6 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           if ($scope.objKeyword.length > 1) {
                $scope.objKeyword.splice(index, 1);
           }
-     }
-
-     $scope.removeClass2 = function (controlid) {
-          $("#" + controlid + "").removeClass('border-theme');
      }
 
      $scope.checkCharLimit = function (obj, fieldName, limit) {
@@ -454,6 +472,14 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                targetObj._charLimitMap[fieldName] = false;
           }
      };
+
+     $scope.removeClass = function (controlid) {
+          $("#" + controlid + "").removeClass('border-theme');
+     }
+
+     $scope.removeClass2 = function (controlid) {
+          $("#" + controlid + "").removeClass('border-theme');
+     }
 
      // --------------------- PROJECT PROPOSAL UPLOAD FUNCTIONALITY ----------------------- //
      // $scope.getProjectDetails = function () {

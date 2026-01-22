@@ -297,6 +297,11 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     $scope.submitExistingGrants = function () {
         debugger;
 
+        if (!$scope.grantsHandledValue || $scope.grantsHandledValue === '' || $scope.grantsHandledValue === '-- Select --') {
+            swal("Info", "Please select a valid Grants Handled option.", "info");
+            return;
+        }
+
         // First, update the Grants_Handled__c value on APA
         ApplicantPortal_Contoller.updateAPAGrantsHandled($rootScope.apaId, $scope.grantsHandledValue, function (result, event) {
             if (event.status && result === 'SUCCESS') {

@@ -729,7 +729,7 @@
                                 <td class="orange-text">{{totalResearchHeads.year1}}</td>
                                 <td class="orange-text">{{totalResearchHeads.year2}}</td>
                                 <td class="orange-text">{{totalResearchHeads.year3}}</td>
-                                <td class="orange-text">{{totalResearchHeads.total}}</td>x
+                                <td class="orange-text">{{totalResearchHeads.total}}</td>
                             </tr>
 
                             <!-- <tr class="final-total">
@@ -769,6 +769,7 @@
                                     ⚠️ Grand Total cannot exceed €16,000 per year
                                 </td>
                             </tr>
+
 
                             <tr class="note-row">
                                 <td colspan="7">Max € 16,000/year</td>

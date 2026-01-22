@@ -2070,6 +2070,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     $scope.saveBudgetTableData = function () {
         debugger;
 
+        // Validation check before saving
+        if (!$scope.validateBeforeSave()) {
+            return;
+        }
+
         // Prepare line items for saving
         var allExpenseLineItems = [];
 
@@ -2434,4 +2439,5 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         // ✅ All validations passed
         return true;
     };
+
 })

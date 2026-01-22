@@ -756,11 +756,11 @@ roup' )
                     </div>
             </div> -->
             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-            <script>
+            <!-- <script>
                 $(function () {
                     $('.selectpicker').selectpicker();
                 });
-            </script>
+            </script> -->
         </body>
     </div>
 
