@@ -450,35 +450,31 @@
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+                                    <span class="text-danger" ng-if="researchStayError.year1">
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                    </span>
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+                                    <span class="text-danger" ng-if="researchStayError.year2">
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                    </span>
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+                                    <span class="text-danger" ng-if="researchStayError.year3">
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                    </span>
                                 </td>
-                                <td class="orange-text">{{budgetResearchStay.totalDays}}</td>
+                                <td class="orange-text">
+                                    {{budgetResearchStay.totalDays}}
+                                    <div class="text-danger" ng-if="researchStayError.total">
+                                        Total stay:{{proposalDurationMonths === 24 ? 20 : 30}} – {{proposalDurationMonths === 24 ? 60 : 90}} days allowed.
+                                    </div>
+                                </td>
                             </tr>
-
-                            <!-- <tr>
-                                <td></td>
-                                <td class="orange-text">Research Stay Per diem cost</td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td class="orange-text">{{budgetResearchStay.totalCost}}</td>
-                            </tr> -->
 
                             <tr>
                                 <td></td>
@@ -488,26 +484,6 @@
                                 <td class="orange-text">{{budgetResearchStay.costYear3 | number:2}}</td>
                                 <td class="orange-text">{{budgetResearchStay.totalCost | number:2}}</td>
                             </tr>
-
-
-                            <!-- <tr>
-                                <td class="section-title">Travel to Host Country (India/Germany)</td>
-                                <td></td>
-                                <td class="orange-text">Travel cost per visit</td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetTravel.costYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    />
-                                </td>
-                                <td class="orange-text">{{budgetTravel.totalCost}}</td>
-                            </tr> -->
 
                             <tr>
                                 <td class="section-title">Travel to Host Country (India/Germany)</td>
@@ -527,7 +503,7 @@
                                 <td class="orange-text">{{researchStayTravelTotal.year1}}</td>
                                 <td class="orange-text">{{researchStayTravelTotal.year2}}</td>
                                 <td class="orange-text">{{researchStayTravelTotal.year3}}</td>
-                                <td class="orange-text">{{researchStayTravelTotal.total}}</td>
+                                <td class="orange-text">{{researchStayTravelTotal.total | number:2}}</td>
                             </tr>
 
                             <tr class="gray-row">
@@ -537,12 +513,14 @@
                                 <td>{{totalResearchAmount.year1}}</td>
                                 <td>{{totalResearchAmount.year2}}</td>
                                 <td>{{totalResearchAmount.year3}}</td>
-                                <td>{{totalResearchAmount.total}}</td>
+                                <td>{{totalResearchAmount.total | number:2}}</td>
                             </tr>
 
                             <!-- Overheads -->
                             <tr>
-                                <td class="bold">Overheads</td>
+                                <td class="bold">Overheads
+                                    <span class="sub-text">(max 10%)</span>
+                                </td>
                                 <td></td>
                                 <td>Percentage of Overheads</td>
                                 <td>
@@ -704,20 +682,38 @@
                             </tr>
 
                             <tr>
-                                <td class="bold">Contingency and Miscellaneous</td>
+                                <td class="bold">Contingency and Miscellaneous
+                                    <br/>
+                                    <span class="sub-text">(max. 15% of Remaining Amount for Research Heads)</span>
+                                </td>
                                 <td></td>
                                 <td></td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetContingency.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+
+                                    <span class="text-danger" ng-if="contingencyError.year1">
+                                        Max allowed:
+                                        <b>{{maxContingency.year1}}</b>
+                                    </span>
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetContingency.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+
+                                    <span class="text-danger" ng-if="contingencyError.year2">
+                                        Max allowed:
+                                        <b>{{maxContingency.year2}}</b>
+                                    </span>
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetContingency.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
+
+                                    <span class="text-danger" ng-if="contingencyError.year3">
+                                        Max allowed:
+                                        <b>{{maxContingency.year3}}</b>
+                                    </span>
                                 </td>
                                 <td>{{budgetContingency.total}}</td>
                             </tr>
@@ -726,21 +722,11 @@
                                 <td class="bold">Total Research Heads</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{totalResearchHeads.year1}}</td>
-                                <td class="orange-text">{{totalResearchHeads.year2}}</td>
-                                <td class="orange-text">{{totalResearchHeads.year3}}</td>
-                                <td class="orange-text">{{totalResearchHeads.total}}</td>
+                                <td class="orange-text">{{totalResearchHeads.year1 | number:2}}</td>
+                                <td class="orange-text">{{totalResearchHeads.year2 | number:2}}</td>
+                                <td class="orange-text">{{totalResearchHeads.year3 | number:2}}</td>
+                                <td class="orange-text">{{totalResearchHeads.total | number:2}}</td>
                             </tr>
-
-                            <!-- <tr class="final-total">
-                                <td class="bold">Total</td>
-                                <td></td>
-                                <td></td>
-                                <td class="orange-text">{{grandTotal.year1}}</td>
-                                <td class="orange-text">{{grandTotal.year2}}</td>
-                                <td class="orange-text">{{grandTotal.year3}}</td>
-                                <td class="orange-text">{{grandTotal.total}}</td>
-                            </tr> -->
 
                             <tr class="final-total">
                                 <td class="bold">Total</td>
@@ -777,9 +763,6 @@
                         </tbody>
                     </table>
                 </div>
-
-
-
 
                 <div class="mx-5 mt-2 mb-3" ng-if="!proposalStage && !isCurrentUserSubmitted">
                     <button class="blue-btn float-end" ng-click="saveExpenceLineitems()" type="button">

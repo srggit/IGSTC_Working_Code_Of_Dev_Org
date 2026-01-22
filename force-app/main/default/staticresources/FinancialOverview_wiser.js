@@ -229,24 +229,35 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     console.log('$rootScope.candidateId ===>>' + $rootScope.candidateId);
 
     $scope.getApplicantStatusFromAPA = function () {
-        debugger;
-        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-            debugger;
 
-            console.log('result return onload :: ');
-            console.log(result);
-            console.log('event:', event);
+        ApplicantPortal_Contoller.fetchApplicantStatusWithDuration(
+            $rootScope.apaId,
+            function (result, event) {
 
-            if (event.status) {
-                $rootScope.isCurrentUserSubmitted = result;
-                CKEDITOR.config.readOnly = true;
-            } else {
-                console.log('Error in fetchApplicantStatus:', event.message);
-            }
-        }, {
-            escape: true
-        });
-    }
+                console.log('Result:', result);
+                console.log('Event:', event);
+
+                if (event.status && result) {
+
+                    // Status flag
+                    $rootScope.isCurrentUserSubmitted = result.applicantStatus === 'Submitted';
+
+                    // Duration (store wherever needed)
+                    $rootScope.proposalDurationMonths = result.durationInMonths;
+
+                    // Lock editor only if submitted
+                    if ($rootScope.isCurrentUserSubmitted) {
+                        CKEDITOR.config.readOnly = true;
+                    }
+
+                } else {
+                    console.error('fetchApplicantStatus failed:', event.message);
+                }
+            },
+            { escape: true }
+        );
+    };
+
     $scope.getApplicantStatusFromAPA();
 
     $scope.getAccounts = function () {
@@ -621,7 +632,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         $scope.researchSum3 = 0;
 
         $scope.researchSumGermany = 0;
-        $scope.researchSum2Germany - 0;
+        $scope.researchSum2Germany = 0;
         $scope.researchSum3Germany = 0;
 
         $scope.travelSum = 0;
@@ -1698,6 +1709,99 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 $scope.grandTotalError.year2 ||
                 $scope.grandTotalError.year3;
 
+            /* =====================================================
+            🔟 VALIDATION: Contingency Max 15% of Remaining Research
+            ===================================================== */
+
+            // Reset contingency errors
+            $scope.contingencyError = {
+                year1: false,
+                year2: false,
+                year3: false,
+                any: false
+            };
+
+            // Calculate max allowed contingency (15%)
+            $scope.maxContingency = {
+                year1: Math.round(($scope.remainingForResearch.year1 || 0) * 0.15 * 100) / 100,
+                year2: Math.round(($scope.remainingForResearch.year2 || 0) * 0.15 * 100) / 100,
+                year3: Math.round(($scope.remainingForResearch.year3 || 0) * 0.15 * 100) / 100
+            };
+
+            // Validate entered contingency
+            $scope.contingencyError.year1 =
+                ($scope.budgetContingency.year1 || 0) > $scope.maxContingency.year1;
+
+            $scope.contingencyError.year2 =
+                ($scope.budgetContingency.year2 || 0) > $scope.maxContingency.year2;
+
+            $scope.contingencyError.year3 =
+                ($scope.budgetContingency.year3 || 0) > $scope.maxContingency.year3;
+
+            $scope.contingencyError.any =
+                $scope.contingencyError.year1 ||
+                $scope.contingencyError.year2 ||
+                $scope.contingencyError.year3;
+
+            /* =====================================================
+            🔟 VALIDATION: Research Stay (Per Year + Total)
+            ===================================================== */
+
+            // Always reset first (important)
+            $scope.researchStayError = {
+                year1: false,
+                year2: false,
+                year3: false,
+                total: false,
+                durationInvalid: false,
+                any: false
+            };
+
+            const MIN_DAYS_PER_YEAR = 10;
+
+            // ---------- Decide rules by duration ----------
+            let MAX_DAYS_PER_YEAR = 0;
+            let TOTAL_MIN = 0;
+            let TOTAL_MAX = 0;
+
+            if ($rootScope.proposalDurationMonths === 24) {
+                MAX_DAYS_PER_YEAR = 50;
+                TOTAL_MIN = 20;
+                TOTAL_MAX = 60;
+            } else if ($rootScope.proposalDurationMonths === 36) {
+                MAX_DAYS_PER_YEAR = 80;
+                TOTAL_MIN = 30;
+                TOTAL_MAX = 90;
+            } else {
+                $scope.researchStayError.durationInvalid = true;
+            }
+
+            // ---------- Per-year validation ----------
+            function isInvalidYear(days) {
+                if (!days || days === 0) return false; // zero allowed
+                return days < MIN_DAYS_PER_YEAR || days > MAX_DAYS_PER_YEAR;
+            }
+
+            $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1);
+            $scope.researchStayError.year2 = isInvalidYear($scope.budgetResearchStay.daysYear2);
+            $scope.researchStayError.year3 = isInvalidYear($scope.budgetResearchStay.daysYear3);
+
+            // ---------- Total validation ----------
+            const totalDays = $scope.budgetResearchStay.totalDays || 0;
+
+            $scope.researchStayError.total =
+                totalDays > 0 &&
+                (totalDays < TOTAL_MIN || totalDays > TOTAL_MAX);
+
+            // ---------- Aggregate flag ----------
+            $scope.researchStayError.any =
+                $scope.researchStayError.year1 ||
+                $scope.researchStayError.year2 ||
+                $scope.researchStayError.year3 ||
+                $scope.researchStayError.total ||
+                $scope.researchStayError.durationInvalid;
+
+
         } finally {
             $scope.isCalculating = false;
         }
@@ -2069,6 +2173,43 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     // Save expense details using ApplicantPortal_Contoller
     $scope.saveBudgetTableData = function () {
         debugger;
+
+        // 🔁 Ensure latest calculations & validations
+        $scope.recalculateAll();
+
+        /* ============================================
+            BLOCK SAVE IF ANY VALIDATION FAILS
+        ============================================ */
+
+        // if (
+        //     ($scope.grandTotalError && $scope.grandTotalError.any) ||
+        //     ($scope.contingencyError && $scope.contingencyError.any) ||
+        //     ($scope.researchStayError && $scope.researchStayError.any)
+        // ) {
+        //     swal({
+        //         title: "Validation Error",
+        //         text: "Please fix all validation errors before saving.",
+        //         icon: "warning",
+        //         button: "OK"
+        //     });
+        //     return;
+        // }
+
+        if ($scope.researchStayError && $scope.researchStayError.any) {
+            swal("Research Stay Error", "Please correct Research Stay duration errors.", "warning");
+            return;
+        }
+
+        if ($scope.contingencyError && $scope.contingencyError.any) {
+            swal("Contingency Error", "Contingency exceeds allowed 15% limit.", "warning");
+            return;
+        }
+
+        if ($scope.grandTotalError && $scope.grandTotalError.any) {
+            swal("Grand Total Error", "Yearly budget cannot exceed €16000.", "warning");
+            return;
+        }
+
 
         // Prepare line items for saving
         var allExpenseLineItems = [];

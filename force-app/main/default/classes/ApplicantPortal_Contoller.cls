@@ -3123,7 +3123,7 @@ public static void updateProposalStage(Id proposalId) {
     @RemoteAction
     public static Boolean fetchApplicantStatus(String apaId){
         List<Applicant_Proposal_Association__c> apaList = [
-            SELECT Applicant_Status__c, Contact__c, Contact__r.Is_Primary__c
+            SELECT Applicant_Status__c, Contact__c, Contact__r.Is_Primary__c, Proposals__c, Proposals__r.Duration_In_Months_Max_36__c
             FROM Applicant_Proposal_Association__c
             WHERE Id = :apaId
             AND Is_Signatory__c = false
@@ -3135,5 +3135,35 @@ public static void updateProposalStage(Id proposalId) {
         }
         return false;
     }
+
+    @RemoteAction
+    public static ApplicantStatusWrapper fetchApplicantStatusWithDuration(String apaId) {
+
+        ApplicantStatusWrapper res = new ApplicantStatusWrapper();
+
+        List<Applicant_Proposal_Association__c> apaList = [
+            SELECT Applicant_Status__c,
+                Proposals__r.Duration_In_Months_Max_36__c
+            FROM Applicant_Proposal_Association__c
+            WHERE Id = :apaId
+            AND Is_Signatory__c = false
+            LIMIT 1
+        ];
+
+        if (!apaList.isEmpty()) {
+            res.applicantStatus = apaList[0].Applicant_Status__c;
+            res.durationInMonths = (Integer) apaList[0]
+                .Proposals__r
+                .Duration_In_Months_Max_36__c;
+        }
+
+        return res;
+    }
+
+    public class ApplicantStatusWrapper {
+        @AuraEnabled public String applicantStatus;
+        @AuraEnabled public Integer durationInMonths;
+    }
+
 
 }
