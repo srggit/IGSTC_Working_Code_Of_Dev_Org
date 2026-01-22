@@ -3940,13 +3940,13 @@ return e.getMessage() + e.getLineNumber();
                 } else {
                     // No Expense_Head__c ID provided (null, empty, or invalid) - create/find by Expense_Type__c (for creates)
                     // Determine which year based on which expense field has value
-                    if(eli.Year1_Expense__c != null && eli.Year1_Expense__c >= 0) {
+                    if(eli.Year1_Expense__c != null && eli.Year1_Expense__c > 0) {
                         targetHead = yearNumHeadMap.get('1_' + eli.Expense_Type__c);
                         targetYear = '1';
-                    } else if(eli.Year2_Expense__c != null && eli.Year2_Expense__c >= 0) {
+                    } else if(eli.Year2_Expense__c != null && eli.Year2_Expense__c > 0) {
                         targetHead = yearNumHeadMap.get('2_' + eli.Expense_Type__c);
                         targetYear = '2';
-                    } else if(eli.Year3_Expense__c != null && eli.Year3_Expense__c >= 0) {
+                    } else if(eli.Year3_Expense__c != null && eli.Year3_Expense__c > 0) {
                         targetHead = yearNumHeadMap.get('3_' + eli.Expense_Type__c);
                         targetYear = '3';
                     }

@@ -547,7 +547,7 @@
                                 <td>Percentage of Overheads</td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="onOverheadChange(1)" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        min="0" max="10" />
+                                        min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear1 > 10">
                                         Maximum allowed overhead is 10%
@@ -555,7 +555,7 @@
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="onOverheadChange(2)" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        min="0" max="10" />
+                                        min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear2 > 10">
                                         Maximum allowed overhead is 10%
@@ -564,7 +564,7 @@
                                 </td>
                                 <td>
                                     <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="onOverheadChange(3)" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        min="0" max="10" />
+                                        min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear3 > 10">
                                         Maximum allowed overhead is 10%
@@ -729,10 +729,10 @@
                                 <td class="orange-text">{{totalResearchHeads.year1}}</td>
                                 <td class="orange-text">{{totalResearchHeads.year2}}</td>
                                 <td class="orange-text">{{totalResearchHeads.year3}}</td>
-                                <td class="orange-text">{{totalResearchHeads.total}}</td>
+                                <td class="orange-text">{{totalResearchHeads.total}}</td>x
                             </tr>
 
-                            <tr class="final-total">
+                            <!-- <tr class="final-total">
                                 <td class="bold">Total</td>
                                 <td></td>
                                 <td></td>
@@ -740,8 +740,35 @@
                                 <td class="orange-text">{{grandTotal.year2}}</td>
                                 <td class="orange-text">{{grandTotal.year3}}</td>
                                 <td class="orange-text">{{grandTotal.total}}</td>
+                            </tr> -->
+
+                            <tr class="final-total">
+                                <td class="bold">Total</td>
+                                <td></td>
+                                <td></td>
+
+                                <td class="orange-text" ng-class="{'text-danger': grandTotalError.year1}">
+                                    {{grandTotal.year1 | number:2}}
+                                </td>
+
+                                <td class="orange-text" ng-class="{'text-danger': grandTotalError.year2}">
+                                    {{grandTotal.year2 | number:2}}
+                                </td>
+
+                                <td class="orange-text" ng-class="{'text-danger': grandTotalError.year3}">
+                                    {{grandTotal.year3 | number:2}}
+                                </td>
+
+                                <td class="orange-text">
+                                    {{grandTotal.total | number:2}}
+                                </td>
                             </tr>
 
+                            <tr ng-if="grandTotalError.any">
+                                <td colspan="7" class="text-danger text-center fw-bold">
+                                    ⚠️ Grand Total cannot exceed €16,000 per year
+                                </td>
+                            </tr>
 
                             <tr class="note-row">
                                 <td colspan="7">Max € 16,000/year</td>

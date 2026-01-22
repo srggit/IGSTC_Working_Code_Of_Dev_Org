@@ -1677,6 +1677,27 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             console.log('$scope.grandTotal.year1', $scope.grandTotal.year1);
 
+            /* =====================================================
+                9️⃣ VALIDATION: Grand Total must not exceed 16000
+            ===================================================== */
+
+            $scope.grandTotalError = {
+                year1: false,
+                year2: false,
+                year3: false,
+                any: false
+            };
+            debugger;
+
+            $scope.grandTotalError.year1 = $scope.grandTotal.year1 > MAX_RESEARCH_AMOUNT;
+            $scope.grandTotalError.year2 = $scope.grandTotal.year2 > MAX_RESEARCH_AMOUNT;
+            $scope.grandTotalError.year3 = $scope.grandTotal.year3 > MAX_RESEARCH_AMOUNT;
+
+            $scope.grandTotalError.any =
+                $scope.grandTotalError.year1 ||
+                $scope.grandTotalError.year2 ||
+                $scope.grandTotalError.year3;
+
         } finally {
             $scope.isCalculating = false;
         }
@@ -1738,7 +1759,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             }
         }
         let nextIndex = maxIndex + 1;
-        
+
         $scope.budgetResearchStaffList.push({
             positionsYear1: 0,
             positionsYear2: 0,
@@ -1766,7 +1787,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             let staff = $scope.budgetResearchStaffList[index];
             // Get the Research Staff type from the staff object, or generate it if not set
             let researchStaffType = staff.researchStaffType || ('Research staff ' + (index + 1));
-            
+
             // Confirm deletion using SweetAlert v2 promise syntax
             swal({
                 title: "Are you sure?",
@@ -1774,7 +1795,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 icon: "warning",
                 buttons: true,
                 dangerMode: true
-            }).then(function(isConfirm) {
+            }).then(function (isConfirm) {
                 if (isConfirm) {
                     // Delete from backend using Expense_Head__c IDs
                     if (staff.expenseHeadIds && staff.expenseHeadIds.length > 0) {
@@ -1786,12 +1807,12 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                         swal("Error", "Error deleting Research Staff: " + result, "error");
                                         return;
                                     }
-                                    
+
                                     // Remove from frontend list
                                     $scope.budgetResearchStaffList.splice(index, 1);
                                     $scope.updateResearchStaffRows();
                                     $scope.recalculateAll();
-                                    
+
                                     swal("Deleted!", researchStaffType + " has been deleted.", "success");
                                     $scope.$apply();
                                 } else {
@@ -1860,7 +1881,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         let head = result.expenseHeads[j];
                         if (head.Name && head.Name.startsWith('Research staff')) {
                             if (!researchStaffHeadIdsMap[head.Name]) {
-                                researchStaffHeadIdsMap[head.Name] = {year1: null, year2: null, year3: null};
+                                researchStaffHeadIdsMap[head.Name] = { year1: null, year2: null, year3: null };
                             }
                             // Map by year
                             let year = head.Yearly_Expense__r && head.Yearly_Expense__r.Year__c ? head.Yearly_Expense__r.Year__c : null;
@@ -1874,7 +1895,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         }
                     }
                 }
-                
+
                 // Process line items and populate budget table variables
                 for (let i = 0; i < result.lineItems.length; i++) {
                     let item = result.lineItems[i];
@@ -1912,11 +1933,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         if (!$scope.budgetResearchStaffList || $scope.budgetResearchStaffList.length === 0) {
                             $scope.budgetResearchStaffList = [];
                         }
-                        
+
                         // Extract Research Staff number from expense type (e.g., "Research staff 1" -> 1)
                         let staffNumberMatch = expenseType.match(/Research staff (\d+)/);
                         let staffIndex = staffNumberMatch ? parseInt(staffNumberMatch[1]) - 1 : $scope.budgetResearchStaffList.length;
-                        
+
                         // Ensure we have enough staff records - only create records that exist in backend
                         while ($scope.budgetResearchStaffList.length <= staffIndex) {
                             let newIndex = $scope.budgetResearchStaffList.length + 1;
@@ -1929,13 +1950,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                 expenseHeadIds: [] // Store Expense_Head__c IDs for deletion
                             });
                         }
-                        
+
                         let staff = $scope.budgetResearchStaffList[staffIndex];
                         // Store the original Research Staff type name from backend
                         if (!staff.researchStaffType) {
                             staff.researchStaffType = expenseType;
                         }
-                        
+
                         // Store Expense_Head__c IDs for this Research Staff in correct order: [Year1, Year2, Year3]
                         // Keep null values to maintain array indices
                         if (researchStaffHeadIdsMap[expenseType]) {
@@ -1949,7 +1970,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                             // Initialize empty array if no IDs found
                             staff.expenseHeadIds = [];
                         }
-                        
+
                         // Map line items based on Index__c and Description
                         // Index 1 = No. of Positions, Index 2 = Cost, Index 3 = Hours
                         if (item.Index__c === 1 || (item.Description__c && (item.Description__c.includes('No. of Positions') || item.Description__c.includes('Positions')))) {
@@ -1994,14 +2015,14 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
                     // Check if any Research Staff has expenseHeadIds (meaning it was saved in backend)
                     for (let k = 0; k < $scope.budgetResearchStaffList.length; k++) {
-                        if ($scope.budgetResearchStaffList[k].expenseHeadIds && 
+                        if ($scope.budgetResearchStaffList[k].expenseHeadIds &&
                             $scope.budgetResearchStaffList[k].expenseHeadIds.length > 0) {
                             hasResearchStaffRecords = true;
                             break;
                         }
                     }
                 }
-                
+
                 // If no Research Staff records found in backend, show only one default record
                 // If records exist, only show those records (don't add default empty records)
                 if (!hasResearchStaffRecords) {
@@ -2016,7 +2037,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     }];
                 } else {
                     // Records exist in backend - remove any records without expenseHeadIds (empty/default records)
-                    $scope.budgetResearchStaffList = $scope.budgetResearchStaffList.filter(function(staff) {
+                    $scope.budgetResearchStaffList = $scope.budgetResearchStaffList.filter(function (staff) {
                         return staff.expenseHeadIds && staff.expenseHeadIds.length > 0;
                     });
                 }
@@ -2048,6 +2069,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     // Save expense details using ApplicantPortal_Contoller
     $scope.saveBudgetTableData = function () {
         debugger;
+
+        // Validation check before saving
+        if (!$scope.validateBeforeSave()) {
+            return;
+        }
 
         // Prepare line items for saving
         var allExpenseLineItems = [];
@@ -2091,20 +2117,20 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 let staff = $scope.budgetResearchStaffList[i];
                 // Use existing researchStaffType or generate new one
                 let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
-                
+
                 // Get Expense_Head__c IDs for this Research Staff (Year 1, 2, 3)
                 // expenseHeadIds array contains [Year1HeadId, Year2HeadId, Year3HeadId] or empty for new records
                 let year1HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 0) ? staff.expenseHeadIds[0] : null;
                 let year2HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 1) ? staff.expenseHeadIds[1] : null;
                 let year3HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 2) ? staff.expenseHeadIds[2] : null;
-                
+
                 // Child Line Item 1: No. of Positions
                 // Store year-specific totals in Description for backend processing
                 // Format: "No. of Positions|Y1Total:XXX|Y2Total:YYY|Y3Total:ZZZ"
                 let year1Total = (staff.positionsYear1 || 0) * (staff.costYear1 || 0) * (staff.hoursYear1 || 0);
                 let year2Total = (staff.positionsYear2 || 0) * (staff.costYear2 || 0) * (staff.hoursYear2 || 0);
                 let year3Total = (staff.positionsYear3 || 0) * (staff.costYear3 || 0) * (staff.hoursYear3 || 0);
-                
+
                 // Year 1 line item
                 let year1LineItem = {
                     Index__c: 1,
@@ -2121,7 +2147,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     year1LineItem.Expense_Head__c = year1HeadId;
                 }
                 allExpenseLineItems.push(year1LineItem);
-                
+
                 // Year 2 line item
                 let year2LineItem = {
                     Index__c: 1,
@@ -2138,7 +2164,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     year2LineItem.Expense_Head__c = year2HeadId;
                 }
                 allExpenseLineItems.push(year2LineItem);
-                
+
                 // Year 3 line item
                 let year3LineItem = {
                     Index__c: 1,
@@ -2155,7 +2181,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     year3LineItem.Expense_Head__c = year3HeadId;
                 }
                 allExpenseLineItems.push(year3LineItem);
-                
+
                 // Child Line Item 2: Cost
                 // Year 1
                 let costYear1Item = {
@@ -2172,7 +2198,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     costYear1Item.Expense_Head__c = year1HeadId;
                 }
                 allExpenseLineItems.push(costYear1Item);
-                
+
                 // Year 2
                 let costYear2Item = {
                     Index__c: 2,
@@ -2188,7 +2214,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     costYear2Item.Expense_Head__c = year2HeadId;
                 }
                 allExpenseLineItems.push(costYear2Item);
-                
+
                 // Year 3
                 let costYear3Item = {
                     Index__c: 2,
@@ -2204,7 +2230,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     costYear3Item.Expense_Head__c = year3HeadId;
                 }
                 allExpenseLineItems.push(costYear3Item);
-                
+
                 // Child Line Item 3: Number of hours/week/days/month
                 // Year 1
                 let hoursYear1Item = {
@@ -2221,7 +2247,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     hoursYear1Item.Expense_Head__c = year1HeadId;
                 }
                 allExpenseLineItems.push(hoursYear1Item);
-                
+
                 // Year 2
                 let hoursYear2Item = {
                     Index__c: 3,
@@ -2237,7 +2263,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     hoursYear2Item.Expense_Head__c = year2HeadId;
                 }
                 allExpenseLineItems.push(hoursYear2Item);
-                
+
                 // Year 3
                 let hoursYear3Item = {
                     Index__c: 3,
@@ -2307,13 +2333,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             function (result, event) {
                 if (event.status && result != null) {
                     debugger;
-                    
+
                     // Check if result is an error string
                     if (result.startsWith && result.startsWith('error')) {
                         swal("Error", "Error saving budget details: " + result, "error");
                         return;
                     }
-                    
+
                     // Try to parse JSON result containing Expense_Head__c IDs
                     try {
                         let saveResult = JSON.parse(result);
@@ -2323,7 +2349,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                 for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
                                     let staff = $scope.budgetResearchStaffList[i];
                                     let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
-                                    
+
                                     // Get Expense_Head__c IDs for this Research Staff from backend response
                                     if (saveResult.researchStaffHeadIds[researchStaffType]) {
                                         // Store IDs in correct order: [Year1HeadId, Year2HeadId, Year3HeadId]
@@ -2357,6 +2383,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     // We'll call it from getAccounts() callback if needed
 
     $scope.onOverheadChange = function (year) {
+        debugger;
         let field = 'percentageYear' + year;
         let value = Number($scope.budgetOverhead[field]) || 0;
 
@@ -2378,4 +2405,39 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         // Recalculate AFTER validation
         $scope.recalculateAll();
     };
+
+    $scope.validateBeforeSave = function () {
+
+        // 1️⃣ Grand Total validation (per year)
+        if (
+            $scope.grandTotal.year1 > MAX_RESEARCH_AMOUNT ||
+            $scope.grandTotal.year2 > MAX_RESEARCH_AMOUNT ||
+            $scope.grandTotal.year3 > MAX_RESEARCH_AMOUNT
+        ) {
+            swal(
+                "Budget Limit Exceeded",
+                "Grand Total cannot be more than €16,000 per year.",
+                "info"
+            );
+            return false;
+        }
+
+        // 2️⃣ Overhead percentage validation
+        if (
+            ($scope.budgetOverhead.percentageYear1 || 0) > 10 ||
+            ($scope.budgetOverhead.percentageYear2 || 0) > 10 ||
+            ($scope.budgetOverhead.percentageYear3 || 0) > 10
+        ) {
+            swal(
+                "Invalid Overheads",
+                "Overheads percentage cannot be more than 10%.",
+                "info"
+            );
+            return false;
+        }
+
+        // ✅ All validations passed
+        return true;
+    };
+
 })
