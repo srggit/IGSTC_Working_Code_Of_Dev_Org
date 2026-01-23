@@ -559,7 +559,7 @@
                                 <td class="orange-text">{{budgetOverhead.amountYear1}}</td>
                                 <td class="orange-text">{{budgetOverhead.amountYear2}}</td>
                                 <td class="orange-text">{{budgetOverhead.amountYear3}}</td>
-                                <td class="orange-text">{{budgetOverhead.totalAmount}}</td>
+                                <td class="orange-text">{{budgetOverhead.totalAmount | number:2}}</td>
                             </tr>
 
                             <tr class="bold">
@@ -569,7 +569,7 @@
                                 <td class="orange-text">{{remainingForResearch.year1}}</td>
                                 <td class="orange-text">{{remainingForResearch.year2}}</td>
                                 <td class="orange-text">{{remainingForResearch.year3}}</td>
-                                <td class="orange-text">{{remainingForResearch.total}}</td>
+                                <td class="orange-text">{{remainingForResearch.total | number:2}}</td>
                             </tr>
 
                             <!-- Research Staff (Multiple records support) -->
@@ -659,7 +659,7 @@
                                     <input type="number" class="tbl-input" ng-model="budgetConsumables.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                 </td>
-                                <td>{{budgetConsumables.total}}</td>
+                                <td class="orange-text bold">{{budgetConsumables.total}}</td>
                             </tr>
 
                             <tr>
@@ -678,13 +678,15 @@
                                     <input type="number" class="tbl-input" ng-model="minorEquipment.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                 </td>
-                                <td>{{minorEquipment.total}}</td>
+                                <td class="orange-text bold">{{minorEquipment.total}}</td>
                             </tr>
 
                             <tr>
                                 <td class="bold">Contingency and Miscellaneous
                                     <br/>
-                                    <span class="sub-text">(max. 15% of Remaining Amount for Research Heads)</span>
+                                    <span class="sub-text">
+                                        <i>(max. 15% of Remaining Amount for Research Heads)</i>
+                                    </span>
                                 </td>
                                 <td></td>
                                 <td></td>
@@ -715,7 +717,7 @@
                                         <b>{{maxContingency.year3}}</b>
                                     </span>
                                 </td>
-                                <td>{{budgetContingency.total}}</td>
+                                <td class="orange-text bold">{{budgetContingency.total}}</td>
                             </tr>
 
                             <tr class="final-total">

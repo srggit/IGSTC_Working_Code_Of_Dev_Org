@@ -1664,6 +1664,27 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 $scope.remainingForResearch.year2 +
                 $scope.remainingForResearch.year3;
 
+            /* =====================================================
+                CALCULATE TOTALS FOR OTHER HEADS
+            ===================================================== */
+
+            // Consumables
+            $scope.budgetConsumables.total =
+                (Number($scope.budgetConsumables.year1) || 0) +
+                (Number($scope.budgetConsumables.year2) || 0) +
+                (Number($scope.budgetConsumables.year3) || 0);
+
+            // Minor Equipment
+            $scope.minorEquipment.total =
+                (Number($scope.minorEquipment.year1) || 0) +
+                (Number($scope.minorEquipment.year2) || 0) +
+                (Number($scope.minorEquipment.year3) || 0);
+
+            // Contingency & Miscellaneous
+            $scope.budgetContingency.total =
+                (Number($scope.budgetContingency.year1) || 0) +
+                (Number($scope.budgetContingency.year2) || 0) +
+                (Number($scope.budgetContingency.year3) || 0);
 
 
             /* =====================================================

@@ -2703,10 +2703,10 @@ input[type=number] {
     font-weight: bold;
 }
 
-.sub-text {
+/* .sub-text {
     font-size: 12px;
     font-style: italic;
-}
+} */
 
 .bold {
     font-weight: bold;

@@ -6189,62 +6189,62 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
         }
         
        
-        
-    Applicant_Proposal_Association__c association;
-    List<Applicant_Proposal_Association__c> assocToInsert = new List<Applicant_Proposal_Association__c>();
+            
+        Applicant_Proposal_Association__c association;
+        List<Applicant_Proposal_Association__c> assocToInsert = new List<Applicant_Proposal_Association__c>();
 
-    if (!contactIds.isEmpty()) {
+        if (!contactIds.isEmpty()) {
 
-        // Fetch existing associations for all contacts for this proposal
-        Map<Id, Applicant_Proposal_Association__c> existingAssocMap = new Map<Id, Applicant_Proposal_Association__c>();
+            // Fetch existing associations for all contacts for this proposal
+            Map<Id, Applicant_Proposal_Association__c> existingAssocMap = new Map<Id, Applicant_Proposal_Association__c>();
 
-        for (Applicant_Proposal_Association__c apa : [
-            SELECT Id, Contact__c, Proposals__c
-            FROM Applicant_Proposal_Association__c
-            WHERE Contact__c IN :contactIds
-            AND Proposals__c = :singleProposal.Id
-        ]) {
-            existingAssocMap.put(apa.Contact__c, apa);
-        }
+            for (Applicant_Proposal_Association__c apa : [
+                SELECT Id, Contact__c, Proposals__c
+                FROM Applicant_Proposal_Association__c
+                WHERE Contact__c IN :contactIds
+                AND Proposals__c = :singleProposal.Id
+            ]) {
+                existingAssocMap.put(apa.Contact__c, apa);
+            }
 
-        // Create associations only if not already present
-        for (Id conId : contactIds) {
-            if (!existingAssocMap.containsKey(conId)) {
-                assocToInsert.add(new Applicant_Proposal_Association__c(
-                    Contact__c = conId,
-                    Proposals__c = singleProposal.Id
-                ));
+            // Create associations only if not already present
+            for (Id conId : contactIds) {
+                if (!existingAssocMap.containsKey(conId)) {
+                    assocToInsert.add(new Applicant_Proposal_Association__c(
+                        Contact__c = conId,
+                        Proposals__c = singleProposal.Id
+                    ));
+                }
+            }
+
+            // Insert missing associations
+            if (!assocToInsert.isEmpty()) {
+                insert assocToInsert;
+                System.debug('Created associations count: ' + assocToInsert.size());
+            }
+
+            // Maintain reference-style single association (first available)
+            if (!existingAssocMap.isEmpty()) {
+                association = existingAssocMap.values()[0];
+            } else if (!assocToInsert.isEmpty()) {
+                association = assocToInsert[0];
             }
         }
-
-        // Insert missing associations
-        if (!assocToInsert.isEmpty()) {
-            insert assocToInsert;
-            System.debug('Created associations count: ' + assocToInsert.size());
-        }
-
-        // Maintain reference-style single association (first available)
-        if (!existingAssocMap.isEmpty()) {
-            association = existingAssocMap.values()[0];
-        } else if (!assocToInsert.isEmpty()) {
-            association = assocToInsert[0];
+            
+            // Populate wrapper with results (EXACT reference pattern)
+            dataWrapper.proposalId = singleProposal.Id;
+            dataWrapper.proposal = singleProposal;
+            dataWrapper.apa = association;        
+            return dataWrapper;
+            
+        } catch (Exception e) {
+            // Log the error properly
+            System.debug('Error in insertPairingDetails at line ' + e.getLineNumber() + ': ' + e.getMessage());
+            System.debug('Stack trace: ' + e.getStackTraceString());
+            
+            throw new AuraHandledException('Error inserting pairing details: ' + e.getMessage());
         }
     }
-        
-        // Populate wrapper with results (EXACT reference pattern)
-        dataWrapper.proposalId = singleProposal.Id;
-        dataWrapper.proposal = singleProposal;
-        dataWrapper.apa = association;        
-        return dataWrapper;
-        
-    } catch (Exception e) {
-        // Log the error properly
-        System.debug('Error in insertPairingDetails at line ' + e.getLineNumber() + ': ' + e.getMessage());
-        System.debug('Stack trace: ' + e.getStackTraceString());
-        
-        throw new AuraHandledException('Error inserting pairing details: ' + e.getMessage());
-    }
-}
 
 public class insertPairingWrapperinWiser {
     public String proposalId { get; set; }
