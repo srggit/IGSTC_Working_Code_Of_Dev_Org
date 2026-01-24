@@ -133,7 +133,7 @@ public static String saveApplicantPortalSingh(String loginHashCode,Contact con,A
     // ------------------------------------- WISER METHOD TO CREATE PROPOSAL ----------------------------------------- //
     /* @RemoteAction 
     public static String saveHostProjectInformation(Application_Proposal__c hostDetails, integer sDate, integer sMonth, integer sYear, integer eDate, integer eMonth, integer eYear){
-        return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, sDate, sMonth, sYear, eDate, eMonth, eYear);
+        return IndustrialFellowshipHelper.insertHostProjectDetails(hostDetails, sDate, sMonth, sYear, eDate,saveHostProjectInformationeMonth, eYear);
     } */
 
     @RemoteAction 

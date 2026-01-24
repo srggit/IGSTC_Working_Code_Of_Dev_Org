@@ -1228,8 +1228,15 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                     RecordTypeId = workshopRecordTypeId,
                     Campaign__c = camp.Id,
                     yearly_Call__c = yearlyCallId,
+                    Host_Project_Title__c = hostDetails.Host_Project_Title__c,
                     Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c,
-                    Host_Project_Title__c = hostDetails.Host_Project_Title__c
+                    Broad_area_of_research__c = hostDetails.Broad_area_of_research__c,
+                    Duration_In_Months_Max_36__c = hostDetails.Duration_In_Months_Max_36__c,
+                    Layman_title_of_project__c = hostDetails.Layman_title_of_project__c,
+                    Layman_abstract_of_proposed_work__c = hostDetails.Layman_abstract_of_proposed_work__c,
+                    Non_Technical_Title_Of_Project__c = hostDetails.Non_Technical_Title_Of_Project__c,
+                    Non_Technical_Abstract_Of_Proposed_Work__c = hostDetails.Non_Technical_Abstract_Of_Proposed_Work__c,
+                    KeyWords__c = hostDetails.KeyWords__c
                     //Actual_Application_Start_Date__c = Date.newInstance(sYear,sMonth,sDate)
                 );
                 upsert proposalRec;

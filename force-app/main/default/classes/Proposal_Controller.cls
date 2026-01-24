@@ -6080,11 +6080,12 @@ public class insertPairingWrapper {
 //////**********************************New Method Added By Karthik For Pairing Page
 
 
-public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapperPairing> contactList, String campaignId, String yearlyCall) {
+public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapperPairing> contactList, String campaignId, String yearlyCall, String proposalId) {
     insertPairingWrapperinWiser dataWrapper = new insertPairingWrapperinWiser();
     
     try {
         system.debug('size ---> ' + contactList.size());
+        system.debug('proposalId passed ---> ' + proposalId);
         
         // Step 1: Upsert Accounts
         List<Account> accList = new List<Account>();
@@ -6128,7 +6129,7 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
         List<Contact> newContacts = new List<Contact>();
         List<Contact> existingContacts = new List<Contact>();
         System.debug('$#newContacts=====>'+newContacts);
-        System.debug('$#newContacts=====>'+existingContacts);
+        System.debug('$#existingContacts=====>'+existingContacts);
         for(Contact c : contList) {
             if(c.Id == null) {
                 newContacts.add(c);
@@ -6148,53 +6149,69 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
         Set<Id> contactIds = new Set<Id>();
         for(Contact c : newContacts) {
             contactIds.add(c.Id);
-            
         }
         for(Contact c : existingContacts) {
             contactIds.add(c.Id);
         }
         
-        // Step 3: Handle Proposal (PEC FAR logic)
+        // Step 3: Handle Proposal - Use existing proposal if provided, otherwise create/find one
         Id wiserRtTd = Utility.getProposalRecordType('WISER');
         Application_Proposal__c singleProposal;
         
-        List<Application_Proposal__c> existingProposalsViaJunction = new List<Application_Proposal__c>();
-        if(!contactIds.isEmpty()) {
-            system.debug('size contactIds---> '+contactIds);
-            existingProposalsViaJunction = [
-                SELECT Id, Campaign__c, RecordTypeId
-                FROM Application_Proposal__c
-                WHERE Id IN (
-                    SELECT Proposals__c 
-                    FROM Applicant_Proposal_Association__c 
-                    WHERE Contact__c IN :contactIds
-                )
-                AND Campaign__c = :campaignId
-                AND RecordTypeId = :wiserRtTd
-                LIMIT 1
-            ];
+        // If proposalId is provided, use that proposal
+        if(String.isNotBlank(proposalId)) {
+            try {
+                singleProposal = [
+                    SELECT Id, Campaign__c, RecordTypeId
+                    FROM Application_Proposal__c
+                    WHERE Id = :proposalId
+                    LIMIT 1
+                ];
+                system.debug('Using provided proposal: ' + singleProposal.Id);
+            } catch(Exception e) {
+                system.debug('Proposal not found with provided ID: ' + proposalId + ', will create new one');
+                singleProposal = null;
+            }
         }
         
-        if(!existingProposalsViaJunction.isEmpty()) {
-            singleProposal = existingProposalsViaJunction[0];
-            system.debug('Found existing proposal via junction: ' + singleProposal.Id);
-        } else {
-            singleProposal = new Application_Proposal__c();
-            singleProposal.RecordTypeId = wiserRtTd;
-            singleProposal.Campaign__c = campaignId;
-            singleProposal.yearly_Call__c = yearlyCall;
-            singleProposal.Proposal_Stages__c = 'Draft';
-            insert singleProposal;
-            system.debug('Created new proposal: ' + singleProposal.Id);
-        }
-        
-       
+        // If proposal not found or not provided, try to find existing via junction or create new
+        if(singleProposal == null) {
+            List<Application_Proposal__c> existingProposalsViaJunction = new List<Application_Proposal__c>();
+            if(!contactIds.isEmpty()) {
+                system.debug('size contactIds---> '+contactIds);
+                existingProposalsViaJunction = [
+                    SELECT Id, Campaign__c, RecordTypeId
+                    FROM Application_Proposal__c
+                    WHERE Id IN (
+                        SELECT Proposals__c 
+                        FROM Applicant_Proposal_Association__c 
+                        WHERE Contact__c IN :contactIds
+                    )
+                    AND Campaign__c = :campaignId
+                    AND RecordTypeId = :wiserRtTd
+                    LIMIT 1
+                ];
+            }
             
+            if(!existingProposalsViaJunction.isEmpty()) {
+                singleProposal = existingProposalsViaJunction[0];
+                system.debug('Found existing proposal via junction: ' + singleProposal.Id);
+            } else {
+                singleProposal = new Application_Proposal__c();
+                singleProposal.RecordTypeId = wiserRtTd;
+                singleProposal.Campaign__c = campaignId;
+                singleProposal.yearly_Call__c = yearlyCall;
+                singleProposal.Proposal_Stages__c = 'Draft';
+                insert singleProposal;
+                system.debug('Created new proposal: ' + singleProposal.Id);
+            }
+        }
+        
+        // Step 4: Create APAs for both contacts (ensure two APAs are created)
         Applicant_Proposal_Association__c association;
         List<Applicant_Proposal_Association__c> assocToInsert = new List<Applicant_Proposal_Association__c>();
 
         if (!contactIds.isEmpty()) {
-
             // Fetch existing associations for all contacts for this proposal
             Map<Id, Applicant_Proposal_Association__c> existingAssocMap = new Map<Id, Applicant_Proposal_Association__c>();
 
@@ -6207,7 +6224,8 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
                 existingAssocMap.put(apa.Contact__c, apa);
             }
 
-            // Create associations only if not already present
+            // Create associations for contacts that don't have one yet
+            // This ensures both contacts get an APA
             for (Id conId : contactIds) {
                 if (!existingAssocMap.containsKey(conId)) {
                     assocToInsert.add(new Applicant_Proposal_Association__c(
@@ -6217,34 +6235,34 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
                 }
             }
 
-            // Insert missing associations
+            // Insert missing associations (will create APAs for contacts that don't have one)
             if (!assocToInsert.isEmpty()) {
                 insert assocToInsert;
                 System.debug('Created associations count: ' + assocToInsert.size());
             }
 
-            // Maintain reference-style single association (first available)
+            // Maintain reference-style single association (first available) for backward compatibility
             if (!existingAssocMap.isEmpty()) {
                 association = existingAssocMap.values()[0];
             } else if (!assocToInsert.isEmpty()) {
                 association = assocToInsert[0];
             }
         }
-            
-            // Populate wrapper with results (EXACT reference pattern)
-            dataWrapper.proposalId = singleProposal.Id;
-            dataWrapper.proposal = singleProposal;
-            dataWrapper.apa = association;        
-            return dataWrapper;
-            
-        } catch (Exception e) {
-            // Log the error properly
-            System.debug('Error in insertPairingDetails at line ' + e.getLineNumber() + ': ' + e.getMessage());
-            System.debug('Stack trace: ' + e.getStackTraceString());
-            
-            throw new AuraHandledException('Error inserting pairing details: ' + e.getMessage());
-        }
+        
+        // Populate wrapper with results
+        dataWrapper.proposalId = singleProposal.Id;
+        dataWrapper.proposal = singleProposal;
+        dataWrapper.apa = association;        
+        return dataWrapper;
+        
+    } catch (Exception e) {
+        // Log the error properly
+        System.debug('Error in insertPairingDetails at line ' + e.getLineNumber() + ': ' + e.getMessage());
+        System.debug('Stack trace: ' + e.getStackTraceString());
+        
+        throw new AuraHandledException('Error inserting pairing details: ' + e.getMessage());
     }
+}
 
 public class insertPairingWrapperinWiser {
     public String proposalId { get; set; }

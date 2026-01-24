@@ -29,27 +29,50 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
 
      $scope.getApplicantStatusFromAPA = function () {
           debugger;
-          ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-               debugger;
 
-               console.log('result return onload :: ');
-               console.log(result);
-               console.log('event:', event);
+          if (!$rootScope.apaId) {
+               console.log('APA Id not available yet, skipping fetchApplicantStatus call');
+               return;
+          }
 
-               if (event.status) {
-                    $rootScope.isCurrentUserSubmitted = result;
-                    CKEDITOR.config.readOnly = true;
-               } else {
-                    console.log('Error in fetchApplicantStatus:', event.message);
-               }
-          }, {
-               escape: true
-          });
-     }
+          ApplicantPortal_Contoller.fetchApplicantStatus(
+               $rootScope.apaId,
+               function (result, event) {
+                    debugger;
+
+                    if (event.status) {
+                         $rootScope.isCurrentUserSubmitted = result;
+
+                         // 🔐 Lock editor condition
+                         $scope.isEditorLocked = ($scope.proposalStage || result);
+
+                         // 🔒 Apply lock to CKEditor
+                         $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
+                    }
+               },
+               { escape: true }
+          );
+     };
      $scope.getApplicantStatusFromAPA();
+
+     $scope.toggleCkEditorReadOnly = function (isReadOnly) {
+          setTimeout(function () {
+               if (CKEDITOR.instances) {
+                    Object.keys(CKEDITOR.instances).forEach(function (instanceName) {
+                         CKEDITOR.instances[instanceName].setReadOnly(isReadOnly);
+                    });
+               }
+          }, 0);
+     };
 
      $scope.getContactHostInfo = function () {
           debugger;
+
+          if (!$rootScope.proposalId) {
+               console.log('Proposal Id not available yet, skipping getHostProjectDetails call');
+               return;
+          }
+
           $scope.pairingDetails = [];
           // IndustrialFellowshipController.getHostProjectDetails($rootScope.candidateId, function (result, event) {
           IndustrialFellowshipController.getHostProjectDetails($rootScope.proposalId, function (result, event) {
@@ -105,7 +128,6 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      }
 
      $scope.readCharacter = function (event, index) {
-          debugger
           try {
                var rtfString = event.toString().replace(/<[^>]*>|\s/g, '').replace(/\s+/g, '').replace(/&ndash;/g, '-').replace(/&euro;/g, '1').replace(/&amp;/g, '1').replace(/&#39;/g, '1').replace(/&quot;/g, '1').replace(/&nbsp;/g, '').replace(/&mdash;/g, '-').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&bull;/g, '');
                charLength = rtfString.length;

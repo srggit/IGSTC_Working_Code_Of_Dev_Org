@@ -1186,8 +1186,8 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
 
 
     @RemoteAction
-    public static Proposal_Controller.insertPairingWrapperinWiser insertPairingDetailsinWiser(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall){
-        return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall);
+    public static Proposal_Controller.insertPairingWrapperinWiser insertPairingDetailsinWiser(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall, String proposalId){
+        return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall, proposalId);
     }
     ////////////////////////////New Method aaded by Karthik 
     
