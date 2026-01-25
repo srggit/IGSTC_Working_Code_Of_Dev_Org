@@ -327,9 +327,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     $scope.expenseList = result;
                     // Process expense records to populate expense table arrays
                     $scope.processExpenseRecordsForTable();
-                    $scope.calculateOtherField();
-                    $scope.calculateOtherField2();
-                    $scope.calculateOtherField3();
+                    // $scope.calculateOtherField();
+                    // $scope.calculateOtherField2();
+                    // $scope.calculateOtherField3();
                 } else {
                     $scope.createExpenceHead();
                 }
@@ -514,106 +514,284 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         $scope.updateTotals();
     }
 
-    $scope.createExpenceHead = function () {
-        debugger;
-        if ($scope.accDetails.Contacts[0].MailingCountry == "India") {
-            var allExpencehead = [{
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Research staff",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Consumables",
-                "Proposals__c": $rootScope.projectId,
-            },
-            {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Research stay",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Travel",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Contingency",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Miscellaneous and Others",
-                "Proposals__c": $rootScope.projectId,
-            }]
-        } else if ($scope.accDetails.Contacts[0].MailingCountry == "Germany") {
-            var allExpencehead = [{
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Research staff",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Consumables",
-                "Proposals__c": $rootScope.projectId,
-            },
-            {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Research stay",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Travel",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Contingency",
-                "Proposals__c": $rootScope.projectId,
-            }, {
-                'Account__c': $scope.accDetails.Id,
-                "Name": "Miscellaneous and Others",
-                "Proposals__c": $rootScope.projectId,
-            }]
-        }
-
-        IndustrialFellowshipController.createExpenceHead(allExpencehead, function (result, event) {
-            console.log("declred expense    list");
-            console.log(result);
-            debugger;
-            if (event.status && result != null) {
-                for (var i = 0; i < result.length; i++) {
-                    result[i].Expense_Line_Items__r = [];
-                    result[i].Expense_Line_Items__r.push({ "Expense_Head__c": result[i].Id, 'Description__c': '', "Year1_Expense__c": "", "Year2_Expense__c": "", "Year3_Expense__c": "", "Total_Expense__c": "", "Expense_Type__c": "" });
-                }
-                $scope.Expense_Line_Items__r = result;
-                $scope.expenseList = result;
+    // ************************************************* NEW DYNAMIC EXPENSE TABLE CODE **************************************************** //
+    // ===== NEW DYNAMIC LOADER =====
+    $scope.initDynamicBudget = function () {
+        ApplicantPortal_Contoller.getYearlyExpenseHierarchy($rootScope.apaId, function (result, event) {
+            if (event.status && result) {
+                $scope.yearlyExpenses = result.yearlyExpenses;
+                $scope.mapDynamicToOldVariables(); // 🔥 bridge
                 $scope.$apply();
             }
-        },
-            { escape: true }
-        )
-    }
-
-    console.log('$scope.manPowerRecords::' + $scope.manPowerRecords);
-    // $scope.proposalId = 'a081y0000029D81AAE';
+        }, { escape: true });
+    };
+    $scope.initDynamicBudget();
 
 
+    // ===== NEW: MAP SALESFORCE DATA TO EXISTING VARIABLES =====
+    // ===== UPDATED: MAP SALESFORCE DATA → OLD UI VARIABLES (USING LINE ITEMS) =====
+    $scope.mapDynamicToOldVariables = function () {
 
-    $scope.addRow = function (param1) {
-        debugger;
-        $scope.expenseList[param1].Expense_Line_Items__r.push({
-            'Description__c': '',
-            "Year1_Expense__c": "",
-            "Year2_Expense__c": "",
-            "Year3_Expense__c": "",
-            "Expense_Head__c": $scope.expenseList[param1].Id
+        $scope.yearlyExpenses.forEach(ye => {
+            let year = parseInt(ye.year); // wrapper uses ye.year now
+
+            ye.expenseHeads.forEach(head => {
+
+                head.lineItems.forEach(li => {
+
+                    let value = li['Year' + year + '_Expense__c'] || 0;
+
+                    let type = (li.Expense_Type__c || '').toLowerCase();
+                    let desc = (li.Description__c || '').toLowerCase();
+
+                    // 🔹 RESEARCH STAY
+                    if (type.includes('research stay')) {
+                        if (desc.includes('day')) {
+                            $scope.budgetResearchStay['daysYear' + year] = value;
+                        } else {
+                            $scope.budgetResearchStay['costYear' + year] = value;
+                        }
+                    }
+
+                    // 🔹 TRAVEL
+                    else if (type.includes('travel')) {
+                        $scope.budgetTravel['costYear' + year] = value;
+                    }
+
+                    // 🔹 CONSUMABLES
+                    else if (type.includes('consumables')) {
+                        $scope.budgetConsumables['year' + year] = value;
+                    }
+
+                    // 🔹 EQUIPMENT
+                    else if (type.includes('equipment')) {
+                        $scope.minorEquipment['year' + year] = value;
+                    }
+
+                    // 🔹 CONTINGENCY
+                    else if (type.includes('contingency')) {
+                        $scope.budgetContingency['year' + year] = value;
+                    }
+
+                    // 🔹 OVERHEAD %
+                    else if (type.includes('overhead')) {
+                        $scope.budgetOverhead['percentageYear' + year] = value;
+                    }
+                });
+            });
         });
-        $scope.$apply();
 
-    }
+        $scope.recalculateAll();
+    };
 
-    $scope.deleteRow = function (param1, param2) {
-        debugger;
-        if ($scope.expenseList[param1].Expense_Line_Items__r.length > 1) {
-            $scope.expenseList[param1].Expense_Line_Items__r.splice(param2, 1);
+
+    // ===== NEW: PUSH UPDATED VALUES BACK TO DYNAMIC MODEL =====
+    $scope.mapOldVariablesToDynamic = function () {
+
+        $scope.yearlyExpenses.forEach(ye => {
+            let year = parseInt(ye.Year__c);
+
+            ye.lineItems.forEach(head => {
+
+                head.Expense_Line_Items__r.forEach(li => {
+
+                    if (head.Name.includes('Research stay')) {
+                        if (li.Description__c.includes('day')) {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetResearchStay['daysYear' + year];
+                        } else {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetResearchStay['costYear' + year];
+                        }
+                    }
+
+                    if (head.Name.includes('Consumables')) {
+                        li['Year' + year + '_Expense__c'] = $scope.budgetConsumables['year' + year];
+                    }
+
+                    // same for others...
+                });
+            });
+        });
+    };
+
+    // ======================================================
+    // ===== UTILITY: BUILD RESEARCH STAFF LINE ITEMS =======
+    // ======================================================
+    $scope.buildResearchStaffLineItems = function (staff) {
+
+        let items = [];
+
+        // Helper to create/update one line item
+        function createLineItem(year, typeKey, value) {
+
+            let indexMap = { positions: 1, cost: 2, hours: 3 };
+            let headId = staff.expenseHeadIds?.[year - 1] || null;
+            let existingId = staff.lineItemIds?.[typeKey]?.[year] || null;
+
+            let item = {
+                Id: existingId, // 🔥 update if exists
+                Index__c: indexMap[typeKey],
+                Expense_Type__c: staff.researchStaffType,
+                Expense_Head__c: headId,
+                Year1_Expense__c: year === 1 ? value : 0,
+                Year2_Expense__c: year === 2 ? value : 0,
+                Year3_Expense__c: year === 3 ? value : 0
+            };
+
+            return item;
         }
-    }
+
+        // Positions
+        items.push(createLineItem(1, 'positions', staff.positionsYear1));
+        items.push(createLineItem(2, 'positions', staff.positionsYear2));
+        items.push(createLineItem(3, 'positions', staff.positionsYear3));
+
+        // Cost
+        items.push(createLineItem(1, 'cost', staff.costYear1));
+        items.push(createLineItem(2, 'cost', staff.costYear2));
+        items.push(createLineItem(3, 'cost', staff.costYear3));
+
+        // Hours
+        items.push(createLineItem(1, 'hours', staff.hoursYear1));
+        items.push(createLineItem(2, 'hours', staff.hoursYear2));
+        items.push(createLineItem(3, 'hours', staff.hoursYear3));
+
+        return items;
+    };
+
+
+    // ========== FINAL SAVE METHOD (DYNAMIC + OLD LOGIC SAFE) ==========
+    $scope.saveBudgetTableData = function () {
+        debugger;
+
+        // 🔁 Ensure latest calculations
+        $scope.recalculateAll();
+
+        /* ============================================
+           🚫 BLOCK SAVE IF ANY VALIDATION FAILS
+        ============================================ */
+        if ($scope.researchStayError && $scope.researchStayError.any) {
+            swal("Research Stay Error", "Please correct Research Stay duration errors.", "warning");
+            return;
+        }
+        if ($scope.contingencyError && $scope.contingencyError.any) {
+            swal("Contingency Error", "Contingency exceeds allowed 15% limit.", "warning");
+            return;
+        }
+        if ($scope.grandTotalError && $scope.grandTotalError.any) {
+            swal("Grand Total Error", "Yearly budget cannot exceed €16000.", "warning");
+            return;
+        }
+
+        // ============================================================
+        // ===== MAP UI VARIABLES BACK INTO DYNAMIC SF MODEL =========
+        // ============================================================
+        if ($scope.yearlyExpenses && $scope.yearlyExpenses.length > 0) {
+
+            $scope.yearlyExpenses.forEach(ye => {
+
+                let year = parseInt(ye.year); // wrapper uses 'year'
+
+                ye.expenseHeads.forEach(head => {
+
+                    head.lineItems.forEach(li => {
+
+                        let type = (li.Expense_Type__c || '').toLowerCase();
+                        let desc = (li.Description__c || '').toLowerCase();
+
+                        // 🔹 RESEARCH STAY
+                        if (type.includes('research stay')) {
+                            if (desc.includes('day')) {
+                                li['Year' + year + '_Expense__c'] = $scope.budgetResearchStay['daysYear' + year] || 0;
+                            } else {
+                                li['Year' + year + '_Expense__c'] = $scope.budgetResearchStay['costYear' + year] || 0;
+                            }
+                        }
+
+                        // 🔹 TRAVEL
+                        else if (type.includes('travel')) {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetTravel['costYear' + year] || 0;
+                        }
+
+                        // 🔹 CONSUMABLES
+                        else if (type.includes('consumables')) {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetConsumables['year' + year] || 0;
+                        }
+
+                        // 🔹 EQUIPMENT
+                        else if (type.includes('equipment')) {
+                            li['Year' + year + '_Expense__c'] = $scope.minorEquipment['year' + year] || 0;
+                        }
+
+                        // 🔹 CONTINGENCY
+                        else if (type.includes('contingency')) {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetContingency['year' + year] || 0;
+                        }
+
+                        // 🔹 OVERHEAD %
+                        else if (type.includes('overhead')) {
+                            li['Year' + year + '_Expense__c'] = $scope.budgetOverhead['percentageYear' + year] || 0;
+                        }
+
+                    });
+                });
+            });
+        }
+
+
+        // ============================================================
+        // ===== BUILD SAVE PAYLOAD FROM DYNAMIC STRUCTURE ============
+        // ============================================================
+        let allExpenseLineItems = [];
+
+        $scope.yearlyExpenses.forEach(ye => {
+            ye.expenseHeads.forEach(head => {
+                head.lineItems.forEach(li => {
+                    delete li.$$hashKey;
+                    allExpenseLineItems.push(li);
+                });
+            });
+        });
+
+        // ============================================================
+        // 🔹 RESEARCH STAFF SAVE (CLEAN VERSION)
+        // ============================================================
+        if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+
+            $scope.budgetResearchStaffList.forEach(staff => {
+
+                let staffItems = $scope.buildResearchStaffLineItems(staff);
+
+                staffItems.forEach(item => {
+                    delete item.$$hashKey;
+                    allExpenseLineItems.push(item);
+                });
+
+            });
+        }
+
+        // ============================================================
+        // 🔹 SAVE TO SALESFORCE
+        // ============================================================
+        ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
+            allExpenseLineItems,
+            $rootScope.apaId,
+            { Id: $rootScope.apaId },
+            function (result, event) {
+                if (event.status && result != null) {
+
+                    if (result.startsWith && result.startsWith('error')) {
+                        swal("Error", "Error saving budget details: " + result, "error");
+                        return;
+                    }
+
+                    swal("Success", "Budget details have been saved successfully.", "success");
+                    $scope.redirectPageURL('ExistingGrantWISER');
+                    $scope.$apply();
+                }
+            },
+            { escape: true }
+        );
+    };
 
     $scope.saveExpenceLineitems = function () {
         // Use new budget table save method if apaId is available
@@ -814,86 +992,6 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         })
     }
 
-
-
-    $scope.calculateOtherField = function () {
-        debugger;
-        $scope.year1 = 0;
-        $scope.year1Germany = 0;
-        for (var i = 0; i < $scope.expenseList.length; i++) {
-            if ($scope.accDetails.Contacts[0].MailingCountry == "India") {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year1_Expense__c != undefined) {
-                            $scope.year1 = $scope.year1 + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year1_Expense__c);
-                        }
-
-                    }
-                }
-            } else {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year1_Expense__c != undefined) {
-                            $scope.year1Germany = $scope.year1Germany + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year1_Expense__c);
-                        }
-
-                    }
-                }
-            }
-        }
-        $scope.$apply();
-    }
-
-
-    $scope.calculateOtherField2 = function () {
-        debugger;
-        $scope.year2 = 0;
-        $scope.year2Germany = 0;
-        for (var i = 0; i < $scope.expenseList.length; i++) {
-            if ($scope.accDetails.Contacts[0].MailingCountry == "India") {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year2_Expense__c != undefined) {
-                            $scope.year2 = $scope.year2 + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year2_Expense__c);
-                        }
-                    }
-                }
-            } else {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year2_Expense__c != undefined) {
-                            $scope.year2Germany = $scope.year2Germany + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year2_Expense__c);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    $scope.calculateOtherField3 = function () {
-        debugger;
-        $scope.year3 = 0;
-        $scope.year3Germany = 0;
-        for (var i = 0; i < $scope.expenseList.length; i++) {
-            if ($scope.accDetails.Contacts[0].MailingCountry == "India") {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year3_Expense__c != undefined) {
-                            $scope.year3 = $scope.year3 + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year3_Expense__c);
-                        }
-                    }
-                }
-            } else {
-                if ($scope.expenseList[i].Expense_Line_Items__r != undefined) {
-                    for (var j = 0; j < $scope.expenseList[i].Expense_Line_Items__r.length; j++) {
-                        if ($scope.expenseList[i].Expense_Line_Items__r[j].Year3_Expense__c != undefined) {
-                            $scope.year3Germany = $scope.year3Germany + Number($scope.expenseList[i].Expense_Line_Items__r[j].Year3_Expense__c);
-                        }
-                    }
-                }
-            }
-        }
-    }
     $scope.redirectPageURL = function (pageName) {
         debugger;
         var link = document.createElement("a");
@@ -919,226 +1017,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     $scope.igstcFunding = {};
     $scope.industryContr = {};
 
-    // Add row methods - Matching ExpenseDeclaration.js
-    $scope.addRow = function (param1, param2) {
-        $scope.manPowerRecords.push({
-            "Position__c": "",
-            "Person_Month__c": "",
-            "Salary_Month__c": "",
-            "Year1_Expense__c": undefined,
-            "Year2_Expense__c": undefined,
-            "Year3_Expense__c": undefined,
-            "Total_Expense__c": undefined
-        });
-        $scope.$apply();
-    }
-    $scope.addRowCon = function (param1, param2) {
-        $scope.consumables.push({
-            "Description__c": "",
-            "Unit_Price__c": "",
-            "Number__c": "",
-            "Year1_Expense__c": undefined,
-            "Year2_Expense__c": undefined,
-            "Year3_Expense__c": undefined,
-            "Total_Expense__c": undefined
-        });
-    }
-    $scope.addRowEquip = function (param1, param2) {
-        $scope.Equipment.push({
-            "Description__c": "",
-            "Unit_Price__c": "",
-            "Number__c": "",
-            "Year1_Expense__c": undefined,
-            "Year2_Expense__c": undefined,
-            "Year3_Expense__c": undefined,
-            "Total_Expense__c": undefined
-        });
-    }
-    $scope.addRowOutsourcing = function (param1, param2) {
-        $scope.outsourcing.push({
-            "Description__c": "",
-            "Unit_Price__c": "",
-            "Year1_Expense__c": undefined,
-            "Year2_Expense__c": undefined,
-            "Year3_Expense__c": undefined,
-            "Total_Expense__c": undefined
-        });
-    }
 
-    // Delete row methods - Matching ExpenseDeclaration.js
-    $scope.deleteRow = function (param1, param2, Id) {
-        if ($scope.manPowerRecords.length > 1) {
-            $scope.manPowerRecords.splice(param2, 1);
-        }
-        $scope.manPower.Total_Year1_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.manPower.Total_Year2_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.manPower.Total_Year3_Expense__c = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.manPower.Overall_Expense = $scope.manPowerRecords.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
-    $scope.deleteRowConsumables = function (param1, param2, Id) {
-        if ($scope.consumables.length > 1) {
-            $scope.consumables.splice(param2, 1);
-        }
-        $scope.consumableTotal.Total_Year1_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.consumableTotal.Total_Year2_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.consumableTotal.Total_Year3_Expense__c = $scope.consumables.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.consumableTotal.Overall_Expense = $scope.consumables.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
-    $scope.deleteRowEquipment = function (param1, param2, Id) {
-        if ($scope.Equipment.length > 1) {
-            $scope.Equipment.splice(param2, 1);
-        }
-        $scope.equipmentTotals.Total_Year1_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.equipmentTotals.Total_Year2_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.equipmentTotals.Total_Year3_Expense__c = $scope.Equipment.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.equipmentTotals.Overall_Expense = $scope.Equipment.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
-    $scope.deleteRowOutsourcing = function (param1, param2, Id) {
-        if ($scope.outsourcing.length > 1) {
-            $scope.outsourcing.splice(param2, 1);
-        }
-        $scope.outsourcingTotal.Total_Year1_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.outsourcingTotal.Total_Year2_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.outsourcingTotal.Total_Year3_Expense__c = $scope.outsourcing.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.outsourcingTotal.Overall_Expense = $scope.outsourcing.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
-    $scope.deleteRowContingency = function (param1, param2, Id) {
-        if ($scope.contingency.length > 1) {
-            $scope.contingency.splice(param2, 1);
-        }
-        $scope.contingencyTotal.Total_Year1_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.contingencyTotal.Total_Year2_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.contingencyTotal.Total_Year3_Expense__c = $scope.contingency.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.contingencyTotal.Overall_Expense = $scope.contingency.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
-    $scope.deleteRowOverhead = function (param1, param2, Id) {
-        if ($scope.overhead.length > 1) {
-            $scope.overhead.splice(param2, 1);
-        }
-        $scope.overheadCharges.Total_Year1_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year1_Expense__c || 0);
-        }, 0);
-        $scope.overheadCharges.Total_Year2_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year2_Expense__c || 0);
-        }, 0);
-        $scope.overheadCharges.Total_Year3_Expense__c = $scope.overhead.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Year3_Expense__c || 0);
-        }, 0);
-        $scope.overheadCharges.Overall_Expense = $scope.overhead.reduce(function (accumulator, currentValue) {
-            return accumulator + (currentValue.Total_Expense__c || 0);
-        }, 0);
-        $scope.updateTotals();
-    }
 
-    // Calculate Other Field - Matching ExpenseDeclaration.js
-    $scope.calculateOtherField = function (exType) {
-        function toNum(val) {
-            return val != null && val !== '' && !isNaN(val)
-                ? Number(parseFloat(val).toFixed(2))
-                : 0;
-        }
-
-        function round2(val) {
-            return Number(parseFloat(val).toFixed(2));
-        }
-
-        function sum(arr, field) {
-            return round2(arr.reduce((acc, cur) => acc + toNum(cur[field]), 0));
-        }
-
-        function calcTotals(list, totalObj) {
-            for (let i = 0; i < list.length; i++) {
-                const r = list[i];
-                r.Total_Expense__c = round2(toNum(r.Year1_Expense__c) + toNum(r.Year2_Expense__c) + toNum(r.Year3_Expense__c));
-            }
-            totalObj.Total_Year1_Expense__c = sum(list, 'Year1_Expense__c');
-            totalObj.Total_Year2_Expense__c = sum(list, 'Year2_Expense__c');
-            totalObj.Total_Year3_Expense__c = sum(list, 'Year3_Expense__c');
-            totalObj.Overall_Expense = round2(list.reduce((acc, cur) => acc + toNum(cur.Total_Expense__c), 0));
-        }
-
-        if (exType === 'man') {
-            calcTotals($scope.manPowerRecords, $scope.manPower);
-        }
-        else if (exType === 'cons') {
-            calcTotals($scope.consumables, $scope.consumableTotal);
-        }
-        else if (exType === 'equi') {
-            calcTotals($scope.Equipment, $scope.equipmentTotals);
-        }
-        else if (exType === 'travel') {
-            calcTotals($scope.travel, $scope.travelTotal);
-        }
-        else if (exType === 'outsourcing') {
-            calcTotals($scope.outsourcing, $scope.outsourcingTotal);
-        }
-        else if (exType === 'contingency') {
-            calcTotals($scope.contingency, $scope.contingencyTotal);
-        }
-        else if (exType === 'overhead') {
-            calcTotals($scope.overhead, $scope.overheadCharges);
-        }
-        else if (exType === 'igstc') {
-            $scope.igstcFunding.Total_Expense__c = round2(
-                toNum($scope.igstcFunding.Year1_Expense__c) +
-                toNum($scope.igstcFunding.Year2_Expense__c) +
-                toNum($scope.igstcFunding.Year3_Expense__c)
-            );
-        }
-        else if (exType === 'ic') {
-            $scope.industryContr.Total_Expense__c = round2(
-                toNum($scope.industryContr.Year1_Expense__c) +
-                toNum($scope.industryContr.Year2_Expense__c) +
-                toNum($scope.industryContr.Year3_Expense__c)
-            );
-        }
-        $scope.updateTotals();
-    };
 
     // Update Totals - Matching ExpenseDeclaration.js
     $scope.updateTotals = function () {
@@ -1209,231 +1089,6 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         );
     };
 
-    // // ========== BUDGET TABLE CALCULATION METHODS ==========
-    // // Flag to prevent infinite loops during calculations
-    // $scope.isCalculating = false;
-
-    // // Master calculation method - calls all calculations in correct order without circular dependencies
-    // $scope.recalculateAll = function () {
-    //     if ($scope.isCalculating) {
-    //         return; // Prevent infinite loops
-    //     }
-    //     $scope.isCalculating = true;
-
-    //     try {
-
-    //         // --- CALCULATION : Research Stay Per diem cost --- //
-    //         const perDay = 2300 / 30;
-
-    //         // --- Research Stay Days ---
-    //         const d1 = Number($scope.budgetResearchStay.daysYear1) || 0;
-    //         const d2 = Number($scope.budgetResearchStay.daysYear2) || 0;
-    //         const d3 = Number($scope.budgetResearchStay.daysYear3) || 0;
-
-    //         $scope.budgetResearchStay.totalDays = d1 + d2 + d3;
-
-    //         // --- Research Stay Per Diem Cost (AUTO CALCULATED) ---
-    //         $scope.budgetResearchStay.costYear1 = Math.round(d1 * perDay * 100) / 100;
-    //         $scope.budgetResearchStay.costYear2 = Math.round(d2 * perDay * 100) / 100;
-    //         $scope.budgetResearchStay.costYear3 = Math.round(d3 * perDay * 100) / 100;
-
-    //         $scope.budgetResearchStay.totalCost =
-    //             $scope.budgetResearchStay.costYear1 +
-    //             $scope.budgetResearchStay.costYear2 +
-    //             $scope.budgetResearchStay.costYear3;
-
-    //         // --- CALCULATION : Travel Cost per Visit (AUTO CALCULATED) ---
-    //         $scope.budgetTravel.costYear1 =
-    //             $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
-
-    //         $scope.budgetTravel.costYear2 =
-    //             $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
-
-    //         $scope.budgetTravel.costYear3 =
-    //             $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
-
-    //         $scope.budgetTravel.totalCost =
-    //             $scope.budgetTravel.costYear1 +
-    //             $scope.budgetTravel.costYear2 +
-    //             $scope.budgetTravel.costYear3;
-
-
-    //         // Step 1: Calculate individual component totals
-    //         $scope.budgetResearchStay.totalDays = ($scope.budgetResearchStay.daysYear1 || 0) + ($scope.budgetResearchStay.daysYear2 || 0) + ($scope.budgetResearchStay.daysYear3 || 0);
-    //         $scope.budgetResearchStay.totalCost = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetResearchStay.costYear3 || 0);
-
-    //         $scope.budgetTravel.totalCost = ($scope.budgetTravel.costYear1 || 0) + ($scope.budgetTravel.costYear2 || 0) + ($scope.budgetTravel.costYear3 || 0);
-
-    //         $scope.budgetResearchStaff.totalYear1 = ($scope.budgetResearchStaff.positionsYear1 || 0) * ($scope.budgetResearchStaff.costYear1 || 0) * ($scope.budgetResearchStaff.hoursYear1 || 0);
-    //         $scope.budgetResearchStaff.totalYear2 = ($scope.budgetResearchStaff.positionsYear2 || 0) * ($scope.budgetResearchStaff.costYear2 || 0) * ($scope.budgetResearchStaff.hoursYear2 || 0);
-    //         $scope.budgetResearchStaff.totalYear3 = ($scope.budgetResearchStaff.positionsYear3 || 0) * ($scope.budgetResearchStaff.costYear3 || 0) * ($scope.budgetResearchStaff.hoursYear3 || 0);
-    //         $scope.budgetResearchStaff.totalAmount = $scope.budgetResearchStaff.totalYear1 + $scope.budgetResearchStaff.totalYear2 + $scope.budgetResearchStaff.totalYear3;
-
-    //         $scope.budgetConsumables.total = ($scope.budgetConsumables.year1 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.budgetConsumables.year3 || 0);
-    //         $scope.minorEquipment.total = ($scope.minorEquipment.year1 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.minorEquipment.year3 || 0);
-    //         $scope.budgetContingency.total = ($scope.budgetContingency.year1 || 0) + ($scope.budgetContingency.year2 || 0) + ($scope.budgetContingency.year3 || 0);
-
-    //         // Step 2: Calculate Research Stay + Travel totals
-    //         // $scope.researchStayTravelTotal.year1 = ($scope.budgetResearchStay.costYear1 || 0) + ($scope.budgetTravel.costYear1 || 0);
-    //         // $scope.researchStayTravelTotal.year2 = ($scope.budgetResearchStay.costYear2 || 0) + ($scope.budgetTravel.costYear2 || 0);
-    //         // $scope.researchStayTravelTotal.year3 = ($scope.budgetResearchStay.costYear3 || 0) + ($scope.budgetTravel.costYear3 || 0);
-    //         // $scope.researchStayTravelTotal.total = $scope.researchStayTravelTotal.year1 + $scope.researchStayTravelTotal.year2 + $scope.researchStayTravelTotal.year3;
-
-    //         // Step 2: Calculate Research Stay + Travel totals
-    //         $scope.researchStayTravelTotal.year1 =
-    //             ($scope.budgetResearchStay.costYear1 || 0) +
-    //             ($scope.budgetTravel.costYear1 || 0);
-
-    //         $scope.researchStayTravelTotal.year2 =
-    //             ($scope.budgetResearchStay.costYear2 || 0) +
-    //             ($scope.budgetTravel.costYear2 || 0);
-
-    //         $scope.researchStayTravelTotal.year3 =
-    //             ($scope.budgetResearchStay.costYear3 || 0) +
-    //             ($scope.budgetTravel.costYear3 || 0);
-
-    //         $scope.researchStayTravelTotal.total =
-    //             $scope.researchStayTravelTotal.year1 +
-    //             $scope.researchStayTravelTotal.year2 +
-    //             $scope.researchStayTravelTotal.year3;
-
-    //         // Step 2.1: Total Research Heads = (Staff + Consumables + Minor Equipment + Contingency)
-    //         $scope.totalResearchHeads.year1 =
-    //             ($scope.budgetResearchStaff.totalYear1 || 0) +
-    //             ($scope.budgetConsumables.year1 || 0) +
-    //             ($scope.minorEquipment.year1 || 0) +
-    //             ($scope.budgetContingency.year1 || 0);
-
-    //         $scope.totalResearchHeads.year2 =
-    //             ($scope.budgetResearchStaff.totalYear2 || 0) +
-    //             ($scope.budgetConsumables.year2 || 0) +
-    //             ($scope.minorEquipment.year2 || 0) +
-    //             ($scope.budgetContingency.year2 || 0);
-
-    //         $scope.totalResearchHeads.year3 =
-    //             ($scope.budgetResearchStaff.totalYear3 || 0) +
-    //             ($scope.budgetConsumables.year3 || 0) +
-    //             ($scope.minorEquipment.year3 || 0) +
-    //             ($scope.budgetContingency.year3 || 0);
-
-    //         $scope.totalResearchHeads.total =
-    //             $scope.totalResearchHeads.year1 +
-    //             $scope.totalResearchHeads.year2 +
-    //             $scope.totalResearchHeads.year3;
-
-
-    //         // Step 3: Calculate Total Research Amount (before overhead)
-    //         // $scope.totalResearchAmount.year1 = ($scope.researchStayTravelTotal.year1 || 0) + ($scope.budgetResearchStaff.totalYear1 || 0) + ($scope.budgetConsumables.year1 || 0) + ($scope.minorEquipment.year1 || 0) + ($scope.budgetContingency.year1 || 0);
-    //         // $scope.totalResearchAmount.year2 = ($scope.researchStayTravelTotal.year2 || 0) + ($scope.budgetResearchStaff.totalYear2 || 0) + ($scope.budgetConsumables.year2 || 0) + ($scope.minorEquipment.year2 || 0) + ($scope.budgetContingency.year2 || 0);
-    //         // $scope.totalResearchAmount.year3 = ($scope.researchStayTravelTotal.year3 || 0) + ($scope.budgetResearchStaff.totalYear3 || 0) + ($scope.budgetConsumables.year3 || 0) + ($scope.minorEquipment.year3 || 0) + ($scope.budgetContingency.year3 || 0);
-    //         // $scope.totalResearchAmount.total = $scope.totalResearchAmount.year1 + $scope.totalResearchAmount.year2 + $scope.totalResearchAmount.year3;
-
-    //         // Step 3: Calculate Total Research Amount (before overhead)
-    //         $scope.totalResearchAmount.year1 =
-    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year1 || 0);
-
-    //         $scope.totalResearchAmount.year2 =
-    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year2 || 0);
-
-    //         $scope.totalResearchAmount.year3 =
-    //             MAX_RESEARCH_AMOUNT - ($scope.researchStayTravelTotal.year3 || 0);
-
-    //         $scope.totalResearchAmount.total =
-    //             $scope.totalResearchAmount.year1 +
-    //             $scope.totalResearchAmount.year2 +
-    //             $scope.totalResearchAmount.year3;
-
-    //         // Preserve original Total Research Amount for overhead calculation
-    //         $scope.originalResearchAmount.year1 = $scope.totalResearchAmount.year1;
-    //         $scope.originalResearchAmount.year2 = $scope.totalResearchAmount.year2;
-    //         $scope.originalResearchAmount.year3 = $scope.totalResearchAmount.year3;
-    //         $scope.originalResearchAmount.total = $scope.totalResearchAmount.total;
-
-
-    //         // Step 4: Calculate Overhead amounts based on Total Research Amount
-    //         var baseYear1 = $scope.totalResearchAmount.year1 || 0;
-    //         var baseYear2 = $scope.totalResearchAmount.year2 || 0;
-    //         var baseYear3 = $scope.totalResearchAmount.year3 || 0;
-
-    //         // $scope.budgetOverhead.amountYear1 = Math.round((baseYear1 * ($scope.budgetOverhead.percentageYear1 || 0) / 100) * 100) / 100;
-    //         // $scope.budgetOverhead.amountYear2 = Math.round((baseYear2 * ($scope.budgetOverhead.percentageYear2 || 0) / 100) * 100) / 100;
-    //         // $scope.budgetOverhead.amountYear3 = Math.round((baseYear3 * ($scope.budgetOverhead.percentageYear3 || 0) / 100) * 100) / 100;
-    //         // $scope.budgetOverhead.totalAmount = $scope.budgetOverhead.amountYear1 + $scope.budgetOverhead.amountYear2 + $scope.budgetOverhead.amountYear3;
-
-    //         $scope.budgetOverhead.amountYear1 =
-    //             Math.round(($scope.totalResearchAmount.year1 *
-    //                 ($scope.budgetOverhead.percentageYear1 || 0))) / 100;
-
-    //         $scope.budgetOverhead.amountYear2 =
-    //             Math.round(($scope.totalResearchAmount.year2 *
-    //                 ($scope.budgetOverhead.percentageYear2 || 0))) / 100;
-
-    //         $scope.budgetOverhead.amountYear3 =
-    //             Math.round(($scope.totalResearchAmount.year3 *
-    //                 ($scope.budgetOverhead.percentageYear3 || 0))) / 100;
-
-    //         $scope.budgetOverhead.totalAmount =
-    //             $scope.budgetOverhead.amountYear1 +
-    //             $scope.budgetOverhead.amountYear2 +
-    //             $scope.budgetOverhead.amountYear3;
-
-
-    //         // Step 5: Calculate Remaining Amount for Research Heads
-    //         $scope.remainingForResearch.year1 = baseYear1 - $scope.budgetOverhead.amountYear1;
-    //         $scope.remainingForResearch.year2 = baseYear2 - $scope.budgetOverhead.amountYear2;
-    //         $scope.remainingForResearch.year3 = baseYear3 - $scope.budgetOverhead.amountYear3;
-    //         $scope.remainingForResearch.total = $scope.remainingForResearch.year1 + $scope.remainingForResearch.year2 + $scope.remainingForResearch.year3;
-
-    //         // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
-    //         // $scope.grandTotal.year1 = ($scope.totalResearchAmount.year1 || 0) + ($scope.budgetOverhead.amountYear1 || 0);
-    //         // $scope.grandTotal.year2 = ($scope.totalResearchAmount.year2 || 0) + ($scope.budgetOverhead.amountYear2 || 0);
-    //         // $scope.grandTotal.year3 = ($scope.totalResearchAmount.year3 || 0) + ($scope.budgetOverhead.amountYear3 || 0);
-    //         // $scope.grandTotal.total = $scope.grandTotal.year1 + $scope.grandTotal.year2 + $scope.grandTotal.year3;
-
-    //         // Step 6: Calculate Grand Total (Total Research Amount + Overhead)
-    //         $scope.grandTotal.year1 =
-    //             $scope.researchStayTravelTotal.year1 +
-    //             $scope.budgetOverhead.amountYear1 +
-    //             $scope.totalResearchHeads.year1;
-
-    //         $scope.grandTotal.year2 =
-    //             $scope.researchStayTravelTotal.year2 +
-    //             $scope.budgetOverhead.amountYear2 +
-    //             $scope.totalResearchHeads.year2;
-
-    //         $scope.grandTotal.year3 =
-    //             $scope.researchStayTravelTotal.year3 +
-    //             $scope.budgetOverhead.amountYear3 +
-    //             $scope.totalResearchHeads.year3;
-
-    //         $scope.grandTotal.total =
-    //             $scope.grandTotal.year1 +
-    //             $scope.grandTotal.year2 +
-    //             $scope.grandTotal.year3;
-
-
-    //         // Step 7: Adjust Total Research Amount (Grand Total - Travel)
-    //         $scope.totalResearchAmount.year1 =
-    //             ($scope.grandTotal.year1 || 0) -
-    //             ($scope.researchStayTravelTotal.year1 || 0);
-
-    //         $scope.totalResearchAmount.year2 =
-    //             ($scope.grandTotal.year2 || 0) -
-    //             ($scope.researchStayTravelTotal.year2 || 0);
-
-    //         $scope.totalResearchAmount.year3 =
-    //             ($scope.grandTotal.year3 || 0) -
-    //             ($scope.researchStayTravelTotal.year3 || 0);
-
-    //         $scope.totalResearchAmount.total =
-    //             $scope.totalResearchAmount.year1 +
-    //             $scope.totalResearchAmount.year2 +
-    //             $scope.totalResearchAmount.year3;
-
-    //     } finally {
-    //         $scope.isCalculating = false;
-    //     }
-    // };
 
     // Individual calculation methods - they only update their own values and call recalculateAll
 
@@ -2192,348 +1847,348 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     };
 
     // Save expense details using ApplicantPortal_Contoller
-    $scope.saveBudgetTableData = function () {
-        debugger;
+    // $scope.saveBudgetTableData = function () {
+    //     debugger;
 
-        // 🔁 Ensure latest calculations & validations
-        $scope.recalculateAll();
+    //     // 🔁 Ensure latest calculations & validations
+    //     $scope.recalculateAll();
 
-        /* ============================================
-            BLOCK SAVE IF ANY VALIDATION FAILS
-        ============================================ */
+    //     /* ============================================
+    //         BLOCK SAVE IF ANY VALIDATION FAILS
+    //     ============================================ */
 
-        // if (
-        //     ($scope.grandTotalError && $scope.grandTotalError.any) ||
-        //     ($scope.contingencyError && $scope.contingencyError.any) ||
-        //     ($scope.researchStayError && $scope.researchStayError.any)
-        // ) {
-        //     swal({
-        //         title: "Validation Error",
-        //         text: "Please fix all validation errors before saving.",
-        //         icon: "warning",
-        //         button: "OK"
-        //     });
-        //     return;
-        // }
+    //     // if (
+    //     //     ($scope.grandTotalError && $scope.grandTotalError.any) ||
+    //     //     ($scope.contingencyError && $scope.contingencyError.any) ||
+    //     //     ($scope.researchStayError && $scope.researchStayError.any)
+    //     // ) {
+    //     //     swal({
+    //     //         title: "Validation Error",
+    //     //         text: "Please fix all validation errors before saving.",
+    //     //         icon: "warning",
+    //     //         button: "OK"
+    //     //     });
+    //     //     return;
+    //     // }
 
-        if ($scope.researchStayError && $scope.researchStayError.any) {
-            swal("Research Stay Error", "Please correct Research Stay duration errors.", "warning");
-            return;
-        }
+    //     if ($scope.researchStayError && $scope.researchStayError.any) {
+    //         swal("Research Stay Error", "Please correct Research Stay duration errors.", "warning");
+    //         return;
+    //     }
 
-        if ($scope.contingencyError && $scope.contingencyError.any) {
-            swal("Contingency Error", "Contingency exceeds allowed 15% limit.", "warning");
-            return;
-        }
+    //     if ($scope.contingencyError && $scope.contingencyError.any) {
+    //         swal("Contingency Error", "Contingency exceeds allowed 15% limit.", "warning");
+    //         return;
+    //     }
 
-        if ($scope.grandTotalError && $scope.grandTotalError.any) {
-            swal("Grand Total Error", "Yearly budget cannot exceed €16000.", "warning");
-            return;
-        }
+    //     if ($scope.grandTotalError && $scope.grandTotalError.any) {
+    //         swal("Grand Total Error", "Yearly budget cannot exceed €16000.", "warning");
+    //         return;
+    //     }
 
 
-        // Prepare line items for saving
-        var allExpenseLineItems = [];
+    //     // Prepare line items for saving
+    //     var allExpenseLineItems = [];
 
-        // Research Stay - days
-        allExpenseLineItems.push({
-            Index__c: 1,
-            Description__c: 'Research Stay - No. of days',
-            Year1_Expense__c: $scope.budgetResearchStay.daysYear1 || 0,
-            Year2_Expense__c: $scope.budgetResearchStay.daysYear2 || 0,
-            Year3_Expense__c: $scope.budgetResearchStay.daysYear3 || 0,
-            Total_Expense__c: $scope.budgetResearchStay.totalDays || 0,
-            Expense_Type__c: 'Research stay'
-        });
+    //     // Research Stay - days
+    //     allExpenseLineItems.push({
+    //         Index__c: 1,
+    //         Description__c: 'Research Stay - No. of days',
+    //         Year1_Expense__c: $scope.budgetResearchStay.daysYear1 || 0,
+    //         Year2_Expense__c: $scope.budgetResearchStay.daysYear2 || 0,
+    //         Year3_Expense__c: $scope.budgetResearchStay.daysYear3 || 0,
+    //         Total_Expense__c: $scope.budgetResearchStay.totalDays || 0,
+    //         Expense_Type__c: 'Research stay'
+    //     });
 
-        // Research Stay - cost
-        allExpenseLineItems.push({
-            Index__c: 2,
-            Description__c: 'Research Stay Per diem cost',
-            Year1_Expense__c: $scope.budgetResearchStay.costYear1 || 0,
-            Year2_Expense__c: $scope.budgetResearchStay.costYear2 || 0,
-            Year3_Expense__c: $scope.budgetResearchStay.costYear3 || 0,
-            Total_Expense__c: $scope.budgetResearchStay.totalCost || 0,
-            Expense_Type__c: 'Research stay'
-        });
+    //     // Research Stay - cost
+    //     allExpenseLineItems.push({
+    //         Index__c: 2,
+    //         Description__c: 'Research Stay Per diem cost',
+    //         Year1_Expense__c: $scope.budgetResearchStay.costYear1 || 0,
+    //         Year2_Expense__c: $scope.budgetResearchStay.costYear2 || 0,
+    //         Year3_Expense__c: $scope.budgetResearchStay.costYear3 || 0,
+    //         Total_Expense__c: $scope.budgetResearchStay.totalCost || 0,
+    //         Expense_Type__c: 'Research stay'
+    //     });
 
-        // Travel
-        allExpenseLineItems.push({
-            Description__c: 'Travel cost per visit',
-            Year1_Expense__c: $scope.budgetTravel.costYear1 || 0,
-            Year2_Expense__c: $scope.budgetTravel.costYear2 || 0,
-            Year3_Expense__c: $scope.budgetTravel.costYear3 || 0,
-            Total_Expense__c: $scope.budgetTravel.totalCost || 0,
-            Expense_Type__c: 'Travel'
-        });
+    //     // Travel
+    //     allExpenseLineItems.push({
+    //         Description__c: 'Travel cost per visit',
+    //         Year1_Expense__c: $scope.budgetTravel.costYear1 || 0,
+    //         Year2_Expense__c: $scope.budgetTravel.costYear2 || 0,
+    //         Year3_Expense__c: $scope.budgetTravel.costYear3 || 0,
+    //         Total_Expense__c: $scope.budgetTravel.totalCost || 0,
+    //         Expense_Type__c: 'Travel'
+    //     });
 
-        // Research Staff - Multiple records with child line items
-        // Use Expense_Head__c IDs to identify which records to update vs create
-        if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
-            for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
-                let staff = $scope.budgetResearchStaffList[i];
-                // Use existing researchStaffType or generate new one
-                let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
+    //     // Research Staff - Multiple records with child line items
+    //     // Use Expense_Head__c IDs to identify which records to update vs create
+    //     if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+    //         for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
+    //             let staff = $scope.budgetResearchStaffList[i];
+    //             // Use existing researchStaffType or generate new one
+    //             let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
 
-                // Get Expense_Head__c IDs for this Research Staff (Year 1, 2, 3)
-                // expenseHeadIds array contains [Year1HeadId, Year2HeadId, Year3HeadId] or empty for new records
-                let year1HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 0) ? staff.expenseHeadIds[0] : null;
-                let year2HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 1) ? staff.expenseHeadIds[1] : null;
-                let year3HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 2) ? staff.expenseHeadIds[2] : null;
+    //             // Get Expense_Head__c IDs for this Research Staff (Year 1, 2, 3)
+    //             // expenseHeadIds array contains [Year1HeadId, Year2HeadId, Year3HeadId] or empty for new records
+    //             let year1HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 0) ? staff.expenseHeadIds[0] : null;
+    //             let year2HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 1) ? staff.expenseHeadIds[1] : null;
+    //             let year3HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 2) ? staff.expenseHeadIds[2] : null;
 
-                // Child Line Item 1: No. of Positions
-                // Store year-specific totals in Description for backend processing
-                // Format: "No. of Positions|Y1Total:XXX|Y2Total:YYY|Y3Total:ZZZ"
-                let year1Total = (staff.positionsYear1 || 0) * (staff.costYear1 || 0) * (staff.hoursYear1 || 0);
-                let year2Total = (staff.positionsYear2 || 0) * (staff.costYear2 || 0) * (staff.hoursYear2 || 0);
-                let year3Total = (staff.positionsYear3 || 0) * (staff.costYear3 || 0) * (staff.hoursYear3 || 0);
+    //             // Child Line Item 1: No. of Positions
+    //             // Store year-specific totals in Description for backend processing
+    //             // Format: "No. of Positions|Y1Total:XXX|Y2Total:YYY|Y3Total:ZZZ"
+    //             let year1Total = (staff.positionsYear1 || 0) * (staff.costYear1 || 0) * (staff.hoursYear1 || 0);
+    //             let year2Total = (staff.positionsYear2 || 0) * (staff.costYear2 || 0) * (staff.hoursYear2 || 0);
+    //             let year3Total = (staff.positionsYear3 || 0) * (staff.costYear3 || 0) * (staff.hoursYear3 || 0);
 
-                // Year 1 line item
-                let year1LineItem = {
-                    Index__c: 1,
-                    Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
-                    Number__c: staff.positionsYear1 || 0,
-                    Year1_Expense__c: staff.positionsYear1 || 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.positionsYear1 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                // Only include Expense_Head__c if it's not null/undefined/empty
-                if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
-                    year1LineItem.Expense_Head__c = year1HeadId;
-                }
-                allExpenseLineItems.push(year1LineItem);
+    //             // Year 1 line item
+    //             let year1LineItem = {
+    //                 Index__c: 1,
+    //                 Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
+    //                 Number__c: staff.positionsYear1 || 0,
+    //                 Year1_Expense__c: staff.positionsYear1 || 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.positionsYear1 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             // Only include Expense_Head__c if it's not null/undefined/empty
+    //             if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
+    //                 year1LineItem.Expense_Head__c = year1HeadId;
+    //             }
+    //             allExpenseLineItems.push(year1LineItem);
 
-                // Year 2 line item
-                let year2LineItem = {
-                    Index__c: 1,
-                    Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
-                    Number__c: staff.positionsYear2 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: staff.positionsYear2 || 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.positionsYear2 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                // Only include Expense_Head__c if it's not null/undefined/empty
-                if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
-                    year2LineItem.Expense_Head__c = year2HeadId;
-                }
-                allExpenseLineItems.push(year2LineItem);
+    //             // Year 2 line item
+    //             let year2LineItem = {
+    //                 Index__c: 1,
+    //                 Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
+    //                 Number__c: staff.positionsYear2 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: staff.positionsYear2 || 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.positionsYear2 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             // Only include Expense_Head__c if it's not null/undefined/empty
+    //             if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
+    //                 year2LineItem.Expense_Head__c = year2HeadId;
+    //             }
+    //             allExpenseLineItems.push(year2LineItem);
 
-                // Year 3 line item
-                let year3LineItem = {
-                    Index__c: 1,
-                    Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
-                    Number__c: staff.positionsYear3 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: staff.positionsYear3 || 0,
-                    Total_Expense__c: staff.positionsYear3 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                // Only include Expense_Head__c if it's not null/undefined/empty
-                if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
-                    year3LineItem.Expense_Head__c = year3HeadId;
-                }
-                allExpenseLineItems.push(year3LineItem);
+    //             // Year 3 line item
+    //             let year3LineItem = {
+    //                 Index__c: 1,
+    //                 Description__c: 'No. of Positions|Y1Total:' + year1Total + '|Y2Total:' + year2Total + '|Y3Total:' + year3Total,
+    //                 Number__c: staff.positionsYear3 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: staff.positionsYear3 || 0,
+    //                 Total_Expense__c: staff.positionsYear3 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             // Only include Expense_Head__c if it's not null/undefined/empty
+    //             if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
+    //                 year3LineItem.Expense_Head__c = year3HeadId;
+    //             }
+    //             allExpenseLineItems.push(year3LineItem);
 
-                // Child Line Item 2: Cost
-                // Year 1
-                let costYear1Item = {
-                    Index__c: 2,
-                    Description__c: 'Cost',
-                    Salary_Month__c: staff.costYear1 || 0,
-                    Year1_Expense__c: staff.costYear1 || 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.costYear1 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
-                    costYear1Item.Expense_Head__c = year1HeadId;
-                }
-                allExpenseLineItems.push(costYear1Item);
+    //             // Child Line Item 2: Cost
+    //             // Year 1
+    //             let costYear1Item = {
+    //                 Index__c: 2,
+    //                 Description__c: 'Cost',
+    //                 Salary_Month__c: staff.costYear1 || 0,
+    //                 Year1_Expense__c: staff.costYear1 || 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.costYear1 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
+    //                 costYear1Item.Expense_Head__c = year1HeadId;
+    //             }
+    //             allExpenseLineItems.push(costYear1Item);
 
-                // Year 2
-                let costYear2Item = {
-                    Index__c: 2,
-                    Description__c: 'Cost',
-                    Salary_Month__c: staff.costYear2 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: staff.costYear2 || 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.costYear2 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
-                    costYear2Item.Expense_Head__c = year2HeadId;
-                }
-                allExpenseLineItems.push(costYear2Item);
+    //             // Year 2
+    //             let costYear2Item = {
+    //                 Index__c: 2,
+    //                 Description__c: 'Cost',
+    //                 Salary_Month__c: staff.costYear2 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: staff.costYear2 || 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.costYear2 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
+    //                 costYear2Item.Expense_Head__c = year2HeadId;
+    //             }
+    //             allExpenseLineItems.push(costYear2Item);
 
-                // Year 3
-                let costYear3Item = {
-                    Index__c: 2,
-                    Description__c: 'Cost',
-                    Salary_Month__c: staff.costYear3 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: staff.costYear3 || 0,
-                    Total_Expense__c: staff.costYear3 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
-                    costYear3Item.Expense_Head__c = year3HeadId;
-                }
-                allExpenseLineItems.push(costYear3Item);
+    //             // Year 3
+    //             let costYear3Item = {
+    //                 Index__c: 2,
+    //                 Description__c: 'Cost',
+    //                 Salary_Month__c: staff.costYear3 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: staff.costYear3 || 0,
+    //                 Total_Expense__c: staff.costYear3 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
+    //                 costYear3Item.Expense_Head__c = year3HeadId;
+    //             }
+    //             allExpenseLineItems.push(costYear3Item);
 
-                // Child Line Item 3: Number of hours/week/days/month
-                // Year 1
-                let hoursYear1Item = {
-                    Index__c: 3,
-                    Description__c: 'Number of hour/week/days/month',
-                    Person_Month__c: staff.hoursYear1 || 0,
-                    Year1_Expense__c: staff.hoursYear1 || 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.hoursYear1 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
-                    hoursYear1Item.Expense_Head__c = year1HeadId;
-                }
-                allExpenseLineItems.push(hoursYear1Item);
+    //             // Child Line Item 3: Number of hours/week/days/month
+    //             // Year 1
+    //             let hoursYear1Item = {
+    //                 Index__c: 3,
+    //                 Description__c: 'Number of hour/week/days/month',
+    //                 Person_Month__c: staff.hoursYear1 || 0,
+    //                 Year1_Expense__c: staff.hoursYear1 || 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.hoursYear1 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
+    //                 hoursYear1Item.Expense_Head__c = year1HeadId;
+    //             }
+    //             allExpenseLineItems.push(hoursYear1Item);
 
-                // Year 2
-                let hoursYear2Item = {
-                    Index__c: 3,
-                    Description__c: 'Number of hour/week/days/month',
-                    Person_Month__c: staff.hoursYear2 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: staff.hoursYear2 || 0,
-                    Year3_Expense__c: 0,
-                    Total_Expense__c: staff.hoursYear2 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
-                    hoursYear2Item.Expense_Head__c = year2HeadId;
-                }
-                allExpenseLineItems.push(hoursYear2Item);
+    //             // Year 2
+    //             let hoursYear2Item = {
+    //                 Index__c: 3,
+    //                 Description__c: 'Number of hour/week/days/month',
+    //                 Person_Month__c: staff.hoursYear2 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: staff.hoursYear2 || 0,
+    //                 Year3_Expense__c: 0,
+    //                 Total_Expense__c: staff.hoursYear2 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
+    //                 hoursYear2Item.Expense_Head__c = year2HeadId;
+    //             }
+    //             allExpenseLineItems.push(hoursYear2Item);
 
-                // Year 3
-                let hoursYear3Item = {
-                    Index__c: 3,
-                    Description__c: 'Number of hour/week/days/month',
-                    Person_Month__c: staff.hoursYear3 || 0,
-                    Year1_Expense__c: 0,
-                    Year2_Expense__c: 0,
-                    Year3_Expense__c: staff.hoursYear3 || 0,
-                    Total_Expense__c: staff.hoursYear3 || 0,
-                    Expense_Type__c: researchStaffType
-                };
-                if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
-                    hoursYear3Item.Expense_Head__c = year3HeadId;
-                }
-                allExpenseLineItems.push(hoursYear3Item);
-            }
-        }
+    //             // Year 3
+    //             let hoursYear3Item = {
+    //                 Index__c: 3,
+    //                 Description__c: 'Number of hour/week/days/month',
+    //                 Person_Month__c: staff.hoursYear3 || 0,
+    //                 Year1_Expense__c: 0,
+    //                 Year2_Expense__c: 0,
+    //                 Year3_Expense__c: staff.hoursYear3 || 0,
+    //                 Total_Expense__c: staff.hoursYear3 || 0,
+    //                 Expense_Type__c: researchStaffType
+    //             };
+    //             if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
+    //                 hoursYear3Item.Expense_Head__c = year3HeadId;
+    //             }
+    //             allExpenseLineItems.push(hoursYear3Item);
+    //         }
+    //     }
 
-        // Consumables
-        allExpenseLineItems.push({
-            Description__c: 'Consumables',
-            Year1_Expense__c: $scope.budgetConsumables.year1 || 0,
-            Year2_Expense__c: $scope.budgetConsumables.year2 || 0,
-            Year3_Expense__c: $scope.budgetConsumables.year3 || 0,
-            Total_Expense__c: $scope.budgetConsumables.total || 0,
-            Expense_Type__c: 'Consumables'
-        });
+    //     // Consumables
+    //     allExpenseLineItems.push({
+    //         Description__c: 'Consumables',
+    //         Year1_Expense__c: $scope.budgetConsumables.year1 || 0,
+    //         Year2_Expense__c: $scope.budgetConsumables.year2 || 0,
+    //         Year3_Expense__c: $scope.budgetConsumables.year3 || 0,
+    //         Total_Expense__c: $scope.budgetConsumables.total || 0,
+    //         Expense_Type__c: 'Consumables'
+    //     });
 
-        // Minor Equipment
-        allExpenseLineItems.push({
-            Description__c: 'Minor equipment',
-            Year1_Expense__c: $scope.minorEquipment.year1 || 0,
-            Year2_Expense__c: $scope.minorEquipment.year2 || 0,
-            Year3_Expense__c: $scope.minorEquipment.year3 || 0,
-            Total_Expense__c: $scope.minorEquipment.total || 0,
-            Expense_Type__c: 'Minor equipment'
-        });
+    //     // Minor Equipment
+    //     allExpenseLineItems.push({
+    //         Description__c: 'Minor equipment',
+    //         Year1_Expense__c: $scope.minorEquipment.year1 || 0,
+    //         Year2_Expense__c: $scope.minorEquipment.year2 || 0,
+    //         Year3_Expense__c: $scope.minorEquipment.year3 || 0,
+    //         Total_Expense__c: $scope.minorEquipment.total || 0,
+    //         Expense_Type__c: 'Minor equipment'
+    //     });
 
-        // Contingency
-        allExpenseLineItems.push({
-            Description__c: 'Contingency and Miscellaneous',
-            Year1_Expense__c: $scope.budgetContingency.year1 || 0,
-            Year2_Expense__c: $scope.budgetContingency.year2 || 0,
-            Year3_Expense__c: $scope.budgetContingency.year3 || 0,
-            Total_Expense__c: $scope.budgetContingency.total || 0,
-            Expense_Type__c: 'Contingency'
-        });
+    //     // Contingency
+    //     allExpenseLineItems.push({
+    //         Description__c: 'Contingency and Miscellaneous',
+    //         Year1_Expense__c: $scope.budgetContingency.year1 || 0,
+    //         Year2_Expense__c: $scope.budgetContingency.year2 || 0,
+    //         Year3_Expense__c: $scope.budgetContingency.year3 || 0,
+    //         Total_Expense__c: $scope.budgetContingency.total || 0,
+    //         Expense_Type__c: 'Contingency'
+    //     });
 
-        // Overhead
-        allExpenseLineItems.push({
-            Description__c: 'Overheads Percentage',
-            Year1_Expense__c: $scope.budgetOverhead.percentageYear1 || 0,
-            Year2_Expense__c: $scope.budgetOverhead.percentageYear2 || 0,
-            Year3_Expense__c: $scope.budgetOverhead.percentageYear3 || 0,
-            Total_Expense__c: $scope.budgetOverhead.totalAmount || 0,
-            Expense_Type__c: 'Overhead'
-        });
+    //     // Overhead
+    //     allExpenseLineItems.push({
+    //         Description__c: 'Overheads Percentage',
+    //         Year1_Expense__c: $scope.budgetOverhead.percentageYear1 || 0,
+    //         Year2_Expense__c: $scope.budgetOverhead.percentageYear2 || 0,
+    //         Year3_Expense__c: $scope.budgetOverhead.percentageYear3 || 0,
+    //         Total_Expense__c: $scope.budgetOverhead.totalAmount || 0,
+    //         Expense_Type__c: 'Overhead'
+    //     });
 
-        // Prepare APA update object
-        var updatedApa = {
-            'Id': $rootScope.apaId
-        };
+    //     // Prepare APA update object
+    //     var updatedApa = {
+    //         'Id': $rootScope.apaId
+    //     };
 
-        // Save using ApplicantPortal_Contoller
-        ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
-            allExpenseLineItems, $rootScope.apaId, updatedApa,
-            function (result, event) {
-                if (event.status && result != null) {
-                    debugger;
+    //     // Save using ApplicantPortal_Contoller
+    //     ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
+    //         allExpenseLineItems, $rootScope.apaId, updatedApa,
+    //         function (result, event) {
+    //             if (event.status && result != null) {
+    //                 debugger;
 
-                    // Check if result is an error string
-                    if (result.startsWith && result.startsWith('error')) {
-                        swal("Error", "Error saving budget details: " + result, "error");
-                        return;
-                    }
+    //                 // Check if result is an error string
+    //                 if (result.startsWith && result.startsWith('error')) {
+    //                     swal("Error", "Error saving budget details: " + result, "error");
+    //                     return;
+    //                 }
 
-                    // Try to parse JSON result containing Expense_Head__c IDs
-                    try {
-                        let saveResult = JSON.parse(result);
-                        if (saveResult.status === 'success' && saveResult.researchStaffHeadIds) {
-                            // Update expenseHeadIds for each Research Staff record
-                            if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
-                                for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
-                                    let staff = $scope.budgetResearchStaffList[i];
-                                    let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
+    //                 // Try to parse JSON result containing Expense_Head__c IDs
+    //                 try {
+    //                     let saveResult = JSON.parse(result);
+    //                     if (saveResult.status === 'success' && saveResult.researchStaffHeadIds) {
+    //                         // Update expenseHeadIds for each Research Staff record
+    //                         if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+    //                             for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
+    //                                 let staff = $scope.budgetResearchStaffList[i];
+    //                                 let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
 
-                                    // Get Expense_Head__c IDs for this Research Staff from backend response
-                                    if (saveResult.researchStaffHeadIds[researchStaffType]) {
-                                        // Store IDs in correct order: [Year1HeadId, Year2HeadId, Year3HeadId]
-                                        // Keep null values to maintain array indices
-                                        let headIds = saveResult.researchStaffHeadIds[researchStaffType];
-                                        staff.expenseHeadIds = [
-                                            headIds[0] || null,
-                                            headIds[1] || null,
-                                            headIds[2] || null
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        // If JSON parsing fails, assume it's a simple success/error string
-                        console.log('Could not parse save result as JSON: ' + e.message);
-                    }
+    //                                 // Get Expense_Head__c IDs for this Research Staff from backend response
+    //                                 if (saveResult.researchStaffHeadIds[researchStaffType]) {
+    //                                     // Store IDs in correct order: [Year1HeadId, Year2HeadId, Year3HeadId]
+    //                                     // Keep null values to maintain array indices
+    //                                     let headIds = saveResult.researchStaffHeadIds[researchStaffType];
+    //                                     staff.expenseHeadIds = [
+    //                                         headIds[0] || null,
+    //                                         headIds[1] || null,
+    //                                         headIds[2] || null
+    //                                     ];
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 } catch (e) {
+    //                     // If JSON parsing fails, assume it's a simple success/error string
+    //                     console.log('Could not parse save result as JSON: ' + e.message);
+    //                 }
 
-                    swal("Success", "Budget details have been saved successfully.", "success");
-                    $scope.redirectPageURL('ExistingGrantWISER');
-                    $scope.$apply();
-                }
-            },
-            { escape: true }
-        );
-    };
+    //                 swal("Success", "Budget details have been saved successfully.", "success");
+    //                 $scope.redirectPageURL('ExistingGrantWISER');
+    //                 $scope.$apply();
+    //             }
+    //         },
+    //         { escape: true }
+    //     );
+    // };
 
     // Initialize: Try to get expense records using ApplicantPortal_Contoller if available
     // This will be called after getAccounts() sets up proposalId and contactId

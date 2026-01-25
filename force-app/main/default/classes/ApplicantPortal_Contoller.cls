@@ -1114,7 +1114,112 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     public static Proposal_Controller.edWrapper getExpenseRecords(String ProposalId, String ContactId) {
         return Proposal_Controller.getExpenseDetails(ProposalId, ContactId);
     }
+
+    public class YearlyExpenseWrapper {
+        public Id id;
+        public String year;
+        public List<ExpenseHeadWrapper> expenseHeads = new List<ExpenseHeadWrapper>();
+    }
+
+    public class ExpenseHeadWrapper {
+        public Id id;
+        public String name;
+        public List<Expense_Line_Item__c> lineItems = new List<Expense_Line_Item__c>();
+    }
+
     
+    @RemoteAction
+    public static Map<String, Object> getYearlyExpenseHierarchy(Id apaId) {
+
+        Map<String, Object> response = new Map<String, Object>();
+
+        /* ===============================
+        1️⃣ Fetch Yearly Expenses
+        =============================== */
+        List<Yearly_Expense__c> yearlyExpenses = [
+            SELECT Id, Year__c
+            FROM Yearly_Expense__c
+            WHERE Applicant_Proposal_Association__c = :apaId
+            ORDER BY Year__c
+        ];
+
+        if (yearlyExpenses.isEmpty()) {
+            response.put('yearlyExpenses', new List<YearlyExpenseWrapper>());
+            return response;
+        }
+
+        /* ===============================
+        2️⃣ Fetch Expense Heads
+        =============================== */
+        List<Expense_Head__c> heads = [
+            SELECT Id, Name, Yearly_Expense__c
+            FROM Expense_Head__c
+            WHERE Yearly_Expense__c IN :yearlyExpenses
+        ];
+
+        /* ===============================
+        3️⃣ Fetch Line Items
+        =============================== */
+        List<Expense_Line_Item__c> lineItems = [
+            SELECT Id, Description__c, Index__c,
+                Year1_Expense__c, Year2_Expense__c, Year3_Expense__c,
+                Expense_Type__c, Expense_Head__c
+            FROM Expense_Line_Item__c
+            WHERE Expense_Head__c IN :heads
+        ];
+
+        /* ===============================
+        4️⃣ Map Line Items → Head
+        =============================== */
+        Map<Id, List<Expense_Line_Item__c>> headToLines = new Map<Id, List<Expense_Line_Item__c>>();
+        for (Expense_Line_Item__c li : lineItems) {
+            if (!headToLines.containsKey(li.Expense_Head__c)) {
+                headToLines.put(li.Expense_Head__c, new List<Expense_Line_Item__c>());
+            }
+            headToLines.get(li.Expense_Head__c).add(li);
+        }
+
+        /* ===============================
+        5️⃣ Map Heads → Yearly Expense
+        =============================== */
+        Map<Id, List<ExpenseHeadWrapper>> yearlyToHeads = new Map<Id, List<ExpenseHeadWrapper>>();
+        for (Expense_Head__c h : heads) {
+
+            ExpenseHeadWrapper hw = new ExpenseHeadWrapper();
+            hw.id = h.Id;
+            hw.name = h.Name;
+            hw.lineItems = headToLines.containsKey(h.Id)
+                ? headToLines.get(h.Id)
+                : new List<Expense_Line_Item__c>();
+
+            if (!yearlyToHeads.containsKey(h.Yearly_Expense__c)) {
+                yearlyToHeads.put(h.Yearly_Expense__c, new List<ExpenseHeadWrapper>());
+            }
+            yearlyToHeads.get(h.Yearly_Expense__c).add(hw);
+        }
+
+        /* ===============================
+        6️⃣ Build Final Hierarchy
+        =============================== */
+        List<YearlyExpenseWrapper> result = new List<YearlyExpenseWrapper>();
+
+        for (Yearly_Expense__c ye : yearlyExpenses) {
+            YearlyExpenseWrapper yw = new YearlyExpenseWrapper();
+            yw.id = ye.Id;
+            yw.year = ye.Year__c;
+            yw.expenseHeads = yearlyToHeads.containsKey(ye.Id)
+                ? yearlyToHeads.get(ye.Id)
+                : new List<ExpenseHeadWrapper>();
+
+            result.add(yw);
+        }
+
+        response.put('yearlyExpenses', result);
+        return response;
+    }
+
+
+
     // NEW CODE - RETURNING CUSTOM TYPE
     @RemoteAction
     public static Proposal_Controller.ProposalWithContactsDTO getConsentCheckbox(string proposalId){
