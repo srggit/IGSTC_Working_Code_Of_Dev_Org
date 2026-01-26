@@ -649,8 +649,7 @@
                                         and then copy paste here</b>
                                 </small>
                                 <ng-ckeditor name="ckEditor2 " maxlength="600 " ng-change="readCharacter(objContact.Host_Abstract_Of_Project__c,0)
-                                    " ng-model="objContact.Host_Abstract_Of_Project__c " ng-config="config ">
-                                </ng-ckeditor>
+                                    " ng-model="objContact.Host_Abstract_Of_Project__c " ng-config="config "></ng-ckeditor>
                                 <span>Total characters : {{objRtf[0].charCount}}</span>
                                 <span class="text-danger " ng-if="objRtf[0].errorStatus ">maximum character limit is 700
                                 </span>
