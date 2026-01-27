@@ -226,6 +226,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
     }
 
+    if (localStorage.getItem('yearlyCallId')) {
+        $rootScope.yearlyCallId = localStorage.getItem('yearlyCallId');
+        console.log('Loaded yearlyCallId from localStorage:', $rootScope.yearlyCallId);
+    }
+
     console.log('$rootScope.candidateId ===>>' + $rootScope.candidateId);
 
     // Function to set year visibility based on duration
@@ -250,6 +255,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
         ApplicantPortal_Contoller.fetchApplicantStatusWithDuration(
             $rootScope.apaId,
+            $rootScope.yearlyCallId,
             function (result, event) {
 
                 console.log('Result:', result);
@@ -260,11 +266,17 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     // Status flag
                     $rootScope.isCurrentUserSubmitted = result.applicantStatus === 'Submitted';
 
-                    // Duration (store wherever needed)
+                    // Duration months
                     $rootScope.proposalDurationMonths = result.durationInMonths;
 
                     // Set year visibility based on duration
                     $scope.setYearVisibilityBasedOnDuration();
+
+                    // Euro exchange rate
+                    $rootScope.euroExchangeRate = result.euroExchangeRate;
+
+                    // Mailing country
+                    $rootScope.mailingCountry = result.mailingCountry;
 
                     // Lock editor only if submitted
                     if ($rootScope.isCurrentUserSubmitted) {
@@ -1915,11 +1927,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             let TOTAL_MAX = 0;
 
             if ($rootScope.proposalDurationMonths === 24) {
-                MAX_DAYS_PER_YEAR = 50;
+                MAX_DAYS_PER_YEAR = 30;
                 TOTAL_MIN = 20;
                 TOTAL_MAX = 60;
             } else if ($rootScope.proposalDurationMonths === 36) {
-                MAX_DAYS_PER_YEAR = 80;
+                MAX_DAYS_PER_YEAR = 45;
                 TOTAL_MIN = 30;
                 TOTAL_MAX = 90;
             } else {
@@ -1927,25 +1939,66 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             }
 
             // ---------- Per-year validation ----------
-            function isInvalidYear(days) {
-                if (!days || days === 0) return false; // zero allowed
+            function isInvalidYear(days, durationMonths) {
+                // For 24 months: 0 is not allowed (both years mandatory)
+                if (durationMonths === 24 && (!days || days === 0)) {
+                    return true;
+                }
+                // For 36 months: 0 is allowed (but at least 2 years must be non-zero - checked separately)
+                if (durationMonths === 36 && (!days || days === 0)) {
+                    return false;
+                }
+                // For non-zero values, check range
                 return days < MIN_DAYS_PER_YEAR || days > MAX_DAYS_PER_YEAR;
             }
 
-            $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1);
+            $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1, $rootScope.proposalDurationMonths);
 
             // Only validate Year 2 if duration is 24 or 36 months
             if ($rootScope.proposalDurationMonths >= 24) {
-                $scope.researchStayError.year2 = isInvalidYear($scope.budgetResearchStay.daysYear2);
+                $scope.researchStayError.year2 = isInvalidYear($scope.budgetResearchStay.daysYear2, $rootScope.proposalDurationMonths);
             } else {
                 $scope.researchStayError.year2 = false;
             }
 
             // Only validate Year 3 if duration is 36 months
             if ($rootScope.proposalDurationMonths === 36) {
-                $scope.researchStayError.year3 = isInvalidYear($scope.budgetResearchStay.daysYear3);
+                $scope.researchStayError.year3 = isInvalidYear($scope.budgetResearchStay.daysYear3, $rootScope.proposalDurationMonths);
             } else {
                 $scope.researchStayError.year3 = false;
+            }
+
+            // ---------- Mandatory years validation ----------
+            // For 24 months: Both Year 1 and Year 2 are mandatory (cannot be 0)
+            if ($rootScope.proposalDurationMonths === 24) {
+                const year1 = Number($scope.budgetResearchStay.daysYear1) || 0;
+                const year2 = Number($scope.budgetResearchStay.daysYear2) || 0;
+                if (year1 === 0) {
+                    $scope.researchStayError.year1 = true;
+                }
+                if (year2 === 0) {
+                    $scope.researchStayError.year2 = true;
+                }
+            }
+
+            // For 36 months: At least 2 years must be non-zero (can have 0 in one year)
+            if ($rootScope.proposalDurationMonths === 36) {
+                const year1 = Number($scope.budgetResearchStay.daysYear1) || 0;
+                const year2 = Number($scope.budgetResearchStay.daysYear2) || 0;
+                const year3 = Number($scope.budgetResearchStay.daysYear3) || 0;
+                const nonZeroCount = (year1 > 0 ? 1 : 0) + (year2 > 0 ? 1 : 0) + (year3 > 0 ? 1 : 0);
+                if (nonZeroCount < 2) {
+                    // At least 2 years must be non-zero - mark zero years as error (only if not already invalid from range check)
+                    if (year1 === 0) {
+                        $scope.researchStayError.year1 = true;
+                    }
+                    if (year2 === 0) {
+                        $scope.researchStayError.year2 = true;
+                    }
+                    if (year3 === 0) {
+                        $scope.researchStayError.year3 = true;
+                    }
+                }
             }
 
             // ---------- Total validation ----------

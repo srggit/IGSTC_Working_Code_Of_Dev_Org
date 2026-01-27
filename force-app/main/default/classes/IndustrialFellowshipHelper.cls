@@ -1161,7 +1161,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                     WHERE Id = :proposalId
                     LIMIT 1
                 ];
-
+                proposalRec.Title_Of__c = hostDetails.Title_Of__c;
                 proposalRec.Host_Project_Title__c = hostDetails.Host_Project_Title__c;
                 proposalRec.Host_Abstract_Of_Project__c = hostDetails.Host_Abstract_Of_Project__c;
                 proposalRec.Broad_area_of_research__c = hostDetails.Broad_area_of_research__c;
@@ -1224,7 +1224,7 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                 // }
  
                 proposalRec = new Application_Proposal__c(
-                    Title_Of__c = 'WISER',
+                    Title_Of__c = hostDetails.Title_Of__c,
                     RecordTypeId = workshopRecordTypeId,
                     Campaign__c = camp.Id,
                     yearly_Call__c = yearlyCallId,

@@ -3253,12 +3253,12 @@ public static void updateProposalStage(Id proposalId) {
     }
 
     @RemoteAction
-    public static ApplicantStatusWrapper fetchApplicantStatusWithDuration(String apaId) {
+    public static ApplicantStatusWrapper fetchApplicantStatusWithDuration(String apaId, String yearlyCallId) {
 
         ApplicantStatusWrapper res = new ApplicantStatusWrapper();
 
         List<Applicant_Proposal_Association__c> apaList = [
-            SELECT Applicant_Status__c,
+            SELECT Applicant_Status__c, Contact__c, Contact__r.MailingCountry,
                 Proposals__r.Duration_In_Months_Max_36__c
             FROM Applicant_Proposal_Association__c
             WHERE Id = :apaId
@@ -3268,9 +3268,16 @@ public static void updateProposalStage(Id proposalId) {
 
         if (!apaList.isEmpty()) {
             res.applicantStatus = apaList[0].Applicant_Status__c;
-            res.durationInMonths = (Integer) apaList[0]
-                .Proposals__r
-                .Duration_In_Months_Max_36__c;
+            res.durationInMonths = (Integer) apaList[0].Proposals__r.Duration_In_Months_Max_36__c;
+            res.mailingCountry = apaList[0].Contact__r.MailingCountry;
+        }
+
+        YealyCall__c yearlyCall = [SELECT Id, Campaign__c, Campaign__r.Euro_Exchange_Rate__c 
+            FROM YealyCall__c 
+            WHERE Id =: yearlyCallId
+        ];
+        if (yearlyCall != null) {
+            res.euroExchangeRate = yearlyCall.Campaign__r.Euro_Exchange_Rate__c;
         }
 
         return res;
@@ -3279,6 +3286,8 @@ public static void updateProposalStage(Id proposalId) {
     public class ApplicantStatusWrapper {
         @AuraEnabled public String applicantStatus;
         @AuraEnabled public Integer durationInMonths;
+        @AuraEnabled public Decimal euroExchangeRate;
+        @AuraEnabled public String mailingCountry;
     }
 
 

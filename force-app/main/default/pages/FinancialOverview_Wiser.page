@@ -451,21 +451,21 @@
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year1">
-                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
                                 <td ng-show="Showyear2">
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year2">
-                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
                                 <td ng-show="Showyear3">
                                     <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year3">
-                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 50 : 80}} days
+                                        Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
                                 <td class="orange-text">
@@ -635,11 +635,11 @@
                             <tr ng-if="budgetResearchStaffList.length > 0">
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text bold">Total Amount for All Research Staff</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalYear1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{budgetResearchStaff.totalYear2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{budgetResearchStaff.totalYear3 | number:2}}</td>
-                                <td class="orange-text">{{budgetResearchStaff.totalAmount | number:2}}</td>
+                                <td class="bold gray-row">Total Amount for All Research Staff</td>
+                                <td class="bold gray-row">{{budgetResearchStaff.totalYear1 | number:2}}</td>
+                                <td class="bold gray-row" ng-show="Showyear2">{{budgetResearchStaff.totalYear2 | number:2}}</td>
+                                <td class="bold gray-row" ng-show="Showyear3">{{budgetResearchStaff.totalYear3 | number:2}}</td>
+                                <td class="bold gray-row">{{budgetResearchStaff.totalAmount | number:2}}</td>
                             </tr>
 
                             <!-- Other Heads -->

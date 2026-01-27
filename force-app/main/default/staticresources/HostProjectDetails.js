@@ -574,7 +574,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           if (typeOfFile[lengthOfType - 1] == "pdf" || typeOfFile[lengthOfType - 1] == "PDF") {
 
           } else {
-               swal('info', 'Please choose pdf file only.', 'info');
+               swal('Info', 'Please choose pdf file only.', 'info');
                return;
           }
           console.log(file);
@@ -582,7 +582,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                if (file.size <= maxFileSize) {
 
                     if (file.size < minFileSize) {
-                         swal("info", "File must be at least 30 KB.", "info");
+                         swal("Info", "File must be at least 30 KB.", "info");
                          return;
                     }
 
@@ -613,21 +613,21 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                          if (fileSize < maxStringSize) {
                               $scope.uploadAttachment(type, userDocId, null, attachment, attachmentName);
                          } else {
-                              swal("info", "Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".", "info");
+                              swal("Info", "Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".", "info");
                               return;
                               // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                          }
 
                     }
                     fileReader.onerror = function (e) {
-                         swal("info", "There was an error reading the file.  Please try again.", "info");
+                         swal("Info", "There was an error reading the file.  Please try again.", "info");
                          console.log('Error is==>', e);
                          console.log('Error Body Is===>', JSON.stringify(e.target.result));
                          return;
                          // alert("There was an error reading the file.  Please try again.");
                     }
                     fileReader.onabort = function (e) {
-                         swal("info", "There was an error reading the file.  Please try again.", "info");
+                         swal("Info", "There was an error reading the file.  Please try again.", "info");
                          return;
                          // alert("There was an error reading the file.  Please try again.");
                     }
@@ -635,11 +635,11 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     fileReader.readAsDataURL(file); //Read the body of the file
 
                } else {
-                    swal("info", "File must be under 1 Mb in size.  Your file is too large.  Please try again.", "info");
+                    swal("Info", "File must be under 1 Mb in size.  Your file is too large.  Please try again.", "info");
                     return;
                }
           } else {
-               swal("info", "You must choose a file before trying to upload it", "info");
+               swal("Info", "You must choose a file before trying to upload it", "info");
                return;
                // alert("You must choose a file before trying to upload it");
                // $scope.showSpinnereditProf = false;
