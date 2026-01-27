@@ -726,7 +726,7 @@
                         </div>
 
                         <div class="col-md-12 my-4 mb-5 mt-5" ng-if="!proposalStage && !isCurrentUserSubmitted">
-                            <button class="blue-btn float-end" ng-click="insertPairingDetailsinWiser()" type="button">
+                            <button class="blue-btn float-end" id="btnPreview" ng-click="insertPairingDetailsinWiser()" type="button">
                                 <i class="fa-solid fa-check me-2"></i>Save and Next</button>
                             <button class="blue-bordered-btn float-end me-2" ng-click="redirectToApplicantPortal()"
                                 type="button">

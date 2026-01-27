@@ -62,7 +62,17 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 	$scope.isDependencyLoaded = false;
 
 	$scope.getDependentPicklistValues = function () {
-		if ($scope.isDependencyLoaded) return;
+		if ($scope.isDependencyLoaded) {
+			// If dependencies are already loaded, ensure stateList is set for existing contact
+			if ($scope.objContact && $scope.objContact.MailingCountry) {
+				if ($scope.objContact.MailingCountry == 'India') {
+					$scope.objContact.stateList = $scope.indianStates;
+				} else if ($scope.objContact.MailingCountry == 'Germany') {
+					$scope.objContact.stateList = $scope.germanStates;
+				}
+			}
+			return;
+		}
 
 		ApplicantPortal_Contoller.getFieldDependencies(
 			'Contact',
@@ -99,11 +109,27 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		// console.log('Calling cities function ---------------->>>');
 		// getCitieNamesgetCitieNames();
 
+		// Preserve the current MailingState value before changing stateList
+		var currentState = $scope.objContact.MailingState;
+
 		if ($scope.objContact.MailingCountry == 'India') {
 			$scope.objContact.stateList = $scope.indianStates;
 		} else if ($scope.objContact.MailingCountry == 'Germany') {
 			$scope.objContact.stateList = $scope.germanStates;
+		} else {
+			$scope.objContact.stateList = [];
 		}
+
+		// Check if the current state exists in the new stateList, if not, clear it
+		if (currentState && $scope.objContact.stateList && $scope.objContact.stateList.length > 0) {
+			var stateExists = $scope.objContact.stateList.indexOf(currentState) !== -1;
+			if (!stateExists) {
+				$scope.objContact.MailingState = '';
+			}
+		} else if (!$scope.objContact.stateList || $scope.objContact.stateList.length === 0) {
+			$scope.objContact.MailingState = '';
+		}
+
 		$scope.$apply();
 	}
 
@@ -153,12 +179,39 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 					$scope.MailingStreet1 = splitStreet[0];
 					$scope.MailingStreet2 = splitStreet[1];
 				}
+
+				// Preserve the MailingState value before assigning result
+				var preservedState = result.MailingState;
+
 				$scope.objContact = result;
 				$scope.orgDOB = result.Birthdate;
+
+				// Set stateList based on country
 				if ($scope.objContact.MailingCountry == 'India') {
 					$scope.objContact.stateList = $scope.indianStates;
 				} else if ($scope.objContact.MailingCountry == 'Germany') {
 					$scope.objContact.stateList = $scope.germanStates;
+				} else {
+					$scope.objContact.stateList = [];
+				}
+
+				// Ensure MailingState is preserved if it exists in the stateList
+				if (preservedState && $scope.objContact.stateList && $scope.objContact.stateList.length > 0) {
+					var stateExists = $scope.objContact.stateList.indexOf(preservedState) !== -1;
+					if (stateExists) {
+						$scope.objContact.MailingState = preservedState;
+					} else {
+						// If state doesn't exist in list, try to find a match (case-insensitive)
+						var foundState = null;
+						for (var i = 0; i < $scope.objContact.stateList.length; i++) {
+							if ($scope.objContact.stateList[i] && preservedState &&
+								$scope.objContact.stateList[i].toString().toLowerCase() === preservedState.toString().toLowerCase()) {
+								foundState = $scope.objContact.stateList[i];
+								break;
+							}
+						}
+						$scope.objContact.MailingState = foundState || preservedState;
+					}
 				}
 				if ($scope.objContact.Attachments != undefined && $scope.objContact.Attachments.length > 0) {
 					$scope.doc = $scope.objContact.Profile_Pic_Attachment_Id__c;
@@ -394,10 +447,15 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 			swal('Info', 'Please upload image.', 'info');
 			return;
 		}
-		delete $scope.objContact.Birthdate;
-		delete ($scope.objContact['stateList']);
-		delete ($scope.objContact['MailingStreet1']);
-		delete ($scope.objContact['MailingStreet2']);
+
+		// Create a copy of objContact for saving to avoid modifying UI-bound object
+		var contactToSave = angular.copy($scope.objContact);
+
+		// Delete fields that shouldn't be sent to backend from the COPY, not the original
+		delete contactToSave.Birthdate;
+		delete contactToSave.stateList;
+		delete contactToSave.MailingStreet1;
+		delete contactToSave.MailingStreet2;
 
 		debugger;
 
@@ -406,11 +464,22 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		}
 
 		$scope.accDet = $scope.objContact.Account;
-		IndustrialFellowshipController.saveApplicantPortalWiser($scope.objContact, $scope.accDet, birthYear, birthMonth, birthDay, $rootScope.proposalId, function (result, event) {
+
+		// Show spinner on button
+		$("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+		$("#btnPreview").prop('disabled', true);
+
+		IndustrialFellowshipController.saveApplicantPortalWiser(contactToSave, $scope.accDet, birthYear, birthMonth, birthDay, $rootScope.proposalId, function (result, event) {
 			debugger;
+
+			// Restore button
+			$("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+			$("#btnPreview").prop('disabled', false);
+
 			if (event.status && result != null) {
 				$rootScope.projectId = result;
 				console.log(result);
+
 				// $scope.uploadFile('','','',51200,30720);
 				swal({
 					title: "SUCCESS",

@@ -328,6 +328,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
 
     $scope.saveandNext = function () {
         debugger;
+
         for (var i = 0; i < $scope.allDocs.length; i++) {
 
             // if($scope.allDocs[i].userDocument.Name == 'Signature of the Host'){
@@ -359,12 +360,18 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         $scope.redirectPageURL('Declaration_Wiser');
     }
 
+    // Show spinner on button
+    $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+    $("#btnPreview").prop('disabled', true);
 
     // ----------------- CODE TO GET PROJECT PROPOSAL DOCUMENT FOR UPLOAD -------------------- //
     $scope.getProjectProposalDoc = function () {
         debugger;
         ApplicantPortal_Contoller.getAllUserDoc($rootScope.proposalId, function (result, event) {
             debugger;
+            // Restore button
+            $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+            $("#btnPreview").prop('disabled', false);
             // console.log('result return onload :: ');
             // console.log(result);
             if (event.status) {

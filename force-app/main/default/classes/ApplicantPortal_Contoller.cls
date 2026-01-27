@@ -954,7 +954,18 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     @RemoteAction
     public static string SaveWorkshopContactDetails2(Contact conDataList, List<Education_Details__c> eduDetails, List<Employment_Details__c> empDetails){
         try{
-            conDataList.MailingState = conDataList.State__c; //Added by Aman on 29 Aug'23. Put back the value of MailingState from State__c and see if it retains the value.
+            // Preserve MailingState: Only update it if State__c has a value, otherwise keep existing value
+            if(String.isNotBlank(conDataList.State__c)){
+                conDataList.MailingState = conDataList.State__c; //Added by Aman on 29 Aug'23. Put back the value of MailingState from State__c and see if it retains the value.
+            } else {
+                // If State__c is blank, preserve existing MailingState by querying it from database
+                if(String.isBlank(conDataList.MailingState) && conDataList.Id != null){
+                    Contact existingContact = [SELECT Id, MailingState FROM Contact WHERE Id = :conDataList.Id LIMIT 1];
+                    if(existingContact != null && String.isNotBlank(existingContact.MailingState)){
+                        conDataList.MailingState = existingContact.MailingState;
+                    }
+                }
+            }
             upsert conDataList;
             upsert eduDetails;
             upsert empDetails;

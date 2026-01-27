@@ -256,6 +256,11 @@ angular.module('cp_app').controller('declarationwiser_ctrl', function ($scope, $
     }
     $scope.finalSubmitWiser = function () {
         debugger;
+
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
+
         var day = 0;
         var month = 0;
         var year = 0;
@@ -307,6 +312,10 @@ angular.module('cp_app').controller('declarationwiser_ctrl', function ($scope, $
                         $rootScope.proposalId, $rootScope.contactId, $rootScope.apaId, day, month, year, function (result, event) {
                             if (event.status) {
                                 debugger;
+
+                                // Restore button
+                                $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Submit');
+                                $("#btnPreview").prop('disabled', false);
 
                                 // Lock current user if submitted
                                 $rootScope.isCurrentUserSubmitted = result.isCurrentUserSubmitted;

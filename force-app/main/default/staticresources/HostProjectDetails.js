@@ -312,6 +312,10 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           delete ($scope.objContact.Actual_Application_End_Date__c);
           delete $scope.objContact._charLimitMap;
 
+          // Show spinner on button
+          $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+          $("#btnPreview").prop('disabled', true);
+
           // New method to create a Proposal
           IndustrialFellowshipController.saveHostProjectInformation(
                $scope.objContact,
@@ -327,6 +331,10 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                function (result, event) {
                     debugger;
                     console.log("Result In saveApplicationPortalHostInformation ::", result);
+                    // Restore button
+                    $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+                    $("#btnPreview").prop('disabled', false);
+
                     if (event.status) {
 
                          // Saving the ProposalId in Local Storage
@@ -647,7 +655,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           console.log('attachment : ', attachment);
           console.log('attachmentName : ', attachmentName);
 
-          //var attachmentBody;
+          var attachmentBody;
           var fileSize = 1048576;
           var positionIndex = 1000000;
           var chunkSize = 48576;
@@ -669,9 +677,13 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           console.log("Uploading " + attachmentBody.length + " chars of " + fileSize);
           debugger;
 
+          // Spinner for buttons 
+          $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+
           ApplicantPortal_Contoller.doCUploadAttachmentAa(
                attachmentBody, attachmentName, fileId, userDocId,
                function (result, event) {
+                    $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
                     debugger;
                     console.log(result);
                     if (event.type === 'exception') {

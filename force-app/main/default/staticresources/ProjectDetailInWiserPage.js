@@ -569,9 +569,16 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             //     delete ($scope.detailedList[i].Birthdate);
             // }
 
+            // Show spinner on button
+            $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+            $("#btnPreview").prop('disabled', true);
+
             ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, $rootScope.proposalId, function (result, event) {
                 if (event.status) {
                     debugger;
+                    // Restore button
+                    $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+                    $("#btnPreview").prop('disabled', false);
 
                     swal({
                         title: "Pairing Details",

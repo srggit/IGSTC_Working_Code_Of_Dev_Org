@@ -803,16 +803,39 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         }
 
         debugger;
+
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
+
         IndustrialFellowshipController.saveExpenceLineItemWISER($scope.expLineItem, $scope.totalSum, function (result, event) {
+
+            // Restore button
+            $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+            $("#btnPreview").prop('disabled', false);
+
+            if (!event) {
+                console.error('Event is null or undefined');
+                swal("Error", "Failed to save: No response from server.", "error");
+                return;
+            }
+
             if (event.status && result != null) {
-                console.log(result);
+                console.log('Save successful - result:', result);
                 swal({
                     title: "SUCCESS",
                     text: 'Budget details have been saved successfully.',
                     icon: "success",
                     button: "ok!",
-                })
-                $scope.redirectPageURL('ExistingGrantWISER');
+                });
+
+                // Redirect immediately - don't wait for swal
+                setTimeout(function () {
+                    $scope.redirectPageURL('ExistingGrantWISER');
+                    if (!$scope.$$phase && !$scope.$root.$$phase) {
+                        $scope.$apply();
+                    }
+                }, 1000);
 
             } else {
                 swal({
@@ -2994,11 +3017,17 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
             allExpenseLineItems, $rootScope.apaId, updatedApa,
             function (result, event) {
+                if (!event) {
+                    console.error('Event is null or undefined');
+                    swal("Error", "Failed to save: No response from server.", "error");
+                    return;
+                }
+
                 if (event.status && result != null) {
                     debugger;
 
                     // Check if result is an error string
-                    if (result.startsWith && result.startsWith('error')) {
+                    if (typeof result === 'string' && result.startsWith && result.startsWith('error')) {
                         swal("Error", "Error saving budget details: " + result, "error");
                         return;
                     }
@@ -3030,11 +3059,32 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     } catch (e) {
                         // If JSON parsing fails, assume it's a simple success/error string
                         console.log('Could not parse save result as JSON: ' + e.message);
+                        // If result is just "success" string, that's fine - we'll still redirect
                     }
 
-                    swal("Success", "Budget details have been saved successfully.", "success");
-                    $scope.redirectPageURL('ExistingGrantWISER');
-                    $scope.$apply();
+                    // Show success message
+                    swal({
+                        title: "Success",
+                        text: "Budget details have been saved successfully.",
+                        icon: "success",
+                        button: "ok!",
+                    });
+
+                    // Redirect immediately - don't wait for swal
+                    setTimeout(function () {
+                        $scope.redirectPageURL('ExistingGrantWISER');
+                        if (!$scope.$$phase && !$scope.$root.$$phase) {
+                            $scope.$apply();
+                        }
+                    }, 1000);
+                } else {
+                    // Handle case where event.status is false or result is null
+                    swal({
+                        title: "ERROR",
+                        text: "Failed to save budget details. Please try again.",
+                        icon: "error",
+                        button: "ok!",
+                    });
                 }
             },
             { escape: true }

@@ -476,7 +476,15 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           var signatoryAPAId = $scope.objContact && $scope.objContact.Id ? $scope.objContact.Id : null;
 
+          // Show spinner on button
+          $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+          $("#btnPreview").prop('disabled', true);
+
           ApplicantPortal_Contoller.insertParticipantsReferences($scope.ParticipantList, $rootScope.proposalId, $rootScope.apaId, $scope.objContact.Contact__r, $scope.objContact, signatoryAPAId, $rootScope.accountId, function (result, event) {
+
+               // Restore button
+               $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+               $("#btnPreview").prop('disabled', false);
 
                if (event.status && result != null) {
                     console.log('Result ::' + result);

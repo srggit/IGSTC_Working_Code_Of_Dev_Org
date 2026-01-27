@@ -191,8 +191,17 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
 
     $scope.getCVDetailsForWiserApplicant();
 
+    // Show spinner on button
+    $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+    $("#btnPreview").prop('disabled', true);
+
     $scope.saveAllDetails = function () {
         debugger;
+
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
+
         if ($scope.contactData != undefined) {
             if ($scope.contactData.Education_Details__r != undefined) {
                 for (var i = 0; i < $scope.contactData.Education_Details__r.length; i++) {
@@ -266,6 +275,13 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
         delete ($scope.contactData['Education_Details__r']);
         delete ($scope.contactData['Employment_Details__r']);
         delete ($scope.contactData['Education_Details__r']);
+
+        // Preserve MailingState: Ensure State__c is set to MailingState if State__c is empty but MailingState has a value
+        // This ensures the backend can properly map State__c to MailingState
+        if (($scope.contactData.MailingState !== undefined && $scope.contactData.MailingState !== null && $scope.contactData.MailingState !== '')
+            && ($scope.contactData.State__c === undefined || $scope.contactData.State__c === null || $scope.contactData.State__c === '')) {
+            $scope.contactData.State__c = $scope.contactData.MailingState;
+        }
 
         for (var i = 0; i < $scope.educationDetails.length; i++) {
             delete ($scope.educationDetails[i]['$$hashKey']);

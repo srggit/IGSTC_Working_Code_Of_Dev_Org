@@ -393,7 +393,7 @@
 
                 <div class="row m-5" ng-if="!proposalStage && !isCurrentUserSubmitted">
                     <div class="col-md-12">
-                        <button class="blue-btn float-end" ng-click="finalSubmitWiser()" type="button">
+                        <button class="blue-btn float-end" id="btnPreview" ng-click="finalSubmitWiser()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Submit</button>
                         <button class="blue-btn float-end me-2" ng-click="insertWiserDraft()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Save &amp; Next</button>

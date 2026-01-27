@@ -503,7 +503,7 @@
 
                 <div class="row mt-5 mx-5">
                     <div class="col-md-12 my-4" ng-if="!proposalStage && !isCurrentUserSubmitted">
-                        <button class="blue-btn float-end" ng-click="saveParticipants()" type="button">
+                        <button class="blue-btn float-end" id="btnPreview" ng-click="saveParticipants()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Save and Next</button>
                         <button class="blue-bordered-btn float-end me-2" ng-click="previousPage()" type="button">
                             <i class="fa-solid fa-arrow-left me-2"></i>Previous</button>

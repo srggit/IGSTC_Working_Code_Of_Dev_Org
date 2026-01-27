@@ -294,6 +294,7 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     // }
     // $scope.getApplicantDetails();
 
+
     $scope.submitExistingGrants = function () {
         debugger;
 
@@ -301,9 +302,16 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
             swal("Info", "Please select a valid Grants Handled option.", "info");
             return;
         }
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
 
         // First, update the Grants_Handled__c value on APA
         ApplicantPortal_Contoller.updateAPAGrantsHandled($rootScope.apaId, $scope.grantsHandledValue, function (result, event) {
+            // Restore button
+            $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+            $("#btnPreview").prop('disabled', false);
+
             if (event.status && result === 'SUCCESS') {
                 console.log("APA Grants Handled updated successfully");
 
