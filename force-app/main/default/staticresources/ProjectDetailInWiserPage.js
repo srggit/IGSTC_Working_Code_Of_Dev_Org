@@ -26,6 +26,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
 
     $scope.selectedFile;
     $scope.isPdfUploded = false;
+    $scope.isLoading = true; // Spinner flag
 
     // ============================================
     /*var maxFileSize = 1048576; // 1MB in bytes
@@ -330,8 +331,12 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     }
 
 
-    $scope.getPairingDetailsinWiser = function () {
+    $scope.getPairingDetailsinWiser = function (showSpinner) {
         debugger;
+        // Show spinner only on initial load (when showSpinner is true or undefined)
+        if (showSpinner !== false) {
+            $scope.isLoading = true;
+        }
         $scope.pairingDetails = [];
         if ($rootScope.campaignId == undefined) {
             $rootScope.campaignId = "";
@@ -400,8 +405,15 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                         }
                     }
                 }
+                if (showSpinner !== false) {
+                    $scope.isLoading = false; // Hide spinner after data is loaded
+                }
                 $scope.$apply();
 
+            } else {
+                if (showSpinner !== false) {
+                    $scope.isLoading = false; // Hide spinner on error
+                }
             }
         }, {
             escape: true
@@ -586,7 +598,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                         icon: "success",
                         button: "ok!",
                     }).then((value) => {
-                        $scope.getPairingDetailsinWiser();
+                        $scope.getPairingDetailsinWiser(false); // Don't show spinner on refresh
                         $scope.redirectPageURL('WiserApplicationPage');
                     });
                     //  Swal.fire(
@@ -939,6 +951,39 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             }
         }, 0);
     };
+
+    $scope.checkEmail = function (email, contId) {
+        debugger;
+        $scope.emailCheck = false;
+        if (contId == undefined) {
+            contId = "";
+        }
+        ApplicantPortal_Contoller.checkEmail(email, contId, function (result, event) {
+            debugger;
+            if (event.status) {
+                debugger;
+                if (result && result.length > 0) {
+                    $scope.pairList = {
+                        FirstName: result[0].FirstName || '',
+                        LastName: result[0].LastName || '',
+                        Email: result[0].Email || '',
+                        Birthdate: result[0].Birthdate
+                            ? new Date(Number(result[0].Birthdate))
+                            : '',
+                        MailingCountry: result[0].MailingCountry || '',
+                        Campaign__c: $scope.campaigntype,
+                        Account: result[0].Account || ''
+                    };
+                    //$scope.emailCheck = true;
+                }
+                else {
+                    $scope.emailCheck = false;
+                }
+                $scope.$apply();
+            }
+        })
+
+    }
 
 
 })

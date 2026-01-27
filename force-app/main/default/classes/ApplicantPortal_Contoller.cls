@@ -275,8 +275,14 @@ public without sharing class ApplicantPortal_Contoller {
             
             // Applied campaigns 
             List<Applicant_Proposal_Association__c> applicantAssociationList = [
-                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name,Proposals__r.Title_Of__c,Proposals__r.Proposal_Stages__c, Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name,Contact__r.Title_Of_Project__c, Proposals__r.Campaign__r.Description, Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,Proposals__r.yearly_Call__r.Campaign_End_Date__c
-                FROM Applicant_Proposal_Association__c WHERE Contact__r.Login_hash_code__c = :candidateId  AND Proposals__r.yearly_Call__r.Years__C = :yearId];
+                SELECT Id, Contact__c, Proposals__c,Proposals__r.Id,Proposals__r.Name,Proposals__r.Title_Of__c,Proposals__r.Proposal_Stages__c, 
+                Proposals__r.Campaign__r.Id,Proposals__r.Campaign__r.Name,Contact__r.Title_Of_Project__c, Proposals__r.Campaign__r.Description, 
+                Proposals__r.Campaign__r.Actual_End_Date__c, Proposals__r.Campaign__r.Icon__c, Proposals__r.Campaign__r.RedirectPage__c,
+                Proposals__r.yearly_Call__c,Proposals__r.yearly_Call__r.Id,Proposals__r.yearly_Call__r.Campaign_Start_Date__c,
+                Proposals__r.yearly_Call__r.Campaign_End_Date__c, Applicant_Status__c
+                FROM Applicant_Proposal_Association__c 
+                WHERE Contact__r.Login_hash_code__c = :candidateId  
+                AND Proposals__r.yearly_Call__r.Years__C = :yearId];
             
             if(!applicantAssociationList.isEmpty()) {
                 wrap.appliedCampaign = applicantAssociationList;

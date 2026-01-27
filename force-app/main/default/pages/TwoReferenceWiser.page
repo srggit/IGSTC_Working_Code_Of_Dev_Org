@@ -313,7 +313,18 @@
                     </div>
                 </div>
 
+
                 <div class="row mt-5 mx-5">
+
+                    <div class="row mt-5">
+                        <div class="col-md-12 alert bg-color-list" role="alert">
+                            <ul class="font-if">
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>Note: 2 References are required for the application.</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="col-md-12">
                         <table class="table" cellpadding="4">
                             <thead>

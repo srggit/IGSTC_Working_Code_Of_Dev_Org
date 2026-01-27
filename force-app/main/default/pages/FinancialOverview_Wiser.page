@@ -270,7 +270,7 @@
                                 <li class="ps-4">
                                     <i class="fa-solid fa-circle text-success me-3"></i>Travel (including visa fee and insurance) approximately ₹ 1 lakh.</li>
                                 <li class="ps-4">
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Project cost up to ₹ 12 lakhs/year (including research staff, consumables, contingency
+                                    <i class="fa-solid fa-circle text-success me-3"></i>Project cost up to ₹ 13 lakhs/year (including research staff, consumables, contingency
                                     and per diem @ € 2300/month in Germany).</li>
                             </ul>
                         </div>
@@ -500,9 +500,9 @@
                                 <td class="bold">Total Research stay and Travel to host</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{researchStayTravelTotal.year1}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{researchStayTravelTotal.year2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{researchStayTravelTotal.year3}}</td>
+                                <td class="orange-text">{{researchStayTravelTotal.year1 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear2">{{researchStayTravelTotal.year2 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear3">{{researchStayTravelTotal.year3 | number:2}}</td>
                                 <td class="orange-text">{{researchStayTravelTotal.total | number:2}}</td>
                             </tr>
 
@@ -510,10 +510,10 @@
                                 <td class="bold">Total Research Amount</td>
                                 <td></td>
                                 <td></td>
-                                <td>{{totalResearchAmount.year1}}</td>
-                                <td ng-show="Showyear2">{{totalResearchAmount.year2}}</td>
-                                <td ng-show="Showyear3">{{totalResearchAmount.year3}}</td>
-                                <td>{{totalResearchAmount.total | number:2}}</td>
+                                <td>{{totalResearchAmount.year1 | number:2}}</td>
+                                <td ng-show="Showyear2">{{totalResearchAmount.year2 | number:2}}</td>
+                                <td ng-show="Showyear3">{{totalResearchAmount.year3 | number:2}}</td>
+                                <td>{{totalResearchAmount.total | number:2 }}</td>
                             </tr>
 
                             <!-- Overheads -->
@@ -556,9 +556,9 @@
                                 <td></td>
                                 <td></td>
                                 <td class="orange-text">Overheads Amount</td>
-                                <td class="orange-text">{{budgetOverhead.amountYear1}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{budgetOverhead.amountYear2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{budgetOverhead.amountYear3}}</td>
+                                <td class="orange-text">{{budgetOverhead.amountYear1 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear2">{{budgetOverhead.amountYear2 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear3">{{budgetOverhead.amountYear3 | number:2}}</td>
                                 <td class="orange-text">{{budgetOverhead.totalAmount | number:2}}</td>
                             </tr>
 
@@ -566,9 +566,9 @@
                                 <td>Remaining Amount for Research Heads</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{remainingForResearch.year1}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{remainingForResearch.year2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{remainingForResearch.year3}}</td>
+                                <td class="orange-text">{{remainingForResearch.year1 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear2">{{remainingForResearch.year2 | number:2}}</td>
+                                <td class="orange-text" ng-show="Showyear3">{{remainingForResearch.year3 | number:2}}</td>
                                 <td class="orange-text">{{remainingForResearch.total | number:2}}</td>
                             </tr>
 
@@ -754,13 +754,13 @@
 
                             <tr ng-if="grandTotalError.any">
                                 <td colspan="{{Showyear3 ? 7 : (Showyear2 ? 6 : 5)}}" class="text-danger text-center fw-bold">
-                                    ⚠️ Grand Total cannot exceed €16,000 per year
+                                    ⚠️ Grand Total cannot exceed {{mailingCountry === 'India' ? '₹13,00,000' : '€16,000'}} per year
                                 </td>
                             </tr>
 
 
                             <tr class="note-row">
-                                <td colspan="{{Showyear3 ? 7 : (Showyear2 ? 6 : 5)}}">Max € 16,000/year</td>
+                                <td colspan="{{Showyear3 ? 7 : (Showyear2 ? 6 : 5)}}">Max {{mailingCountry === 'India' ? '₹ 13,00,000' : '€ 16,000'}}/year</td>
                             </tr>
                         </tbody>
                     </table>

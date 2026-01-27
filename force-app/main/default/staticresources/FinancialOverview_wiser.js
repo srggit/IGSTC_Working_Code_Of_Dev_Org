@@ -22,7 +22,33 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     const PER_DIEM_MONTHLY = 2300;
     const DAYS_IN_MONTH = 30;
     const PER_DAY_COST = PER_DIEM_MONTHLY / DAYS_IN_MONTH;
-    const MAX_RESEARCH_AMOUNT = 16000;
+    const MAX_RESEARCH_AMOUNT_EURO = 16000;
+    const MAX_RESEARCH_AMOUNT_INR = 1300000;
+    const TRAVEL_COST_EURO = 1500;
+
+    // Function to get max research amount based on mailing country
+    $scope.getMaxResearchAmount = function () {
+        if ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') {
+            return MAX_RESEARCH_AMOUNT_INR;
+        }
+        return MAX_RESEARCH_AMOUNT_EURO;
+    };
+
+    // Function to get travel cost based on mailing country
+    $scope.getTravelCost = function () {
+        if ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') {
+            return TRAVEL_COST_EURO * ($scope.euroExchangeRate || $rootScope.euroExchangeRate || 1);
+        }
+        return TRAVEL_COST_EURO;
+    };
+
+    // Function to get per day rate based on mailing country
+    $scope.getPerDayRate = function () {
+        if ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') {
+            return (PER_DIEM_MONTHLY * ($scope.euroExchangeRate || $rootScope.euroExchangeRate || 1)) / DAYS_IN_MONTH;
+        }
+        return PER_DIEM_MONTHLY / DAYS_IN_MONTH;
+    };
 
     // Budget table variables (using different names to avoid conflicts with expense arrays)
     // ===== INITIALIZE MODELS =====
@@ -274,9 +300,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
                     // Euro exchange rate
                     $rootScope.euroExchangeRate = result.euroExchangeRate;
+                    $scope.euroExchangeRate = result.euroExchangeRate;
 
                     // Mailing country
                     $rootScope.mailingCountry = result.mailingCountry;
+                    $scope.mailingCountry = result.mailingCountry;
 
                     // Lock editor only if submitted
                     if ($rootScope.isCurrentUserSubmitted) {
@@ -1506,7 +1534,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             /* =====================================================
                1️⃣ RESEARCH STAY (Per diem calculation)
             ===================================================== */
-            const PER_DAY_RATE = 2300 / 30;
+            const PER_DAY_RATE = $scope.getPerDayRate();
 
             const d1 = Number($scope.budgetResearchStay.daysYear1) || 0;
             const d2 = Number($scope.budgetResearchStay.daysYear2) || 0;
@@ -1525,11 +1553,12 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             /* =====================================================
                2️⃣ TRAVEL COST (AUTO)
-               IF research stay exists → 1500
+               IF research stay exists → 1500 (or converted to INR for India)
             ===================================================== */
-            $scope.budgetTravel.costYear1 = $scope.budgetResearchStay.costYear1 > 0 ? 1500 : 0;
-            $scope.budgetTravel.costYear2 = $scope.budgetResearchStay.costYear2 > 0 ? 1500 : 0;
-            $scope.budgetTravel.costYear3 = $scope.budgetResearchStay.costYear3 > 0 ? 1500 : 0;
+            const travelCost = $scope.getTravelCost();
+            $scope.budgetTravel.costYear1 = $scope.budgetResearchStay.costYear1 > 0 ? travelCost : 0;
+            $scope.budgetTravel.costYear2 = $scope.budgetResearchStay.costYear2 > 0 ? travelCost : 0;
+            $scope.budgetTravel.costYear3 = $scope.budgetResearchStay.costYear3 > 0 ? travelCost : 0;
 
             $scope.budgetTravel.totalCost =
                 $scope.budgetTravel.costYear1 +
@@ -1626,15 +1655,16 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             /* =====================================================
                5️⃣ TOTAL RESEARCH AMOUNT (Remaining Balance)
-               = 16000 − (Research Stay + Travel)
+               = MAX_RESEARCH_AMOUNT − (Research Stay + Travel)
             ===================================================== */
+            const maxResearchAmount = $scope.getMaxResearchAmount();
             $scope.totalResearchAmount.year1 =
-                Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year1);
+                Math.max(0, maxResearchAmount - $scope.researchStayTravelTotal.year1);
 
             // Only calculate Year 2 if duration is 24 or 36 months
             if ($rootScope.proposalDurationMonths >= 24) {
                 $scope.totalResearchAmount.year2 =
-                    Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year2);
+                    Math.max(0, maxResearchAmount - $scope.researchStayTravelTotal.year2);
             } else {
                 $scope.totalResearchAmount.year2 = 0;
             }
@@ -1642,7 +1672,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             // Only calculate Year 3 if duration is 36 months
             if ($rootScope.proposalDurationMonths === 36) {
                 $scope.totalResearchAmount.year3 =
-                    Math.max(0, MAX_RESEARCH_AMOUNT - $scope.researchStayTravelTotal.year3);
+                    Math.max(0, maxResearchAmount - $scope.researchStayTravelTotal.year3);
             } else {
                 $scope.totalResearchAmount.year3 = 0;
             }
@@ -1732,12 +1762,12 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             // =====================================================
             // Remaining Amount for Research Heads
-            // = 16000 - (Research Stay + Travel) - Overheads
+            // = MAX_RESEARCH_AMOUNT - (Research Stay + Travel) - Overheads
             // =====================================================
             $scope.remainingForResearch.year1 =
                 Math.max(
                     0,
-                    MAX_RESEARCH_AMOUNT -
+                    maxResearchAmount -
                     ($scope.researchStayTravelTotal.year1 || 0) -
                     ($scope.budgetOverhead.amountYear1 || 0)
                 );
@@ -1747,7 +1777,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 $scope.remainingForResearch.year2 =
                     Math.max(
                         0,
-                        MAX_RESEARCH_AMOUNT -
+                        maxResearchAmount -
                         ($scope.researchStayTravelTotal.year2 || 0) -
                         ($scope.budgetOverhead.amountYear2 || 0)
                     );
@@ -1760,7 +1790,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 $scope.remainingForResearch.year3 =
                     Math.max(
                         0,
-                        MAX_RESEARCH_AMOUNT -
+                        maxResearchAmount -
                         ($scope.researchStayTravelTotal.year3 || 0) -
                         ($scope.budgetOverhead.amountYear3 || 0)
                     );
@@ -1829,7 +1859,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             console.log('$scope.grandTotal.year1', $scope.grandTotal.year1);
 
             /* =====================================================
-                9️⃣ VALIDATION: Grand Total must not exceed 16000
+                9️⃣ VALIDATION: Grand Total must not exceed MAX_RESEARCH_AMOUNT
             ===================================================== */
 
             $scope.grandTotalError = {
@@ -1840,18 +1870,18 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             };
             debugger;
 
-            $scope.grandTotalError.year1 = $scope.grandTotal.year1 > MAX_RESEARCH_AMOUNT;
+            $scope.grandTotalError.year1 = $scope.grandTotal.year1 > maxResearchAmount;
 
             // Only validate Year 2 if duration is 24 or 36 months
             if ($rootScope.proposalDurationMonths >= 24) {
-                $scope.grandTotalError.year2 = $scope.grandTotal.year2 > MAX_RESEARCH_AMOUNT;
+                $scope.grandTotalError.year2 = $scope.grandTotal.year2 > maxResearchAmount;
             } else {
                 $scope.grandTotalError.year2 = false;
             }
 
             // Only validate Year 3 if duration is 36 months
             if ($rootScope.proposalDurationMonths === 36) {
-                $scope.grandTotalError.year3 = $scope.grandTotal.year3 > MAX_RESEARCH_AMOUNT;
+                $scope.grandTotalError.year3 = $scope.grandTotal.year3 > maxResearchAmount;
             } else {
                 $scope.grandTotalError.year3 = false;
             }
@@ -2522,7 +2552,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         }
 
         if ($scope.grandTotalError && $scope.grandTotalError.any) {
-            swal("Grand Total Error", "Yearly budget cannot exceed €16000.", "warning");
+            const maxAmountFormatted = ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') ? '₹13,00,000' : '€16,000';
+            swal("Grand Total Error", "Yearly budget cannot exceed " + maxAmountFormatted + ".", "warning");
             return;
         }
 
@@ -3066,10 +3097,18 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             'Id': $rootScope.apaId
         };
 
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
+
         // Save using ApplicantPortal_Contoller
         ApplicantPortal_Contoller.createExpenseWithHeadAndLineItemsForWiser(
             allExpenseLineItems, $rootScope.apaId, updatedApa,
             function (result, event) {
+                // Restore button
+                $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+                $("#btnPreview").prop('disabled', false);
+
                 if (!event) {
                     console.error('Event is null or undefined');
                     swal("Error", "Failed to save: No response from server.", "error");
@@ -3173,32 +3212,36 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     };
 
     $scope.validateBeforeSave = function () {
+        const maxResearchAmount = $scope.getMaxResearchAmount();
+        const isIndia = ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India');
+        const currencySymbol = isIndia ? '₹' : '€';
+        const maxAmountFormatted = isIndia ? '₹13,00,000' : '€16,000';
 
         // 1️⃣ Grand Total validation (per year)
-        if ($scope.grandTotal.year1 > MAX_RESEARCH_AMOUNT) {
+        if ($scope.grandTotal.year1 > maxResearchAmount) {
             swal(
                 "Budget Limit Exceeded",
-                "Year 1 Grand Total cannot be more than €16,000.",
+                "Year 1 Grand Total cannot be more than " + maxAmountFormatted + ".",
                 "info"
             );
             return false;
         }
 
         // Only validate Year 2 if duration is 24 or 36 months
-        if ($rootScope.proposalDurationMonths >= 24 && $scope.grandTotal.year2 > MAX_RESEARCH_AMOUNT) {
+        if ($rootScope.proposalDurationMonths >= 24 && $scope.grandTotal.year2 > maxResearchAmount) {
             swal(
                 "Budget Limit Exceeded",
-                "Year 2 Grand Total cannot be more than €16,000.",
+                "Year 2 Grand Total cannot be more than " + maxAmountFormatted + ".",
                 "info"
             );
             return false;
         }
 
         // Only validate Year 3 if duration is 36 months
-        if ($rootScope.proposalDurationMonths === 36 && $scope.grandTotal.year3 > MAX_RESEARCH_AMOUNT) {
+        if ($rootScope.proposalDurationMonths === 36 && $scope.grandTotal.year3 > maxResearchAmount) {
             swal(
                 "Budget Limit Exceeded",
-                "Year 3 Grand Total cannot be more than €16,000.",
+                "Year 3 Grand Total cannot be more than " + maxAmountFormatted + ".",
                 "info"
             );
             return false;

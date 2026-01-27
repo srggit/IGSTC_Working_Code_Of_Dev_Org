@@ -148,7 +148,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         var typeOfFile = fileName.split(".");
         lengthOfType = typeOfFile.length;
         if (typeOfFile[lengthOfType - 1] != "pdf") {
-            swal('info', 'Please choose pdf file only.', 'info');
+            swal('Info', 'Please choose pdf file only.', 'info');
             return;
         }
         console.log(file);
@@ -156,7 +156,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         if (file != undefined) {
             if (file.size <= maxFileSize) {
                 if (minFileSize && file.size < minFileSize) {
-                    swal('info', 'Your file is too small. Minimum size is ' + (minFileSize / 1024) + ' KB.', 'info');
+                    swal('Info', 'Your file is too small. Minimum size is ' + (minFileSize / 1024) + ' KB.', 'info');
                     return;
                 }
                 attachmentName = file.name;
@@ -173,19 +173,19 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                     if (fileSize < maxStringSize) {
                         $scope.uploadAttachment(type, userDocId, null);
                     } else {
-                        swal('info', 'Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".', 'info');
+                        swal('Info', 'Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".', 'info');
                         return;
                         // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                     }
 
                 }
                 fileReader.onerror = function (e) {
-                    swal('info', 'There was an error reading the file.  Please try again.', 'info');
+                    swal('Info', 'There was an error reading the file.  Please try again.', 'info');
                     return;
                     // alert("There was an error reading the file.  Please try again.");
                 }
                 fileReader.onabort = function (e) {
-                    swal('info', 'There was an error reading the file.  Please try again.', 'info');
+                    swal('Info', 'There was an error reading the file.  Please try again.', 'info');
                     return;
                     // alert("There was an error reading the file.  Please try again.");
                 }
@@ -193,13 +193,13 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                 fileReader.readAsBinaryString(file);  //Read the body of the file
 
             } else {
-                swal('info', 'Your file is too large.  Please try again.', 'info');
+                swal('Info', 'Your file is too large.  Please try again.', 'info');
                 return;
                 // alert("Your file is too large.  Please try again.");
                 $scope.showSpinnereditProf = false;
             }
         } else {
-            swal('info', 'You must choose a file before trying to upload it', 'info');
+            swal('Info', 'You must choose a file before trying to upload it', 'info');
             return;
             // alert("You must choose a file before trying to upload it");
             $scope.showSpinnereditProf = false;
@@ -218,7 +218,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         if (typeOfFile[lengthOfType - 1] == "jpg" || typeOfFile[lengthOfType - 1] == "jpeg") {
 
         } else {
-            swal('info', 'Please choose jpg/jpeg file only.', 'info');
+            swal('Info', 'Please choose jpg/jpeg file only.', 'info');
             return;
         }
         console.log(file);
@@ -226,7 +226,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         if (file != undefined) {
             if (file.size <= maxFileSize) {
                 if (file.size < minFileSize) {
-                    swal('info', 'Your file is too small. Please try again.', 'info');
+                    swal('Info', 'Your file is too small. Please try again.', 'info');
                     return;
                     // alert("Your file is too small. Please try again.");
                     // return;
@@ -245,19 +245,19 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                     if (fileSize < maxStringSize) {
                         $scope.uploadAttachment(type, userDocId, null);
                     } else {
-                        swal('info', 'Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".', 'info');
+                        swal('Info', 'Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".', 'info');
                         return;
                         // alert("Base 64 Encoded file is too large.  Maximum size is " + maxStringSize + " your file is " + fileSize + ".");
                     }
 
                 }
                 fileReader.onerror = function (e) {
-                    swal('info', 'There was an error reading the file.  Please try again.', 'info');
+                    swal('Info', 'There was an error reading the file.  Please try again.', 'info');
                     return;
                     // alert("There was an error reading the file.  Please try again.");
                 }
                 fileReader.onabort = function (e) {
-                    swal('info', 'There was an error reading the file.  Please try again.', 'info');
+                    swal('Info', 'There was an error reading the file.  Please try again.', 'info');
                     return;
                     // alert("There was an error reading the file.  Please try again.");
                 }
@@ -265,13 +265,13 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                 fileReader.readAsBinaryString(file);  //Read the body of the file
 
             } else {
-                swal('info', 'Your file is too large.  Please try again.', 'info');
+                swal('Info', 'Your file is too large.  Please try again.', 'info');
                 return;
                 // alert("Your file is too large.  Please try again.");
                 $scope.showSpinnereditProf = false;
             }
         } else {
-            swal('info', 'You must choose a file before trying to upload it', 'info');
+            swal('Info', 'You must choose a file before trying to upload it', 'info');
             return;
             // alert("You must choose a file before trying to upload it");
             $scope.showSpinnereditProf = false;
@@ -339,12 +339,12 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
             // }else
             if ($scope.allDocs[i].userDocument.Name == 'Acceptance letter') {
                 if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
-                    swal('info', 'Please upload Acceptance Letter.', 'info');
+                    swal('Info', 'Please upload Acceptance Letter.', 'info');
                     return;
                 }
             } else if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
                 if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
-                    swal('info', 'Please upload no objection certificate.', 'info');
+                    swal('Info', 'Please upload no objection certificate.', 'info');
                     return;
                 }
             }
