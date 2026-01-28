@@ -337,7 +337,8 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         if (showSpinner !== false) {
             $scope.isLoading = true;
         }
-        $scope.pairingDetails = [];
+        // Initialize as object, not array
+        $scope.pairingDetails = { "Account": { "Name": "" } };
         if ($rootScope.campaignId == undefined) {
             $rootScope.campaignId = "";
         }
@@ -370,18 +371,23 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                 debugger;
 
                 if (result == null || result.length == 0) {
-                    $scope.pairingDetails.push({
+                    $scope.pairingDetails = {
                         "FirstName": " ",
                         "LastName": " ",
                         "Email": " ",
                         "Birthdate": "",
                         "MailingCountry": "",
+                        "Account": { "Name": "" }
                         // "Campaign__c":$scope.campaigntype
-                    });
+                    };
                 } else {
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].Is_Primary__c == true) {
                             $scope.pairingDetails = result[i];
+                            // Ensure Account object exists
+                            if (!$scope.pairingDetails.Account) {
+                                $scope.pairingDetails.Account = { Name: "" };
+                            }
                             if ($scope.pairingDetails.MailingCountry == "India") {
                                 $scope.pairList.MailingCountry = "Germany";
                                 $scope.country2 = "German";
@@ -392,7 +398,27 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                                 $scope.country1 = "German";
                             }
                         } else if (result[i].Is_Primary__c == false) {
-                            $scope.pairList = result[i];
+                            // Create a copy to avoid reference issues
+                            $scope.pairList = angular.copy(result[i]);
+
+                            // Ensure Account object exists and has Name property
+                            if (!$scope.pairList.Account || typeof $scope.pairList.Account !== 'object') {
+                                $scope.pairList.Account = { Name: "" };
+                            } else if (!$scope.pairList.Account.hasOwnProperty('Name') || $scope.pairList.Account.Name === null || $scope.pairList.Account.Name === undefined) {
+                                $scope.pairList.Account.Name = $scope.pairList.Account.Name || "";
+                            }
+
+                            // Ensure all required fields have default values if missing
+                            $scope.pairList.FirstName = $scope.pairList.FirstName || "";
+                            $scope.pairList.LastName = $scope.pairList.LastName || "";
+                            $scope.pairList.Email = $scope.pairList.Email || "";
+                            $scope.pairList.Id = $scope.pairList.Id || "";
+                            $scope.pairList.AccountId = $scope.pairList.AccountId || "";
+
+                            console.log('pairList after assignment:', JSON.stringify($scope.pairList));
+                            console.log('pairList.Account:', $scope.pairList.Account);
+                            console.log('pairList.Account.Name:', $scope.pairList.Account ? $scope.pairList.Account.Name : 'Account is null');
+
                             if ($scope.pairList.MailingCountry == "Germany") {
                                 $scope.pairingDetails.MailingCountry = "India";
                                 $scope.country1 = "Indian";
@@ -424,6 +450,10 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
 
     $scope.insertPairingDetailsinWiser = function () {
         debugger;
+
+        // Disable button at start
+        $("#btnPreview").prop('disabled', true);
+
         $scope.detailedList = [];
         $scope.conList = [];
         $scope.detailedList.push($scope.pairingDetails, $scope.pairList);
@@ -436,6 +466,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
 
         // 🔹 Stop save if DOB invalid
         if ($scope.dobErrors.dobPrimary || $scope.dobErrors.dobSecondary) {
+            $("#btnPreview").prop('disabled', false);
             swal(
                 "Invalid Date of Birth",
                 "Age must be more than 26 years and less than 55 years.",
@@ -447,11 +478,13 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         if ($scope.pairingDetails != undefined) {
 
             if ($scope.pairingDetails.Email == undefined || $scope.pairingDetails.Email == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Email.");
                 $("#txtIndEmail").addClass('border-theme');
                 return;
             } else {
                 if ($scope.valid($scope.pairingDetails.Email)) {
+                    $("#btnPreview").prop('disabled', false);
                     swal(
                         'Info',
                         'Check Your Registered Email.',
@@ -463,12 +496,14 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             }
 
             if ($scope.pairingDetails.FirstName == undefined || $scope.pairingDetails.FirstName == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter First Name.");
                 $("#txtIndFN").addClass('border-theme');
                 return;
             }
 
             if ($scope.pairingDetails.LastName == undefined || $scope.pairingDetails.LastName == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Last Name.");
                 $("#txtIndLN").addClass('border-theme');
                 return;
@@ -486,6 +521,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                 !$scope.pairingDetails.Account.Name ||
                 !$scope.pairingDetails.Account.Name.trim()
             ) {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Institution / Organization Name.");
                 $("#txtIndOrg").addClass('border-theme');
                 return;
@@ -493,6 +529,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
 
             if ($scope.pairingDetails.Account != undefined) {
                 if ($scope.pairingDetails.Account.Name == undefined) {
+                    $("#btnPreview").prop('disabled', false);
                     swal("Info", "Please Enter Institution / Organization Name.");
                     $("#txtIndOrg").addClass('border-theme');
                     return;
@@ -500,6 +537,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             }
 
             if ($scope.pairingDetails.Birthdate == undefined || $scope.pairingDetails.Birthdate == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter BirthDate.");
                 $("#txtIndBD").addClass('border-theme');
                 return;
@@ -509,11 +547,13 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         if ($scope.pairList != undefined) {
 
             if ($scope.pairList.Email == undefined || $scope.pairList.Email == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Email.");
                 $("#txtGerEmail").addClass('border-theme');
                 return;
             } else {
                 if ($scope.valid($scope.pairList.Email)) {
+                    $("#btnPreview").prop('disabled', false);
                     swal(
                         'Info',
                         'Check Your Registered Email.',
@@ -524,13 +564,28 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                 }
             }
 
+            // Validation: 2nd contact must be an existing contact (must have Id)
+            if (!$scope.pairList.Id || $scope.pairList.Id === '') {
+                $("#btnPreview").prop('disabled', false);
+                swal({
+                    title: "Contact Validation",
+                    text: "The second member of the pair must be an existing contact. Please enter a valid email address of an existing contact.",
+                    icon: "error",
+                    button: "OK"
+                });
+                $("#txtGerEmail").addClass('border-theme');
+                return;
+            }
+
             if ($scope.pairList.FirstName == undefined || $scope.pairList.FirstName == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter First Name.");
                 $("#txtGerFN").addClass('border-theme');
                 return;
             }
 
             if ($scope.pairList.LastName == undefined || $scope.pairList.LastName == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Last Name.");
                 $("#txtGerLn").addClass('border-theme');
                 return;
@@ -542,85 +597,148 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                 !$scope.pairList.Account.Name ||
                 !$scope.pairList.Account.Name.trim()
             ) {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter Institution / Organization Name.");
                 $("#txtGerOrg").addClass('border-theme');
                 return;
             }
 
             if ($scope.pairList.Birthdate == undefined || $scope.pairList.Birthdate == "") {
+                $("#btnPreview").prop('disabled', false);
                 swal("Info", "Please Enter BirthDate.");
                 $("#txtGerBD").addClass('border-theme');
                 return;
             }
 
+            // Check if both contacts already exist for this proposal - if yes, allow edit; if no, check limit
+            if ($rootScope.proposalId) {
+                var contact1Id = ($scope.pairingDetails && $scope.pairingDetails.Id) ? $scope.pairingDetails.Id : null;
+                var contact2Id = ($scope.pairList && $scope.pairList.Id) ? $scope.pairList.Id : null;
 
-
-            for (let i = 0; i < $scope.detailedList.length; i++) {
-                delete ($scope.detailedList[i]['$$hashKey']);
-                var pairingObj = {
-                    "companyNmae": $scope.detailedList[i].Account.Name, "proposal": $rootScope.projectId, "accId": $scope.detailedList[i].AccountId, "birthyear": 0, "birthmonth": 0, "birthday": 0, cont: {
-                        "FirstName": $scope.detailedList[i].FirstName, "LastName": $scope.detailedList[i].LastName, "Id": $scope.detailedList[i].Id, "Email": $scope.detailedList[i].Email, "Campaign__c": $scope.campaigntype, "MailingCountry": $scope.detailedList[i].MailingCountry, AccountId: $scope.detailedList[i].AccountId, "Proposals__c": $rootScope.projectId
-                    }
-                };
-                pairingObj.companyNmae = $scope.detailedList[i].Account.Name;
-
-                if ($scope.detailedList[i].Birthdate == undefined || $scope.detailedList[i].Birthdate == '') {
-                    delete ($scope.detailedList[i].Birthdate);
-                } else if ($scope.detailedList[i].Birthdate != undefined || $scope.detailedList[i].Birthdate != "") {
-                    pairingObj.birthyear = $scope.detailedList[i].Birthdate.getUTCFullYear();
-                    //pairingObj.birthmonth = $scope.detailedList[i].Birthdate.getUTCMonth()+1;
-                    pairingObj.birthmonth = $scope.birthDatepresent[i] ? $scope.detailedList[i].Birthdate.getUTCMonth() + 1 : $scope.detailedList[i].Birthdate.getUTCMonth() + 2;
-                    pairingObj.birthday = $scope.detailedList[i].Birthdate.getDate();
-
+                if (contact1Id && contact2Id) {
+                    // Check if both contacts already have APAs for this proposal
+                    ApplicantPortal_Contoller.checkContactsHaveAPAs($rootScope.proposalId, [contact1Id, contact2Id], function (hasAPAs, event) {
+                        if (event.status && hasAPAs) {
+                            // Editing existing contacts - allow save
+                            $scope.proceedWithSave();
+                        } else {
+                            // Adding new contacts - check limit
+                            ApplicantPortal_Contoller.getAPACountForProposal($rootScope.proposalId, function (count, event) {
+                                if (event.status && count >= 2) {
+                                    swal({
+                                        title: "Maximum Partners Reached",
+                                        text: "Already two Partners are existing for the current Proposal. Cannot add more partners.",
+                                        icon: "error",
+                                        button: "OK"
+                                    });
+                                    $("#btnPreview").prop('disabled', false);
+                                } else {
+                                    $scope.proceedWithSave();
+                                }
+                            }, { escape: true });
+                        }
+                    }, { escape: true });
+                    return;
+                } else {
+                    // One or both contacts missing IDs - check limit
+                    ApplicantPortal_Contoller.getAPACountForProposal($rootScope.proposalId, function (count, event) {
+                        if (event.status && count >= 2) {
+                            swal({
+                                title: "Maximum Partners Reached",
+                                text: "Already two Partners are existing for the current Proposal. Cannot add more partners.",
+                                icon: "error",
+                                button: "OK"
+                            });
+                            $("#btnPreview").prop('disabled', false);
+                        } else {
+                            $scope.proceedWithSave();
+                        }
+                    }, { escape: true });
+                    return;
                 }
-                $scope.conList.push(pairingObj);
-
             }
 
-            // for (var i = 0; i < $scope.detailedList.length; i++) {
-            //     delete ($scope.detailedList[i].Birthdate);
-            // }
-
-            // Show spinner on button
-            $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
-            $("#btnPreview").prop('disabled', true);
-
-            ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, $rootScope.proposalId, function (result, event) {
-                if (event.status) {
-                    debugger;
-                    // Restore button
-                    $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
-                    $("#btnPreview").prop('disabled', false);
-
-                    swal({
-                        title: "Pairing Details",
-                        text: 'Pairing details have been successfully saved.',
-                        icon: "success",
-                        button: "ok!",
-                    }).then((value) => {
-                        $scope.getPairingDetailsinWiser(false); // Don't show spinner on refresh
-                        $scope.redirectPageURL('WiserApplicationPage');
-                    });
-                    //  Swal.fire(
-                    //      'Success',
-                    //      'Pairing detail has been saved successfully.',
-                    //      'success'
-                    //  );
-                    // $scope.redirectPageURL('WiserApplicationPage');
-                    $scope.$apply();
-                }
-                else {
-                    swal({
-                        title: "Pairing Details",
-                        text: "Exception!",
-                        icon: "error",
-                        button: "ok!",
-                    });
-                }
-            },
-                { escape: true }
-            )
+            $scope.proceedWithSave();
         }
+    }
+
+    // Separate function to handle the actual save logic
+    $scope.proceedWithSave = function () {
+        debugger;
+        $scope.detailedList = [];
+        $scope.conList = [];
+        $scope.detailedList.push($scope.pairingDetails, $scope.pairList);
+        console.log('detailedList :: ' + $scope.detailedList);
+        debugger;
+
+        for (let i = 0; i < $scope.detailedList.length; i++) {
+            delete ($scope.detailedList[i]['$$hashKey']);
+            var pairingObj = {
+                "companyNmae": $scope.detailedList[i].Account.Name, "proposal": $rootScope.projectId, "accId": $scope.detailedList[i].AccountId, "birthyear": 0, "birthmonth": 0, "birthday": 0, cont: {
+                    "FirstName": $scope.detailedList[i].FirstName, "LastName": $scope.detailedList[i].LastName, "Id": $scope.detailedList[i].Id, "Email": $scope.detailedList[i].Email, "Campaign__c": $scope.campaigntype, "MailingCountry": $scope.detailedList[i].MailingCountry, AccountId: $scope.detailedList[i].AccountId, "Proposals__c": $rootScope.projectId
+                }
+            };
+            pairingObj.companyNmae = $scope.detailedList[i].Account.Name;
+
+            if ($scope.detailedList[i].Birthdate == undefined || $scope.detailedList[i].Birthdate == '') {
+                delete ($scope.detailedList[i].Birthdate);
+            } else if ($scope.detailedList[i].Birthdate != undefined || $scope.detailedList[i].Birthdate != "") {
+                pairingObj.birthyear = $scope.detailedList[i].Birthdate.getUTCFullYear();
+                //pairingObj.birthmonth = $scope.detailedList[i].Birthdate.getUTCMonth()+1;
+                pairingObj.birthmonth = $scope.birthDatepresent[i] ? $scope.detailedList[i].Birthdate.getUTCMonth() + 1 : $scope.detailedList[i].Birthdate.getUTCMonth() + 2;
+                pairingObj.birthday = $scope.detailedList[i].Birthdate.getDate();
+
+            }
+            $scope.conList.push(pairingObj);
+
+        }
+
+        // for (var i = 0; i < $scope.detailedList.length; i++) {
+        //     delete ($scope.detailedList[i].Birthdate);
+        // }
+
+        // Show spinner on button
+        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+        $("#btnPreview").prop('disabled', true);
+
+        ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, $rootScope.proposalId, function (result, event) {
+            if (event.status) {
+                debugger;
+                // Restore button
+                $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+                $("#btnPreview").prop('disabled', false);
+
+                swal({
+                    title: "Pairing Details",
+                    text: 'Pairing details have been successfully saved.',
+                    icon: "success",
+                    button: "ok!",
+                }).then((value) => {
+                    $scope.getPairingDetailsinWiser(false); // Don't show spinner on refresh
+                    $scope.redirectPageURL('WiserApplicationPage');
+                });
+                //  Swal.fire(
+                //      'Success',
+                //      'Pairing detail has been saved successfully.',
+                //      'success'
+                //  );
+                // $scope.redirectPageURL('WiserApplicationPage');
+                $scope.$apply();
+            }
+            else {
+                // Restore button on error
+                $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+                $("#btnPreview").prop('disabled', false);
+                swal({
+                    title: "Pairing Details",
+                    text: "Exception!",
+                    icon: "error",
+                    button: "ok!",
+                });
+            }
+        },
+            { escape: true }
+        )
     }
 
     $scope.redirectToApplicantPortal = function () {
@@ -955,6 +1073,22 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     $scope.checkEmail = function (email, contId) {
         debugger;
         $scope.emailCheck = false;
+
+        // Clear previous contact data if email is empty
+        if (!email || email.trim() === '') {
+            $scope.pairList.Id = '';
+            $scope.$apply();
+            return;
+        }
+
+        // Validate email format first
+        if ($scope.valid(email)) {
+            $scope.emailCheck = false;
+            $scope.pairList.Id = '';
+            $scope.$apply();
+            return;
+        }
+
         if (contId == undefined) {
             contId = "";
         }
@@ -963,21 +1097,48 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             if (event.status) {
                 debugger;
                 if (result && result.length > 0) {
-                    $scope.pairList = {
-                        FirstName: result[0].FirstName || '',
-                        LastName: result[0].LastName || '',
-                        Email: result[0].Email || '',
-                        Birthdate: result[0].Birthdate
-                            ? new Date(Number(result[0].Birthdate))
-                            : '',
-                        MailingCountry: result[0].MailingCountry || '',
-                        Campaign__c: $scope.campaigntype,
-                        Account: result[0].Account || ''
-                    };
-                    //$scope.emailCheck = true;
+                    // Contact exists - populate pairList with contact data including Id
+                    $scope.pairList.Id = result[0].Id || '';
+                    $scope.pairList.FirstName = result[0].FirstName || '';
+                    $scope.pairList.LastName = result[0].LastName || '';
+                    $scope.pairList.Email = result[0].Email || email;
+                    $scope.pairList.Birthdate = result[0].Birthdate
+                        ? new Date(Number(result[0].Birthdate))
+                        : '';
+                    $scope.pairList.MailingCountry = result[0].MailingCountry || '';
+                    $scope.pairList.Campaign__c = $scope.campaigntype;
+                    $scope.pairList.Account = result[0].Account || { Name: '' };
+                    $scope.pairList.AccountId = result[0].AccountId || '';
+
+                    $scope.emailCheck = true;
+
+                    // Show success message that contact exists
+                    swal({
+                        title: "Contact Found",
+                        text: "Contact exists in the system.",
+                        icon: "success",
+                        button: "OK",
+                        timer: 2000
+                    });
                 }
                 else {
+                    // Contact doesn't exist - show error and clear contact-specific fields
                     $scope.emailCheck = false;
+                    $scope.pairList.Id = '';
+                    $scope.pairList.FirstName = '';
+                    $scope.pairList.LastName = '';
+                    $scope.pairList.Birthdate = '';
+                    $scope.pairList.Account = { Name: '' };
+                    $scope.pairList.AccountId = '';
+                    // Keep the email that was entered
+                    $scope.pairList.Email = email;
+
+                    swal({
+                        title: "Contact Not Found",
+                        text: "This email does not exist in the system. Only existing contacts can be added as the second member of the pair.",
+                        icon: "error",
+                        button: "OK"
+                    });
                 }
                 $scope.$apply();
             }

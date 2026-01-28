@@ -1311,6 +1311,54 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
     public static Proposal_Controller.insertPairingWrapperinWiser insertPairingDetailsinWiser(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall, String proposalId){
         return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall, proposalId);
     }
+    
+    @RemoteAction
+    public static Integer getAPACountForProposal(String proposalId){
+        try {
+            if(String.isBlank(proposalId)) {
+                return 0;
+            }
+            List<Applicant_Proposal_Association__c> apaList = [
+                SELECT Id 
+                FROM Applicant_Proposal_Association__c 
+                WHERE Proposals__c = :proposalId
+            ];
+            return apaList.size();
+        } catch(Exception e) {
+            System.debug('Error in getAPACountForProposal: ' + e.getMessage());
+            return 0;
+        }
+    }
+    
+    @RemoteAction
+    public static Boolean checkContactsHaveAPAs(String proposalId, List<String> contactIds){
+        try {
+            if(String.isBlank(proposalId) || contactIds == null || contactIds.isEmpty()) {
+                return false;
+            }
+            // Check if all provided contacts already have APAs for this proposal
+            List<Applicant_Proposal_Association__c> existingAPAs = [
+                SELECT Id, Contact__c 
+                FROM Applicant_Proposal_Association__c 
+                WHERE Proposals__c = :proposalId
+                AND Contact__c IN :contactIds
+            ];
+            
+            // Create a set of contact IDs that have APAs
+            Set<String> contactIdsWithAPAs = new Set<String>();
+            for(Applicant_Proposal_Association__c apa : existingAPAs) {
+                if(apa.Contact__c != null) {
+                    contactIdsWithAPAs.add(apa.Contact__c);
+                }
+            }
+            
+            // Return true if all provided contacts already have APAs (meaning we're editing existing contacts)
+            return contactIdsWithAPAs.size() == contactIds.size();
+        } catch(Exception e) {
+            System.debug('Error in checkContactsHaveAPAs: ' + e.getMessage());
+            return false;
+        }
+    }
     ////////////////////////////New Method aaded by Karthik 
     
     @RemoteAction

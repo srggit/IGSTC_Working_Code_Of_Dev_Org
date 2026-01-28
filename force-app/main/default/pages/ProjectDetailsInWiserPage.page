@@ -681,6 +681,9 @@
                                     <input type="text" class="form-control" ng-focus="removeClass('txtGerEmail')"
                                         id="txtGerEmail" ng-model="pairList.Email" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                         ng-change="checkEmail(pairList.Email,pairList.Id)" />
+                                    <div ng-show="emailCheck && pairList.Id" class="text-success mt-2" style="font-size: 14px;">
+                                        <i class="fa-solid fa-check-circle me-2"></i>Contact exists in the system
+                                    </div>
                                 </div>
                                 <div class="col-md-12 mt-5">
                                     <label class="font-if">
