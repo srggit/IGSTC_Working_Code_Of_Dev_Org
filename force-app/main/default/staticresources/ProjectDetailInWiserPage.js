@@ -460,20 +460,20 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         console.log('detailedList :: ' + $scope.detailedList);
         debugger;
 
-        // 🔹 Force DOB validation on Save
-        $scope.validateDOB($scope.pairingDetails.Birthdate, 'dobPrimary');
-        $scope.validateDOB($scope.pairList.Birthdate, 'dobSecondary');
+        // // 🔹 Force DOB validation on Save
+        // $scope.validateDOB($scope.pairingDetails.Birthdate, 'dobPrimary');
+        // $scope.validateDOB($scope.pairList.Birthdate, 'dobSecondary');
 
-        // 🔹 Stop save if DOB invalid
-        if ($scope.dobErrors.dobPrimary || $scope.dobErrors.dobSecondary) {
-            $("#btnPreview").prop('disabled', false);
-            swal(
-                "Invalid Date of Birth",
-                "Age must be more than 26 years and less than 55 years.",
-                "info"
-            );
-            return;
-        }
+        // // 🔹 Stop save if DOB invalid
+        // if ($scope.dobErrors.dobPrimary || $scope.dobErrors.dobSecondary) {
+        //     $("#btnPreview").prop('disabled', false);
+        //     swal(
+        //         "Invalid Date of Birth",
+        //         "Age must be more than 26 years and less than 55 years.",
+        //         "info"
+        //     );
+        //     return;
+        // }
 
         if ($scope.pairingDetails != undefined) {
 
@@ -1009,28 +1009,28 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     $scope.dobErrors = {};
 
     // Reusable DOB validation function
-    $scope.validateDOB = function (dob, fieldName) {
-        debugger;
+    // $scope.validateDOB = function (dob, fieldName) {
+    //     debugger;
 
-        if (!dob) {
-            $scope.dobErrors[fieldName] = false;
-            return;
-        }
+    //     if (!dob) {
+    //         $scope.dobErrors[fieldName] = false;
+    //         return;
+    //     }
 
-        var today = new Date();
-        var birthDate = new Date(dob);
+    //     var today = new Date();
+    //     var birthDate = new Date(dob);
 
-        var age = today.getFullYear() - birthDate.getFullYear();
-        var m = today.getMonth() - birthDate.getMonth();
+    //     var age = today.getFullYear() - birthDate.getFullYear();
+    //     var m = today.getMonth() - birthDate.getMonth();
 
-        // Adjust if birthday has not occurred yet this year
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
+    //     // Adjust if birthday has not occurred yet this year
+    //     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    //         age--;
+    //     }
 
-        // Age rule: >26 and <55
-        $scope.dobErrors[fieldName] = !(age > 26 && age < 55);
-    };
+    //     // Age rule: >26 and <55
+    //     $scope.dobErrors[fieldName] = !(age > 26 && age < 55);
+    // };
 
     $scope.getApplicantStatusFromAPA = function () {
         debugger;

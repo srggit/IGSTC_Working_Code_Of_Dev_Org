@@ -75,28 +75,28 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           for (var i = 0; i < $scope.ParticipantList.length; i++) {
                if ($scope.ParticipantList[i].Name == undefined || $scope.ParticipantList[i].Name == "") {
-                    swal("info", "Please Enter Reference name.", "info");
+                    swal("Info", "Please Enter Reference name.", "info");
                     $("#name" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Designation__c == undefined || $scope.ParticipantList[i].Designation__c == "") {
-                    swal("info", "Please Enter Designation.", "info");
+                    swal("Info", "Please Enter Designation.", "info");
                     $("#designation" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Organisation_Institute__c == undefined || $scope.ParticipantList[i].Organisation_Institute__c == "") {
-                    swal("info", "Please Enter Organisation/Institute.", "info");
+                    swal("Info", "Please Enter Organisation/Institute.", "info");
                     $("#organisation" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Email__c == undefined || $scope.ParticipantList[i].Email__c == "") {
-                    swal("info", "Please Enter Email.", "info");
+                    swal("Info", "Please Enter Email.", "info");
                     $("#email" + i + "").addClass('border-theme');
                     return;
                } else {
                     if ($scope.valid($scope.ParticipantList[i].Email__c)) {
                          swal(
-                              'info',
+                              'Info',
                               'Check Your Registered Email!',
                               'info'
                          )
@@ -109,7 +109,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           for (var i = 0; i < $scope.ParticipantList.length; i++) {
                if ($scope.emailList.indexOf($scope.ParticipantList[i].Email__c) != -1) {
-                    swal("info", "DUPLICATE Reference Email, Please check.", "info");
+                    swal("Info", "DUPLICATE Reference Email, Please check.", "info");
                     $("#email" + i + "").addClass('border-theme');
                     return;
                }
@@ -134,7 +134,7 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           for (var j = 0; j < $scope.uppercaseEmailList.length; j++) {
                if ($scope.uppercaseEmailList.indexOf($scope.uppercaseEmailList[j].toUpperCase()) == -1) {
-                    swal("info", "DUPLICATE Reference Email, Please check.", "info");
+                    swal("Info", "DUPLICATE Reference Email, Please check.", "info");
                     //  var indexNo = getKeyByValue(mapForIndex,$scope.uppercaseEmailList[j].toUpperCase());
                     $("#email" + indexNum + "").addClass('border-theme');
                     return;
@@ -337,28 +337,28 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
           for (var i = 0; i < $scope.ParticipantList.length; i++) {
                if ($scope.ParticipantList[i].Name == undefined || $scope.ParticipantList[i].Name == "") {
-                    swal("info", "Please Enter Reference name.", "info");
+                    swal("Info", "Please Enter Reference name.", "info");
                     $("#name" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Designation__c == undefined || $scope.ParticipantList[i].Designation__c == "") {
-                    swal("info", "Please Enter Designation.", "info");
+                    swal("Indo", "Please Enter Designation.", "info");
                     $("#designation" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Organisation_Institute__c == undefined || $scope.ParticipantList[i].Organisation_Institute__c == "") {
-                    swal("info", "Please Enter Organisation/Institute.", "info");
+                    swal("Info", "Please Enter Organisation/Institute.", "info");
                     $("#organisation" + i + "").addClass('border-theme');
                     return;
                }
                if ($scope.ParticipantList[i].Email__c == undefined || $scope.ParticipantList[i].Email__c == "") {
-                    swal("info", "Please Enter Email.", "info");
+                    swal("Info", "Please Enter Email.", "info");
                     $("#email" + i + "").addClass('border-theme');
                     return;
                } else {
                     if ($scope.valid($scope.ParticipantList[i].Email__c)) {
                          swal(
-                              'info',
+                              'Info',
                               'Check Your Registered Email!',
                               'info'
                          )

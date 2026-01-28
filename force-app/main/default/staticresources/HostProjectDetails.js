@@ -3,7 +3,16 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $rootScope.projectId;
      $scope.startdate;
      $scope.enddate;
-     $scope.objRtf = [{ charCount: 0, maxCharLimit: 700, errorStatus: false }];
+     $scope.objRtf = [
+          { charCount: 0, maxCharLimit: 700, errorStatus: false },  // Abstract
+          { charCount: 0, maxCharLimit: 700, errorStatus: false },  // Non Technical Abstract
+          { charCount: 0, maxCharLimit: 50, errorStatus: false },   // Acronym
+          { charCount: 0, maxCharLimit: 6000, errorStatus: false }, // Project Description
+          { charCount: 0, maxCharLimit: 2000, errorStatus: false }, // Work elements Indian
+          { charCount: 0, maxCharLimit: 2000, errorStatus: false }, // Work elements German
+          { charCount: 0, maxCharLimit: 2000, errorStatus: false }, // Linkages and convergence
+          { charCount: 0, maxCharLimit: 3000, errorStatus: false }  // References
+     ];
 
      $rootScope.proposalStage;
      $rootScope.isCurrentUserSubmitted;
@@ -101,6 +110,38 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     }
                     if (result.Non_Technical_Abstract_Of_Proposed_Work__c != undefined || result.Non_Technical_Abstract_Of_Proposed_Work__c != "") {
                          result.Non_Technical_Abstract_Of_Proposed_Work__c = result.Non_Technical_Abstract_Of_Proposed_Work__c ? result.Non_Technical_Abstract_Of_Proposed_Work__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Non_Technical_Abstract_Of_Proposed_Work__c;
+                         // Initialize character count for Non Technical Abstract RTF field
+                         $scope.readCharacter(result.Non_Technical_Abstract_Of_Proposed_Work__c, 1);
+                    }
+                    if (result.Acronym__c != undefined || result.Acronym__c != "") {
+                         result.Acronym__c = result.Acronym__c ? result.Acronym__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Acronym__c;
+                         // Initialize character count for Acronym RTF field
+                         $scope.readCharacter(result.Acronym__c, 2);
+                    }
+                    if (result.Project_Description__c != undefined || result.Project_Description__c != "") {
+                         result.Project_Description__c = result.Project_Description__c ? result.Project_Description__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Project_Description__c;
+                         // Initialize character count for Project Description RTF field
+                         $scope.readCharacter(result.Project_Description__c, 3);
+                    }
+                    if (result.Work_elements_to_be_completed_by_Indian__c != undefined || result.Work_elements_to_be_completed_by_Indian__c != "") {
+                         result.Work_elements_to_be_completed_by_Indian__c = result.Work_elements_to_be_completed_by_Indian__c ? result.Work_elements_to_be_completed_by_Indian__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Work_elements_to_be_completed_by_Indian__c;
+                         // Initialize character count for Work elements Indian RTF field
+                         $scope.readCharacter(result.Work_elements_to_be_completed_by_Indian__c, 4);
+                    }
+                    if (result.Work_elements_to_be_completed_by_German__c != undefined || result.Work_elements_to_be_completed_by_German__c != "") {
+                         result.Work_elements_to_be_completed_by_German__c = result.Work_elements_to_be_completed_by_German__c ? result.Work_elements_to_be_completed_by_German__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Work_elements_to_be_completed_by_German__c;
+                         // Initialize character count for Work elements German RTF field
+                         $scope.readCharacter(result.Work_elements_to_be_completed_by_German__c, 5);
+                    }
+                    if (result.Linkages_and_convergence_of_work_element__c != undefined || result.Linkages_and_convergence_of_work_element__c != "") {
+                         result.Linkages_and_convergence_of_work_element__c = result.Linkages_and_convergence_of_work_element__c ? result.Linkages_and_convergence_of_work_element__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.Linkages_and_convergence_of_work_element__c;
+                         // Initialize character count for Linkages and convergence RTF field
+                         $scope.readCharacter(result.Linkages_and_convergence_of_work_element__c, 6);
+                    }
+                    if (result.References__c != undefined || result.References__c != "") {
+                         result.References__c = result.References__c ? result.References__c.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : result.References__c;
+                         // Initialize character count for References RTF field
+                         $scope.readCharacter(result.References__c, 7);
                     }
                     // ------------------------- Keyword Functionality ------------------------------ //
                     if (result.KeyWords__c != undefined && result.KeyWords__c != '') {
@@ -114,6 +155,10 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                          $scope.objKeyword.push({ "keyword": "" });
                     }
                     $scope.objContact = result;
+                    // Initialize character count for Abstract RTF field if it exists
+                    if (result.Host_Abstract_Of_Project__c != undefined && result.Host_Abstract_Of_Project__c != "") {
+                         $scope.readCharacter(result.Host_Abstract_Of_Project__c, 0);
+                    }
                     $scope.$apply();
                }
 
@@ -161,41 +206,60 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                return;
           }
 
+          if ($scope.objContact.Title_Of__c.length > 300) {
+               swal(
+                    "Info",
+                    "Maximum 300 characters allowed for Title Of Project.",
+                    "info");
+               //$("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
           if ($scope.objContact.Broad_area_of_research__c == undefined || $scope.objContact.Broad_area_of_research__c == "") {
                swal("Info", "Please Enter Area Of Research.", "info");
                $("#areaOfResearch").addClass('border-theme');
                return;
           }
 
-          if ($scope.objContact.Layman_title_of_project__c == undefined || $scope.objContact.Layman_title_of_project__c == "") {
-               swal("Info", "Please Enter Layman Title Of Project.", "info");
-               $("#laymanTitle").addClass('border-theme');
-               return;
-          }
-
-          if ($scope.objContact.Layman_title_of_project__c.length > 600) {
+          if ($scope.objContact.Broad_area_of_research__c.length > 300) {
                swal(
                     "Info",
-                    "Please Enter Layman Title Of Proposal.",
-                    "info");
-               //$("#laymanTitle").addClass('border-theme');
-               return;
-          }
-
-          if ($scope.objContact.Layman_abstract_of_proposed_work__c == undefined || $scope.objContact.Layman_abstract_of_proposed_work__c == "") {
-               swal("Info", "Please Enter Layman Abstract Of Proposed Work.", "info");
-               $("#laymanabstract").addClass('border-theme');
-               return;
-          }
-
-          if ($scope.objContact.Layman_abstract_of_proposed_work__c.length > 600) {
-               swal(
-                    "Info",
-                    "Please Enter Layman Abstract Of Proposed Work.",
+                    "Maximum 300 characters allowed for Area Of Research.",
                     "info");
                //$("#laymanabstract").addClass('border-theme');
                return;
           }
+
+
+          // if ($scope.objContact.Layman_title_of_project__c == undefined || $scope.objContact.Layman_title_of_project__c == "") {
+          //      swal("Info", "Please Enter Layman Title Of Project.", "info");
+          //      $("#laymanTitle").addClass('border-theme');
+          //      return;
+          // }
+
+          // if ($scope.objContact.Layman_title_of_project__c.length > 600) {
+          //      swal(
+          //           "Info",
+          //           "Please Enter Layman Title Of Proposal.",
+          //           "info");
+          //      //$("#laymanTitle").addClass('border-theme');
+          //      return;
+          // }
+
+          // if ($scope.objContact.Layman_abstract_of_proposed_work__c == undefined || $scope.objContact.Layman_abstract_of_proposed_work__c == "") {
+          //      swal("Info", "Please Enter Layman Abstract Of Proposed Work.", "info");
+          //      $("#laymanabstract").addClass('border-theme');
+          //      return;
+          // }
+
+          // if ($scope.objContact.Layman_abstract_of_proposed_work__c.length > 600) {
+          //      swal(
+          //           "Info",
+          //           "Please Enter Layman Abstract Of Proposed Work.",
+          //           "info");
+          //      //$("#laymanabstract").addClass('border-theme');
+          //      return;
+          // }
 
           if ($scope.objContact.Non_Technical_Title_Of_Project__c == undefined || $scope.objContact.Non_Technical_Title_Of_Project__c == "") {
                swal("Info", "Please Enter Non Technical Title of Project.", "info");
@@ -206,7 +270,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           if ($scope.objContact.Non_Technical_Title_Of_Project__c.length > 300) {
                swal(
                     "Info",
-                    "Please Enter Non Technical Title of Project.",
+                    "Maximum 300 characters allowed for Non Technical Title of Project.",
                     "info");
                //$("#laymanabstract").addClass('border-theme');
                return;
@@ -218,12 +282,90 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                return;
           }
 
-          if ($scope.objContact.Non_Technical_Abstract_Of_Proposed_Work__c.length > 300) {
+          if ($scope.objRtf[1].charCount > 700 || $scope.objRtf[1].errorStatus) {
                swal(
                     "Info",
-                    "Please Enter Non Technical Abstract of Proposed Work.",
+                    "Maximum 700 characters allowed for Non Technical Abstract of Proposed Work.",
                     "info");
                //$("#laymanabstract").addClass('border-theme');
+               return;
+          }
+
+          if ($scope.objContact.Acronym__c == undefined || $scope.objContact.Acronym__c == "") {
+               swal("Info", "Please Enter Acronym.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[2].charCount > 50 || $scope.objRtf[2].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 50 characters allowed for Acronym.",
+                    "info");
+               return;
+          }
+
+          if ($scope.objContact.Project_Description__c == undefined || $scope.objContact.Project_Description__c == "") {
+               swal("Info", "Please Enter Project Description.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[3].charCount > 6000 || $scope.objRtf[3].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 6000 characters allowed for Project Description.",
+                    "info");
+               return;
+          }
+
+          if ($scope.objContact.Work_elements_to_be_completed_by_Indian__c == undefined || $scope.objContact.Work_elements_to_be_completed_by_Indian__c == "") {
+               swal("Info", "Please Enter Work elements to be completed by Indian Awardee.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[4].charCount > 2000 || $scope.objRtf[4].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 2000 characters allowed for Work elements to be completed by Indian Awardee.",
+                    "info");
+               return;
+          }
+
+          if ($scope.objContact.Work_elements_to_be_completed_by_German__c == undefined || $scope.objContact.Work_elements_to_be_completed_by_German__c == "") {
+               swal("Info", "Please Enter Work elements to be completed by German Awardee.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[5].charCount > 2000 || $scope.objRtf[5].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 2000 characters allowed for Work elements to be completed by German Awardee.",
+                    "info");
+               return;
+          }
+
+          if ($scope.objContact.Linkages_and_convergence_of_work_element__c == undefined || $scope.objContact.Linkages_and_convergence_of_work_element__c == "") {
+               swal("Info", "Please Enter Linkages and convergence of these work elements for the expected outcome.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[6].charCount > 2000 || $scope.objRtf[6].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 2000 characters allowed for Linkages and convergence of these work elements for the expected outcome.",
+                    "info");
+               return;
+          }
+
+          if ($scope.objContact.References__c == undefined || $scope.objContact.References__c == "") {
+               swal("Info", "Please Enter References.", "info");
+               return;
+          }
+
+          if ($scope.objRtf[7].charCount > 3000 || $scope.objRtf[7].errorStatus) {
+               swal(
+                    "Info",
+                    "Maximum 3000 characters allowed for References.",
+                    "info");
                return;
           }
 
@@ -253,7 +395,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           $scope.objContact.KeyWords__c = keyword;
 
           if ($scope.objContact.KeyWords__c == undefined || $scope.objContact.KeyWords__c == "") {
-               swal("info", "Please Enter Keywords.", "info");
+               swal("Info", "Please Enter Keywords.", "info");
                $("#keywords").addClass('border-theme');
                return;
           }
@@ -303,7 +445,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                //     abstract = abstract.replaceAll(' ','');
 
                if ($scope.objRtf[0].charCount > 700) {
-                    swal("info", "Abstract maxlength will be 700 characters only.", "info");
+                    swal("Info", "Abstract maxlength will be 700 characters only.", "info");
                     return;
                }
           }

@@ -440,10 +440,10 @@
                         <tbody>
                             <!-- Research Stay -->
                             <tr>
-                                <td class="section-title" rowspan="2">
+                                <td rowspan="2">
                                     Research stay (India/Germany)
                                     <br/>
-                                    <span class="sub-text">(per diem @ € 2300/month)</span>
+                                    <span class="sub-text section-title">(per diem @ € 2300/month)</span>
                                 </td>
                                 <td></td>
                                 <td class="orange-text">No. of days</td>
@@ -468,7 +468,7 @@
                                         Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
-                                <td class="orange-text">
+                                <td class="orange-text" style="text-align: right;">
                                     {{budgetResearchStay.totalDays}}
                                     <div class="text-danger" ng-if="researchStayError.total">
                                         Total stay:{{proposalDurationMonths === 24 ? 20 : 30}} – {{proposalDurationMonths === 24 ? 60 : 90}} days allowed.
@@ -478,42 +478,60 @@
 
                             <tr>
                                 <td></td>
-                                <td class="orange-text">Research Stay Per diem cost</td>
-                                <td class="orange-text">{{budgetResearchStay.costYear1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{budgetResearchStay.costYear2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{budgetResearchStay.costYear3 | number:2}}</td>
-                                <td class="orange-text">{{budgetResearchStay.totalCost | number:2}}</td>
+                                <td class="orange-text">Research Stay Cost</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStay.costYear1, 2) : (budgetResearchStay.costYear1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStay.costYear2, 2) : (budgetResearchStay.costYear2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStay.costYear3, 2) : (budgetResearchStay.costYear3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStay.totalCost, 2) : (budgetResearchStay.totalCost
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr>
-                                <td class="section-title">Travel to Host Country (India/Germany)</td>
+                                <td class="">Travel to Host Country
+                                    <span class="sub-text section-title">(India/Germany)</span>
+                                </td>
                                 <td></td>
                                 <td class="orange-text">Travel cost per visit</td>
-                                <td class="orange-text">{{budgetTravel.costYear1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{budgetTravel.costYear2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{budgetTravel.costYear3 | number:2}}</td>
-                                <td class="orange-text">{{budgetTravel.totalCost | number:2}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetTravel.costYear1, 2) : (budgetTravel.costYear1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetTravel.costYear2, 2) : (budgetTravel.costYear2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetTravel.costYear3, 2) : (budgetTravel.costYear3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetTravel.totalCost, 2) : (budgetTravel.totalCost
+                                    | number:2))}}</td>
                             </tr>
 
 
                             <tr class="subtotal">
-                                <td class="bold">Total Research stay and Travel to host</td>
+                                <td class="bold">Total Research Stay and Travel to Host</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{researchStayTravelTotal.year1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{researchStayTravelTotal.year2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{researchStayTravelTotal.year3 | number:2}}</td>
-                                <td class="orange-text">{{researchStayTravelTotal.total | number:2}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(researchStayTravelTotal.year1, 2) : (researchStayTravelTotal.year1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(researchStayTravelTotal.year2, 2) : (researchStayTravelTotal.year2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(researchStayTravelTotal.year3, 2) : (researchStayTravelTotal.year3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(researchStayTravelTotal.total, 2) : (researchStayTravelTotal.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr class="gray-row">
                                 <td class="bold">Total Research Amount</td>
                                 <td></td>
                                 <td></td>
-                                <td>{{totalResearchAmount.year1 | number:2}}</td>
-                                <td ng-show="Showyear2">{{totalResearchAmount.year2 | number:2}}</td>
-                                <td ng-show="Showyear3">{{totalResearchAmount.year3 | number:2}}</td>
-                                <td>{{totalResearchAmount.total | number:2 }}</td>
+                                <td style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchAmount.year1, 2) : (totalResearchAmount.year1
+                                    | number:2))}}</td>
+                                <td ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchAmount.year2, 2) : (totalResearchAmount.year2
+                                    | number:2))}}</td>
+                                <td ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchAmount.year3, 2) : (totalResearchAmount.year3
+                                    | number:2))}}</td>
+                                <td style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchAmount.total, 2) : (totalResearchAmount.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <!-- Overheads -->
@@ -556,20 +574,28 @@
                                 <td></td>
                                 <td></td>
                                 <td class="orange-text">Overheads Amount</td>
-                                <td class="orange-text">{{budgetOverhead.amountYear1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{budgetOverhead.amountYear2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{budgetOverhead.amountYear3 | number:2}}</td>
-                                <td class="orange-text">{{budgetOverhead.totalAmount | number:2}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetOverhead.amountYear1, 2) : (budgetOverhead.amountYear1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetOverhead.amountYear2, 2) : (budgetOverhead.amountYear2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetOverhead.amountYear3, 2) : (budgetOverhead.amountYear3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetOverhead.totalAmount, 2) : (budgetOverhead.totalAmount
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr class="bold">
                                 <td>Remaining Amount for Research Heads</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{remainingForResearch.year1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{remainingForResearch.year2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{remainingForResearch.year3 | number:2}}</td>
-                                <td class="orange-text">{{remainingForResearch.total | number:2}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(remainingForResearch.year1, 2) : (remainingForResearch.year1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(remainingForResearch.year2, 2) : (remainingForResearch.year2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(remainingForResearch.year3, 2) : (remainingForResearch.year3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(remainingForResearch.total, 2) : (remainingForResearch.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <!-- Research Staff (Multiple records support) -->
@@ -601,7 +627,8 @@
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear1" ng-change="recalculateAll()"
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
-                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear1 | number:2}}</span>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear1, 2) : (row.staff.totalYear1
+                                        | number:2))}}</span>
                                 </td>
                                 <td ng-show="Showyear2">
                                     <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear2" ng-change="recalculateAll()"
@@ -610,7 +637,8 @@
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear2" ng-change="recalculateAll()"
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
-                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear2 | number:2}}</span>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear2, 2) : (row.staff.totalYear2
+                                        | number:2))}}</span>
                                 </td>
                                 <td ng-show="Showyear3">
                                     <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear3" ng-change="recalculateAll()"
@@ -619,10 +647,12 @@
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear3" ng-change="recalculateAll()"
                                         ng-disabled="proposalStage || isCurrentUserSubmitted" />
-                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalYear3 | number:2}}</span>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear3, 2) : (row.staff.totalYear3
+                                        | number:2))}}</span>
                                 </td>
                                 <td>
-                                    <span ng-if="row.rowType === 'total'" class="orange-text">{{row.staff.totalAmount | number:2}}</span>
+                                    <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalAmount, 2) : (row.staff.totalAmount
+                                        | number:2))}}</span>
                                     <button ng-if="row.rowType === 'positions' && !proposalStage && !isCurrentUserSubmitted && budgetResearchStaffList.length > 1"
                                         type="button" class="btn btn-sm btn-danger" ng-click="removeResearchStaff(row.index)"
                                         title="Remove Research Staff" style="padding: 2px 6px;">
@@ -636,10 +666,14 @@
                                 <td></td>
                                 <td></td>
                                 <td class="bold gray-row">Total Amount for All Research Staff</td>
-                                <td class="bold gray-row">{{budgetResearchStaff.totalYear1 | number:2}}</td>
-                                <td class="bold gray-row" ng-show="Showyear2">{{budgetResearchStaff.totalYear2 | number:2}}</td>
-                                <td class="bold gray-row" ng-show="Showyear3">{{budgetResearchStaff.totalYear3 | number:2}}</td>
-                                <td class="bold gray-row">{{budgetResearchStaff.totalAmount | number:2}}</td>
+                                <td class="bold gray-row" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStaff.totalYear1, 2) : (budgetResearchStaff.totalYear1
+                                    | number:2))}}</td>
+                                <td class="bold gray-row" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStaff.totalYear2, 2) : (budgetResearchStaff.totalYear2
+                                    | number:2))}}</td>
+                                <td class="bold gray-row" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStaff.totalYear3, 2) : (budgetResearchStaff.totalYear3
+                                    | number:2))}}</td>
+                                <td class="bold gray-row" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetResearchStaff.totalAmount, 2) :
+                                    (budgetResearchStaff.totalAmount | number:2))}}</td>
                             </tr>
 
                             <!-- Other Heads -->
@@ -659,7 +693,8 @@
                                     <input type="number" class="tbl-input" ng-model="budgetConsumables.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                 </td>
-                                <td class="orange-text bold">{{budgetConsumables.total}}</td>
+                                <td class="orange-text bold" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetConsumables.total, 2) : (budgetConsumables.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr>
@@ -678,7 +713,8 @@
                                     <input type="number" class="tbl-input" ng-model="minorEquipment.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     />
                                 </td>
-                                <td class="orange-text bold">{{minorEquipment.total}}</td>
+                                <td class="orange-text bold" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(minorEquipment.total, 2) : (minorEquipment.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr>
@@ -696,7 +732,8 @@
 
                                     <span class="text-danger" ng-if="contingencyError.year1">
                                         Max allowed:
-                                        <b>{{maxContingency.year1}}</b>
+                                        <b style="text-align: right; display: inline-block;">{{(mailingCountry === 'India' ? formatIndianNumber(maxContingency.year1, 2) : (maxContingency.year1
+                                            | number:2))}}</b>
                                     </span>
                                 </td>
                                 <td ng-show="Showyear2">
@@ -705,7 +742,8 @@
 
                                     <span class="text-danger" ng-if="contingencyError.year2">
                                         Max allowed:
-                                        <b>{{maxContingency.year2}}</b>
+                                        <b style="text-align: right; display: inline-block;">{{(mailingCountry === 'India' ? formatIndianNumber(maxContingency.year2, 2) : (maxContingency.year2
+                                            | number:2))}}</b>
                                     </span>
                                 </td>
                                 <td ng-show="Showyear3">
@@ -714,20 +752,26 @@
 
                                     <span class="text-danger" ng-if="contingencyError.year3">
                                         Max allowed:
-                                        <b>{{maxContingency.year3}}</b>
+                                        <b style="text-align: right; display: inline-block;">{{(mailingCountry === 'India' ? formatIndianNumber(maxContingency.year3, 2) : (maxContingency.year3
+                                            | number:2))}}</b>
                                     </span>
                                 </td>
-                                <td class="orange-text bold">{{budgetContingency.total}}</td>
+                                <td class="orange-text bold" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetContingency.total, 2) : (budgetContingency.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr class="final-total">
                                 <td class="bold">Total Research Heads</td>
                                 <td></td>
                                 <td></td>
-                                <td class="orange-text">{{totalResearchHeads.year1 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear2">{{totalResearchHeads.year2 | number:2}}</td>
-                                <td class="orange-text" ng-show="Showyear3">{{totalResearchHeads.year3 | number:2}}</td>
-                                <td class="orange-text">{{totalResearchHeads.total | number:2}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchHeads.year1, 2) : (totalResearchHeads.year1
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear2" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchHeads.year2, 2) : (totalResearchHeads.year2
+                                    | number:2))}}</td>
+                                <td class="orange-text" ng-show="Showyear3" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchHeads.year3, 2) : (totalResearchHeads.year3
+                                    | number:2))}}</td>
+                                <td class="orange-text" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(totalResearchHeads.total, 2) : (totalResearchHeads.total
+                                    | number:2))}}</td>
                             </tr>
 
                             <tr class="final-total">
@@ -735,20 +779,20 @@
                                 <td></td>
                                 <td></td>
 
-                                <td class="orange-text" ng-class="{'text-danger': grandTotalError.year1}">
-                                    {{grandTotal.year1 | number:2}}
+                                <td class="orange-text" ng-class="{'text-danger': grandTotalError.year1}" style="text-align: right;">
+                                    {{(mailingCountry === 'India' ? formatIndianNumber(grandTotal.year1, 2) : (grandTotal.year1 | number:2))}}
                                 </td>
 
-                                <td class="orange-text" ng-show="Showyear2" ng-class="{'text-danger': grandTotalError.year2}">
-                                    {{grandTotal.year2 | number:2}}
+                                <td class="orange-text" ng-show="Showyear2" ng-class="{'text-danger': grandTotalError.year2}" style="text-align: right;">
+                                    {{(mailingCountry === 'India' ? formatIndianNumber(grandTotal.year2, 2) : (grandTotal.year2 | number:2))}}
                                 </td>
 
-                                <td class="orange-text" ng-show="Showyear3" ng-class="{'text-danger': grandTotalError.year3}">
-                                    {{grandTotal.year3 | number:2}}
+                                <td class="orange-text" ng-show="Showyear3" ng-class="{'text-danger': grandTotalError.year3}" style="text-align: right;">
+                                    {{(mailingCountry === 'India' ? formatIndianNumber(grandTotal.year3, 2) : (grandTotal.year3 | number:2))}}
                                 </td>
 
-                                <td class="orange-text">
-                                    {{grandTotal.total | number:2}}
+                                <td class="orange-text" style="text-align: right;">
+                                    {{(mailingCountry === 'India' ? formatIndianNumber(grandTotal.total, 2) : (grandTotal.total | number:2))}}
                                 </td>
                             </tr>
 

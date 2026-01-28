@@ -1170,6 +1170,12 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                 proposalRec.Layman_abstract_of_proposed_work__c = hostDetails.Layman_abstract_of_proposed_work__c;
                 proposalRec.Non_Technical_Title_Of_Project__c = hostDetails.Non_Technical_Title_Of_Project__c;
                 proposalRec.Non_Technical_Abstract_Of_Proposed_Work__c = hostDetails.Non_Technical_Abstract_Of_Proposed_Work__c;
+                proposalRec.Acronym__c = hostDetails.Acronym__c;
+                proposalRec.Project_Description__c = hostDetails.Project_Description__c;
+                proposalRec.Work_elements_to_be_completed_by_Indian__c = hostDetails.Work_elements_to_be_completed_by_Indian__c;
+                proposalRec.Work_elements_to_be_completed_by_German__c = hostDetails.Work_elements_to_be_completed_by_German__c;
+                proposalRec.Linkages_and_convergence_of_work_element__c = hostDetails.Linkages_and_convergence_of_work_element__c;
+                proposalRec.References__c = hostDetails.References__c;
                 proposalRec.KeyWords__c = hostDetails.KeyWords__c;
                 upsert proposalRec;
  
@@ -1236,6 +1242,12 @@ public string saveApplicantPortalWiser(String loginHashCode, Contact con){
                     Layman_abstract_of_proposed_work__c = hostDetails.Layman_abstract_of_proposed_work__c,
                     Non_Technical_Title_Of_Project__c = hostDetails.Non_Technical_Title_Of_Project__c,
                     Non_Technical_Abstract_Of_Proposed_Work__c = hostDetails.Non_Technical_Abstract_Of_Proposed_Work__c,
+                    Acronym__c = hostDetails.Acronym__c,
+                    Project_Description__c = hostDetails.Project_Description__c,
+                    Work_elements_to_be_completed_by_Indian__c = hostDetails.Work_elements_to_be_completed_by_Indian__c,
+                    Work_elements_to_be_completed_by_German__c = hostDetails.Work_elements_to_be_completed_by_German__c,
+                    Linkages_and_convergence_of_work_element__c = hostDetails.Linkages_and_convergence_of_work_element__c,
+                    References__c = hostDetails.References__c,
                     KeyWords__c = hostDetails.KeyWords__c
                     //Actual_Application_Start_Date__c = Date.newInstance(sYear,sMonth,sDate)
                 );
@@ -2107,7 +2119,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
 
     public static ProposalAccountWrapper getProposalAccounts(String ProposalId, String loginHashCode){
     
-        Applicant_Proposal_Association__c apa = [
+        List<Applicant_Proposal_Association__c> apaList = [
             SELECT Id, Name, Proposals__r.Duration_In_Months_Max_36__c, Contact__c, Contact__r.AccountId  
             FROM Applicant_Proposal_Association__c 
             WHERE Proposals__c = :ProposalId 
@@ -2115,12 +2127,26 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             LIMIT 1
         ];
 
+        if (apaList.isEmpty()) {
+            throw new AuraHandledException('No Applicant Proposal Association found for ProposalId: ' + ProposalId + ' and loginHashCode: ' + loginHashCode);
+        }
+
+        Applicant_Proposal_Association__c apa = apaList[0];
+
+        if (apa.Contact__r.AccountId == null) {
+            throw new AuraHandledException('Contact AccountId is null for Applicant Proposal Association: ' + apa.Id);
+        }
+
         List<Account> acc = [
             SELECT Id, Name, Country_Type__c, 
                 (SELECT Id, Name, MailingCountry FROM Contacts) 
             FROM Account 
             WHERE Id = :apa.Contact__r.AccountId
         ];
+        
+        if (acc.isEmpty()) {
+            throw new AuraHandledException('No Account found for AccountId: ' + apa.Contact__r.AccountId);
+        }
         
         return new ProposalAccountWrapper(acc[0], apa.Proposals__r.Duration_In_Months_Max_36__c, apa.Id);
     }

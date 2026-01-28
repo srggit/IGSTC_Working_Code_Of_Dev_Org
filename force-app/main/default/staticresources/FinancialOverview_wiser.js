@@ -25,6 +25,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     const MAX_RESEARCH_AMOUNT_EURO = 16000;
     const MAX_RESEARCH_AMOUNT_INR = 1300000;
     const TRAVEL_COST_EURO = 1500;
+    const TRAVEL_COST_INR = 100000; // Fixed ₹1,00,000 for India
 
     // Function to get max research amount based on mailing country
     $scope.getMaxResearchAmount = function () {
@@ -35,11 +36,12 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     };
 
     // Function to get travel cost based on mailing country
+    // Travel cost is fixed: ₹1,00,000 for India, €1500 for Germany
     $scope.getTravelCost = function () {
         if ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') {
-            return TRAVEL_COST_EURO * ($scope.euroExchangeRate || $rootScope.euroExchangeRate || 1);
+            return TRAVEL_COST_INR; // Fixed ₹1,00,000 for India
         }
-        return TRAVEL_COST_EURO;
+        return TRAVEL_COST_EURO; // Fixed €1500 for Germany
     };
 
     // Function to get per day rate based on mailing country
@@ -326,6 +328,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         IndustrialFellowshipController.getProposalAccounts($rootScope.proposalId, $rootScope.candidateId, function (result, event) {
             console.log('onload :: =>');
             console.log(result);
+            console.log('event:', event);
+
             if (event.status && result != null) {
                 debugger;
                 if (result.accountDetail.Name != undefined || result.accountDetail.Name != "") {
@@ -354,8 +358,24 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 }
 
                 $scope.$apply();
+            } else {
+                // Handle error case
+                console.error('Error fetching proposal accounts:', event);
+                var errorMessage = 'Failed to load account details.';
+                if (event && event.message) {
+                    errorMessage = event.message;
+                } else if (event && event.type) {
+                    errorMessage = 'Error: ' + event.type;
+                }
+                swal({
+                    title: "Error",
+                    text: errorMessage,
+                    icon: "error",
+                    button: "OK"
+                });
+                $scope.$apply();
             }
-        })
+        }, { escape: true })
     }
     $scope.getAccounts();
 
@@ -1553,12 +1573,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             /* =====================================================
                2️⃣ TRAVEL COST (AUTO)
-               IF research stay exists → 1500 (or converted to INR for India)
+               Validation: Fixed ₹1,00,000 for India (€1500 for Germany) if any days are added, 0 if zero days
             ===================================================== */
             const travelCost = $scope.getTravelCost();
-            $scope.budgetTravel.costYear1 = $scope.budgetResearchStay.costYear1 > 0 ? travelCost : 0;
-            $scope.budgetTravel.costYear2 = $scope.budgetResearchStay.costYear2 > 0 ? travelCost : 0;
-            $scope.budgetTravel.costYear3 = $scope.budgetResearchStay.costYear3 > 0 ? travelCost : 0;
+            // Check days instead of cost - travel cost is fixed if any days are added
+            $scope.budgetTravel.costYear1 = (d1 > 0) ? travelCost : 0;
+            $scope.budgetTravel.costYear2 = (d2 > 0) ? travelCost : 0;
+            $scope.budgetTravel.costYear3 = (d3 > 0) ? travelCost : 0;
 
             $scope.budgetTravel.totalCost =
                 $scope.budgetTravel.costYear1 +
@@ -1970,16 +1991,27 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
             // ---------- Per-year validation ----------
             function isInvalidYear(days, durationMonths) {
+                // Don't validate if duration is not set yet
+                if (!durationMonths || (durationMonths !== 24 && durationMonths !== 36)) {
+                    return false;
+                }
+
+                // Convert days to number, default to 0 if undefined/null
+                const daysNum = Number(days) || 0;
+
                 // For 24 months: 0 is not allowed (both years mandatory)
-                if (durationMonths === 24 && (!days || days === 0)) {
+                if (durationMonths === 24 && daysNum === 0) {
                     return true;
                 }
                 // For 36 months: 0 is allowed (but at least 2 years must be non-zero - checked separately)
-                if (durationMonths === 36 && (!days || days === 0)) {
+                if (durationMonths === 36 && daysNum === 0) {
                     return false;
                 }
                 // For non-zero values, check range
-                return days < MIN_DAYS_PER_YEAR || days > MAX_DAYS_PER_YEAR;
+                if (daysNum > 0) {
+                    return daysNum < MIN_DAYS_PER_YEAR || daysNum > MAX_DAYS_PER_YEAR;
+                }
+                return false;
             }
 
             $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1, $rootScope.proposalDurationMonths);
@@ -1999,8 +2031,14 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             }
 
             // ---------- Mandatory years validation ----------
+            // Only validate mandatory years if user has started entering data (total days > 0)
+            const totalDays1 = (Number($scope.budgetResearchStay.daysYear1) || 0) +
+                (Number($scope.budgetResearchStay.daysYear2) || 0) +
+                (Number($scope.budgetResearchStay.daysYear3) || 0);
+            const hasUserStartedEnteringData = totalDays1 > 0;
+
             // For 24 months: Both Year 1 and Year 2 are mandatory (cannot be 0)
-            if ($rootScope.proposalDurationMonths === 24) {
+            if ($rootScope.proposalDurationMonths === 24 && hasUserStartedEnteringData) {
                 const year1 = Number($scope.budgetResearchStay.daysYear1) || 0;
                 const year2 = Number($scope.budgetResearchStay.daysYear2) || 0;
                 if (year1 === 0) {
@@ -2012,7 +2050,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             }
 
             // For 36 months: At least 2 years must be non-zero (can have 0 in one year)
-            if ($rootScope.proposalDurationMonths === 36) {
+            if ($rootScope.proposalDurationMonths === 36 && hasUserStartedEnteringData) {
                 const year1 = Number($scope.budgetResearchStay.daysYear1) || 0;
                 const year2 = Number($scope.budgetResearchStay.daysYear2) || 0;
                 const year3 = Number($scope.budgetResearchStay.daysYear3) || 0;
@@ -3279,5 +3317,63 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
         // ✅ All validations passed
         return true;
+    };
+
+    // Function to format numbers in Indian currency format (12,00,000)
+    $scope.formatIndianNumber = function (value, decimals) {
+        if (value == null || value === undefined || value === '') {
+            return '0';
+        }
+
+        const num = parseFloat(value);
+        if (isNaN(num)) {
+            return '0';
+        }
+
+        // Round to specified decimal places (default 2)
+        const decimalPlaces = decimals !== undefined ? decimals : 2;
+        const rounded = Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+
+        // Split into integer and decimal parts
+        const parts = rounded.toString().split('.');
+        let integerPart = parts[0];
+        const decimalPart = parts[1] || '';
+
+        // Apply Indian numbering system: first 3 digits from right, then every 2 digits
+        if (integerPart.length > 3) {
+            const lastThree = integerPart.slice(-3);
+            const remaining = integerPart.slice(0, -3);
+
+            // Add commas: every 2 digits from right for remaining part
+            let formattedRemaining = '';
+            let i = remaining.length - 1;
+            while (i >= 0) {
+                const start = Math.max(0, i - 1);
+                const chunk = remaining.slice(start, i + 1);
+                formattedRemaining = (formattedRemaining ? chunk + ',' : chunk) + formattedRemaining;
+                i -= 2;
+            }
+
+            integerPart = formattedRemaining + ',' + lastThree;
+        }
+
+        // Add decimal part if exists
+        if (decimalPart) {
+            // Pad decimal part to required decimal places
+            let paddedDecimal = decimalPart;
+            while (paddedDecimal.length < decimalPlaces) {
+                paddedDecimal += '0';
+            }
+            paddedDecimal = paddedDecimal.substring(0, decimalPlaces);
+            return integerPart + '.' + paddedDecimal;
+        } else if (decimalPlaces > 0) {
+            let zeros = '';
+            for (let j = 0; j < decimalPlaces; j++) {
+                zeros += '0';
+            }
+            return integerPart + '.' + zeros;
+        }
+
+        return integerPart;
     };
 })

@@ -304,7 +304,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                         $scope.getProjectdetils();
                         $scope.getProjectProposalDoc();
                         swal(
-                            'success',
+                            'Success',
                             'Uploaded Successfully!',
                             'success'
                         )
@@ -351,7 +351,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         }
 
         swal({
-            title: "SUCCESS",
+            title: "Success",
             text: 'Attachments have been saved successfully.',
             icon: "success",
             button: "ok!",

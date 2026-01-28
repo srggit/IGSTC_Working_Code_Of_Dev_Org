@@ -8491,8 +8491,8 @@ public static String insertFellowship_DetailsWithTheme(Contact proposalDetails, 
     public static Contact getCVDetailsForWiserApplicant(string userId,String apaId){
         try{
             Contact conRec = [SELECT Id,Name,FirstName,LastName,Phone,Email,Publications_Patents__c,List_Of_Patents_Filed_Granted__c,Book_Chapters_Monographs__c,Any_Other_Notable_Achievements__c,Designation__c,MailingState,State__c, Account.Name,
-                              (SELECT Id,Degree__c,End_Year__c,Start_Year__c,Institution_Name__c,Percentage__c,Percentage_cgpa__c,Area_of_specialization__c,Applicant_Proposal_Association__c FROM Education_Details__r WHERE Applicant_Proposal_Association__c =: apaId),
-                              (SELECT Id,End_Year__c,Start_Year__c,Position__c,current_employement__c,Organization_Name__c,Nature_of_Job__c,Applicant_Proposal_Association__c FROM Employment_Details__r WHERE Applicant_Proposal_Association__c =: apaId) FROM Contact WHERE Login_Hash_Code__c=: userId];
+                              (SELECT Id,Degree__c,End_Year__c,Start_Year__c,Institution_Name__c,Percentage__c,Percentage_cgpa__c,Area_of_specialization__c,Applicant_Proposal_Association__c FROM Education_Details__r WHERE Applicant_Proposal_Association__c =: apaId ORDER BY End_Year__c DESC),
+                              (SELECT Id,End_Year__c,Start_Year__c,Position__c,current_employement__c,Organization_Name__c,Nature_of_Job__c,Applicant_Proposal_Association__c FROM Employment_Details__r WHERE Applicant_Proposal_Association__c =: apaId ORDER BY End_Year__c DESC) FROM Contact WHERE Login_Hash_Code__c=: userId];
             return conRec;
             
         }catch(Exception e){

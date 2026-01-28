@@ -195,121 +195,152 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
     $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
     $("#btnPreview").prop('disabled', true);
 
+    // Helper function to restore button state
+    $scope.restoreButtonState = function () {
+        $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+        $("#btnPreview").prop('disabled', false);
+    };
+
     $scope.saveAllDetails = function () {
         debugger;
+        try {
+            // Show spinner on button
+            $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
+            $("#btnPreview").prop('disabled', true);
 
-        // Show spinner on button
-        $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
-        $("#btnPreview").prop('disabled', true);
-
-        if ($scope.contactData != undefined) {
-            if ($scope.contactData.Education_Details__r != undefined) {
-                for (var i = 0; i < $scope.contactData.Education_Details__r.length; i++) {
-                    $scope.contactData.Education_Details__r[i].Applicant_Proposal_Association__c = $scope.apaId;
-                    if ($scope.contactData.Education_Details__r[i].Institution_Name__c == undefined || $scope.contactData.Education_Details__r[i].Institution_Name__c == "") {
-                        swal("Education Details", "Please Enter Institution Name.");
-                        $("#institution" + i + "").addClass('border-theme');
-                        return;
-                    }
-                    if ($scope.contactData.Education_Details__r[i].Area_of_specialization__c == undefined || $scope.contactData.Education_Details__r[i].Area_of_specialization__c == "") {
-                        swal("Education Details", "Please Enter Specialization.");
-                        $("#specialization" + i + "").addClass('border-theme');
-                        return;
-                    }
-                    if ($scope.contactData.Education_Details__r[i].Degree__c == undefined || $scope.contactData.Education_Details__r[i].Degree__c == "") {
-                        swal("Education Details", "Please Enter Degree.");
-                        $("#degree" + i + "").addClass('border-theme');
-                        return;
-                    }
-                    if ($scope.contactData.Education_Details__r[i].Start_Year__c == undefined || $scope.contactData.Education_Details__r[i].Start_Year__c == "") {
-                        swal("Education Details", "Please Enter Start Year.");
-                        $("#zipCode1" + i + "").addClass('border-theme');
-                        return;
-                    }
-                    if ($scope.contactData.Education_Details__r[i].End_Year__c == undefined || $scope.contactData.Education_Details__r[i].End_Year__c == "") {
-                        swal("Education Details", "Please Enter End Year.");
-                        $("#zipCode2" + i + "").addClass('border-theme');
-                        return;
-                    }
-                }
-            }
-
-            if ($scope.contactData.Employment_Details__r != undefined) {
-                for (var j = 0; j < $scope.contactData.Employment_Details__r.length; j++) {
-                    $scope.contactData.Employment_Details__r[j].Applicant_Proposal_Association__c = $scope.apaId;
-
-                    if ($scope.contactData.Employment_Details__r[j].Organization_Name__c == undefined || $scope.contactData.Employment_Details__r[j].Organization_Name__c == "") {
-                        swal("Employment Details", "Please Enter Organization Name.");
-                        $("#org" + j + "").addClass('border-theme');
-                        return;
-                    }
-
-                    if ($scope.contactData.Employment_Details__r[j].Position__c == undefined || $scope.contactData.Employment_Details__r[j].Position__c == "") {
-                        swal("Employment Details", "Please Enter Position.");
-                        $("#position" + j + "").addClass('border-theme');
-                        return;
-                    }
-
-                    if ($scope.contactData.Employment_Details__r[j].Start_Year__c == undefined || $scope.contactData.Employment_Details__r[j].Start_Year__c == "") {
-                        swal("Employment Details", "Please Enter Start Year.");
-                        $("#zipCode11" + j + "").addClass('border-theme');
-                        return;
-                    }
-
-                    if ($scope.contactData.Employment_Details__r[j].End_Year__c == undefined || $scope.contactData.Employment_Details__r[j].End_Year__c == "") {
-                        swal("Employment Details", "Please Enter End Year.");
-                        $("#zipCode22" + j + "").addClass('border-theme');
-                        return;
+            if ($scope.contactData != undefined) {
+                if ($scope.contactData.Education_Details__r != undefined) {
+                    for (var i = 0; i < $scope.contactData.Education_Details__r.length; i++) {
+                        $scope.contactData.Education_Details__r[i].Applicant_Proposal_Association__c = $scope.apaId;
+                        if ($scope.contactData.Education_Details__r[i].Institution_Name__c == undefined || $scope.contactData.Education_Details__r[i].Institution_Name__c == "") {
+                            swal("Education Details", "Please Enter Institution Name.");
+                            $("#institution" + i + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+                        if ($scope.contactData.Education_Details__r[i].Area_of_specialization__c == undefined || $scope.contactData.Education_Details__r[i].Area_of_specialization__c == "") {
+                            swal("Education Details", "Please Enter Specialization.");
+                            $("#specialization" + i + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+                        if ($scope.contactData.Education_Details__r[i].Degree__c == undefined || $scope.contactData.Education_Details__r[i].Degree__c == "") {
+                            swal("Education Details", "Please Enter Degree.");
+                            $("#degree" + i + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+                        if ($scope.contactData.Education_Details__r[i].Start_Year__c == undefined || $scope.contactData.Education_Details__r[i].Start_Year__c == "") {
+                            swal("Education Details", "Please Enter Start Year.");
+                            $("#zipCode1" + i + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+                        if ($scope.contactData.Education_Details__r[i].End_Year__c == undefined || $scope.contactData.Education_Details__r[i].End_Year__c == "") {
+                            swal("Education Details", "Please Enter End Year.");
+                            $("#zipCode2" + i + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
                     }
                 }
 
+                if ($scope.contactData.Employment_Details__r != undefined) {
+                    for (var j = 0; j < $scope.contactData.Employment_Details__r.length; j++) {
+                        $scope.contactData.Employment_Details__r[j].Applicant_Proposal_Association__c = $scope.apaId;
+
+                        if ($scope.contactData.Employment_Details__r[j].Organization_Name__c == undefined || $scope.contactData.Employment_Details__r[j].Organization_Name__c == "") {
+                            swal("Employment Details", "Please Enter Organization Name.");
+                            $("#org" + j + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+
+                        if ($scope.contactData.Employment_Details__r[j].Position__c == undefined || $scope.contactData.Employment_Details__r[j].Position__c == "") {
+                            swal("Employment Details", "Please Enter Position.");
+                            $("#position" + j + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+
+                        if ($scope.contactData.Employment_Details__r[j].Start_Year__c == undefined || $scope.contactData.Employment_Details__r[j].Start_Year__c == "") {
+                            swal("Employment Details", "Please Enter Start Year.");
+                            $("#zipCode11" + j + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+
+                        if ($scope.contactData.Employment_Details__r[j].End_Year__c == undefined || $scope.contactData.Employment_Details__r[j].End_Year__c == "") {
+                            swal("Employment Details", "Please Enter End Year.");
+                            $("#zipCode22" + j + "").addClass('border-theme');
+                            $scope.restoreButtonState();
+                            return;
+                        }
+                    }
+
+                }
+
             }
 
-        }
+            $scope.educationDetails = [];
+            $scope.employmentDetails = [];
+            $scope.educationDetails = $scope.contactData.Education_Details__r;
+            $scope.employmentDetails = $scope.contactData.Employment_Details__r;
 
-        $scope.educationDetails = [];
-        $scope.employmentDetails = [];
-        $scope.educationDetails = $scope.contactData.Education_Details__r;
-        $scope.employmentDetails = $scope.contactData.Employment_Details__r;
+            delete ($scope.contactData['Education_Details__r']);
+            delete ($scope.contactData['Employment_Details__r']);
+            delete ($scope.contactData['Education_Details__r']);
 
-        delete ($scope.contactData['Education_Details__r']);
-        delete ($scope.contactData['Employment_Details__r']);
-        delete ($scope.contactData['Education_Details__r']);
+            // Preserve MailingState: Ensure State__c is set to MailingState if State__c is empty but MailingState has a value
+            // This ensures the backend can properly map State__c to MailingState
+            if (($scope.contactData.MailingState !== undefined && $scope.contactData.MailingState !== null && $scope.contactData.MailingState !== '')
+                && ($scope.contactData.State__c === undefined || $scope.contactData.State__c === null || $scope.contactData.State__c === '')) {
+                $scope.contactData.State__c = $scope.contactData.MailingState;
+            }
 
-        // Preserve MailingState: Ensure State__c is set to MailingState if State__c is empty but MailingState has a value
-        // This ensures the backend can properly map State__c to MailingState
-        if (($scope.contactData.MailingState !== undefined && $scope.contactData.MailingState !== null && $scope.contactData.MailingState !== '')
-            && ($scope.contactData.State__c === undefined || $scope.contactData.State__c === null || $scope.contactData.State__c === '')) {
-            $scope.contactData.State__c = $scope.contactData.MailingState;
-        }
+            for (var i = 0; i < $scope.educationDetails.length; i++) {
+                delete ($scope.educationDetails[i]['$$hashKey']);
+            }
+            for (var i = 0; i < $scope.employmentDetails.length; i++) {
+                delete ($scope.employmentDetails[i]['$$hashKey']);
+            }
 
-        for (var i = 0; i < $scope.educationDetails.length; i++) {
-            delete ($scope.educationDetails[i]['$$hashKey']);
-        }
-        for (var i = 0; i < $scope.employmentDetails.length; i++) {
-            delete ($scope.employmentDetails[i]['$$hashKey']);
-        }
-
-        ApplicantPortal_Contoller.SaveWorkshopContactDetails2($scope.contactData, $scope.educationDetails, $scope.employmentDetails, function (result, event) {
-            debugger;
-            if (event.status) {
+            ApplicantPortal_Contoller.SaveWorkshopContactDetails2($scope.contactData, $scope.educationDetails, $scope.employmentDetails, function (result, event) {
                 debugger;
-                swal({
-                    title: "SUCCESS",
-                    text: 'Your CV Details has been Saved successfully.',
-                    icon: "success",
-                    button: "ok!",
-                });
-                // Swal.fire(
-                //     'Success',
-                //     'your CV Details has been Saved successfully.',
-                //     'success'
-                // );
-                // $scope.redirectPageURL('Declaration_Wiser');
-                $scope.redirectPageURL('FinancialOverview_wiser');
-                $scope.$apply();
-            }
-        })
+                try {
+                    if (event.status) {
+                        debugger;
+                        swal({
+                            title: "SUCCESS",
+                            text: 'Your CV Details has been Saved successfully.',
+                            icon: "success",
+                            button: "ok!",
+                        });
+                        // Swal.fire(
+                        //     'Success',
+                        //     'your CV Details has been Saved successfully.',
+                        //     'success'
+                        // );
+                        // $scope.redirectPageURL('Declaration_Wiser');
+                        $scope.redirectPageURL('FinancialOverview_wiser');
+                        $scope.$apply();
+                    } else {
+                        // Re-enable button on error
+                        $scope.restoreButtonState();
+                        $scope.$apply();
+                    }
+                } catch (error) {
+                    // Re-enable button on unexpected error in callback
+                    console.error('Error in save callback:', error);
+                    $scope.restoreButtonState();
+                    $scope.$apply();
+                }
+            }, { escape: true });
+        } catch (error) {
+            // Re-enable button on unexpected error
+            console.error('Error in saveAllDetails:', error);
+            $scope.restoreButtonState();
+        }
     }
 
     $scope.addEducationRow = function () {

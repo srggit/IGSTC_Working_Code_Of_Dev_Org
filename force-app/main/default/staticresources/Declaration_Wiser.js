@@ -472,7 +472,7 @@ angular.module('cp_app').controller('declarationwiser_ctrl', function ($scope, $
                     if (doneUploading == true) {
                         $scope.getProjectdetils();
                         swal(
-                            'success',
+                            'Success',
                             'Uploaded Successfully!',
                             'success'
                         )

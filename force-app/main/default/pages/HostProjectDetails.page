@@ -376,11 +376,42 @@
 
                 <div class="row mt-5 mx-5">
                     <div class="col-md-12 alert bg-color-list" role="alert">
-                        <ul class="font-if">
+                        <ul class="font-if" style="text-align: justify; line-height: 1.6;">
                             <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>Pair project details pertain to the project with which the applicant will engage in collaboration.
-                                This provides brief about collaborating partner’s proposed project and the complementary
-                                objectives.
+                                Provide comprehensive information on the
+                                <b>Joint Indo-German project</b> forming the basis of the WISER collaboration.
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Clearly define the
+                                <b>roles and responsibilities</b> of both paired applicants within the project.
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Describe the
+                                <b>objectives</b>,
+                                <b>overall work plan</b>,
+                                <b>milestones</b>, and
+                                <b>expected outcomes</b>.
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Specify the
+                                <b>scientific</b>,
+                                <b>technological</b>, or
+                                <b>strategic value addition</b> of the collaboration at the host country, including how mobility
+                                and joint work strengthen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innovation capacity.
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Present milestones as a
+                                <b>year-wise travel and activity plan</b> for the project duration, indicating timelines for
+                                research visits, joint experiments, and milestone-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;linked deliverables.
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Outline
+                                <b>future plans</b> and potential follow-up work beyond the project period, where relevant.
                             </li>
                         </ul>
                     </div>
@@ -421,41 +452,42 @@
 
                             <div class="col-md-6">
                                 <label class="font-if color-theme">
-                                    <b>Title of project</b> (Max. characters 600)
+                                    <b>Title of project</b> (Max. characters 300)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
                                 <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    id="titleOfProposal" ng-change="checkCharLimit(objContact, 'Title_Of__c', 600)" ng-focus="removeClass('titleOfProposal')"
+                                    id="titleOfProposal" ng-change="checkCharLimit(objContact, 'Title_Of__c', 300)" ng-focus="removeClass('titleOfProposal')"
                                 />
 
                                 <small class=" text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Title_Of__c ">
-                                    Maximum 600 characters allowed
+                                    Maximum 300 characters allowed
                                 </small>
                             </div>
 
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Broad area of research</b> (Max. characters 255)
+                                    <b>Broad area of research</b> (Max. characters 300)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Broad_area_of_research__c
                                     " ng-disabled="proposalStage || isCurrentUserSubmitted " id="areaOfResearch " ng-change="checkCharLimit(objContact,
-                                    'Broad_area_of_research__c', 255)" ng-focus="removeClass('areaOfResearch')" />
+                                    'Broad_area_of_research__c', 300)" ng-focus="removeClass('areaOfResearch')" />
 
                                 <small class=" text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Broad_area_of_research__c ">
-                                    Maximum 255 characters allowed
+                                    Maximum 300 characters allowed
                                 </small>
                             </div>
 
                         </div>
                     </div>
 
+                    <!--
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
 
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Layman title of project</b> (Max. 600 chars)
+                                    <b>Layman title of project</b> (Max. characters 600)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Layman_title_of_project__c
@@ -469,7 +501,7 @@
 
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Layman abstract of proposed work</b> (Max. 600 chars)
+                                    <b>Layman abstract of proposed work</b> (Max. characters 600)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Layman_abstract_of_proposed_work__c
@@ -484,42 +516,25 @@
 
                         </div>
                     </div>
-
+                    -->
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
-
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Non Technical Title Of Project</b> (Max. 300 chars)
+                                    <b>Non Technical Title Of Project</b> (Max. characters 300)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control" type="text " ng-model="objContact.Non_Technical_Title_Of_Project__c
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted " id="nonTechnicalTitle " ng-change="checkCharLimit(objContact,
-                                    'Non_Technical_Title_Of_Project__c', 300)" ng-focus="removeClass('nonTechnicalTitle')"
-                                />
+                            " ng-disabled="proposalStage || isCurrentUserSubmitted " id="nonTechnicalTitle " ng-change="checkCharLimit(objContact,
+                            'Non_Technical_Title_Of_Project__c', 300)" ng-focus="removeClass('nonTechnicalTitle')" />
 
                                 <small class="text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Non_Technical_Title_Of_Project__c ">
                                     Maximum 300 characters allowed
                                 </small>
                             </div>
-
-                            <div class="col-md-6 ">
-                                <label class="font-if color-theme ">
-                                    <b>Non Technical Abstract Of Proposed Work</b> (Max. 300 chars)
-                                    <span class="required-asterisk text-danger ">*</span>
-                                </label>
-                                <input class="form-control " type="text " ng-model="objContact.Non_Technical_Abstract_Of_Proposed_Work__c
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted " id="nonTechnicalAbstract "
-                                    ng-change="checkCharLimit(objContact, 'Non_Technical_Abstract_Of_Proposed_Work__c',
-                                    300)" ng-focus="removeClass('nonTechnicalAbstract')" />
-
-                                <small class=" text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Non_Technical_Abstract_Of_Proposed_Work__c ">
-                                    Maximum 300 characters allowed
-                                </small>
-                            </div>
-
                         </div>
                     </div>
+
 
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
@@ -545,20 +560,19 @@
 
                             <div class="col-md-6 ">
                                 <label class="pb-3 color-theme ">
-                                    Duration In Months (Only 24 or 36 months)
+                                    Duration In Months
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
 
                                 <form name="formPrjDet ">
-                                    <input name="duration" type="number" class="form-control" placeholder="Enter 24 or 36" ng-model="objContact.Duration_In_Months_Max_36__c"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" ng-pattern="/^(24|36)$/" required="true"
-                                        id="txtDuration" ng-focus="removeClass('txtDuration')" />
+                                    <select name="duration" class="form-control" ng-model="objContact.Duration_In_Months_Max_36__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        required="true" id="txtDuration" ng-focus="removeClass('txtDuration')">
+                                        <option value="">-- Select Duration --</option>
+                                        <option ng-value="24">24 months</option>
+                                        <option ng-value="36">36 months</option>
+                                    </select>
 
                                     <!-- Validation message -->
-                                    <span class="text-danger " ng-show="formPrjDet.duration.$dirty && formPrjDet.duration.$error.pattern ">
-                                        Only 24 or 36 months are allowed
-                                    </span>
-
                                     <span class="text-danger " ng-show="formPrjDet.duration.$dirty && formPrjDet.duration.$error.required ">
                                         Duration is required
                                     </span>
@@ -640,6 +654,26 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Acronym (max 50 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor4" maxlength="50" ng-change="readCharacter(objContact.Acronym__c,2)
+                                    " ng-model="objContact.Acronym__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[2].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[2].errorStatus ">maximum character limit is 50
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
                                 <label class="font-if color-theme ">Abstract (max 700 characters without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
@@ -652,6 +686,132 @@
                                     " ng-model="objContact.Host_Abstract_Of_Project__c " ng-config="config "></ng-ckeditor>
                                 <span>Total characters : {{objRtf[0].charCount}}</span>
                                 <span class="text-danger " ng-if="objRtf[0].errorStatus ">maximum character limit is 700
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Non Technical Abstract Of Proposed Work (max 700 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor3" maxlength="700" ng-change="readCharacter(objContact.Non_Technical_Abstract_Of_Proposed_Work__c,1)
+                                    " ng-model="objContact.Non_Technical_Abstract_Of_Proposed_Work__c" ng-config="config "></ng-ckeditor>
+                                <span>Total characters : {{objRtf[1].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[1].errorStatus">maximum character limit is 700
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Project Description (max 6000 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <span class="label-rtf">Please structure the project description under the following headings:
+                                    <br/> Background: Specific Objectives:
+                                    <br/> Methodology:
+                                    <br/> Expected Outcome:
+                                    <br/> Milestones with timeline: </span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor5" maxlength="6000" ng-change="readCharacter(objContact.Project_Description__c,3)
+                                    " ng-model="objContact.Project_Description__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[3].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[3].errorStatus">maximum character limit is 6000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Work elements to be completed by Indian Awardee (max 2000 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor6" maxlength="2000" ng-change="readCharacter(objContact.Work_elements_to_be_completed_by_Indian__c,4)
+                                    " ng-model="objContact.Work_elements_to_be_completed_by_Indian__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[4].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[4].errorStatus">maximum character limit is 2000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Work elements to be completed by German Awardee (max 2000 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor7" maxlength="2000" ng-change="readCharacter(objContact.Work_elements_to_be_completed_by_German__c,5)
+                                    " ng-model="objContact.Work_elements_to_be_completed_by_German__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[5].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[5].errorStatus">maximum character limit is 2000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">Linkages and convergence of these work elements for the expected outcome (max 2000 characters
+                                    without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor8" maxlength="2000" ng-change="readCharacter(objContact.Linkages_and_convergence_of_work_element__c,6)
+                                    " ng-model="objContact.Linkages_and_convergence_of_work_element__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[6].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[6].errorStatus">maximum character limit is 2000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-5 ">
+                        <div class="row ">
+                            <div class="col-md-12 ">
+                                <label class="font-if color-theme ">References (max 3000 characters without space)
+                                </label>
+                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <br />
+                                <small class="label-rtf ">
+                                    <b>To use RTF more efficiently, make sure you write your content in word document first
+                                        and then copy paste here</b>
+                                </small>
+                                <ng-ckeditor name="ckEditor9" maxlength="3000" ng-change="readCharacter(objContact.References__c,7)
+                                    " ng-model="objContact.References__c" ng-config="config"></ng-ckeditor>
+                                <span>Total characters : {{objRtf[7].charCount}}</span>
+                                <span class="text-danger " ng-if="objRtf[7].errorStatus">maximum character limit is 3000
                                 </span>
                             </div>
                         </div>

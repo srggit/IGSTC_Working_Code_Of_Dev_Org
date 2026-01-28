@@ -218,7 +218,9 @@ public class IndustrialFellowshipModel {
             if(proposalId != null){
                 appProposal = [SELECT Id, Host_Project_Title__c, Host_Abstract_Of_Project__c, Host_Funding_Source__c, Actual_Application_Start_Date__c, Actual_Application_End_Date__c, 
                     Title_Of__c, Broad_area_of_research__c, Duration_In_Months_Max_36__c, KeyWords__c, Layman_abstract_of_proposed_work__c, Layman_title_of_project__c,
-                    Non_Technical_Title_Of_Project__c, Non_Technical_Abstract_Of_Proposed_Work__c
+                    Non_Technical_Title_Of_Project__c, Non_Technical_Abstract_Of_Proposed_Work__c, Acronym__c, Project_Description__c,
+                    Work_elements_to_be_completed_by_Indian__c, Work_elements_to_be_completed_by_German__c,
+                    Linkages_and_convergence_of_work_element__c, References__c
                     FROM Application_Proposal__c 
                     WHERE Id =: proposalId 
                     Limit 1];

@@ -472,7 +472,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		IndustrialFellowshipController.saveApplicantPortalWiser(contactToSave, $scope.accDet, birthYear, birthMonth, birthDay, $rootScope.proposalId, function (result, event) {
 			debugger;
 
-			// Restore button
+			// Restore button8
 			$("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
 			$("#btnPreview").prop('disabled', false);
 
@@ -482,7 +482,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 
 				// $scope.uploadFile('','','',51200,30720);
 				swal({
-					title: "SUCCESS",
+					title: "Success",
 					text: 'Applicant Details have been Saved Successfully.',
 					icon: "success",
 					button: "ok!",
@@ -492,7 +492,7 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 			}
 			else {
 				swal({
-					title: "ERROR",
+					title: "Error",
 					text: "Exception!",
 					icon: "error",
 					button: "ok!",
@@ -630,8 +630,8 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 					if (doneUploading == true) {
 						$scope.objContact.Uploaded__c = true;
 						swal(
-							'success',
-							'Uploaded successfully.',
+							'Success',
+							'Uploaded Successfully!',
 							'success'
 						);
 						$scope.getProjectdetils();
