@@ -848,7 +848,88 @@
 
                 </div>
 
+                <!-- Image Upload Section -->
+                <div class="row mt-5 mx-5">
+                    <div class="col-md-12 alert bg-color-list" role="alert">
+                        <ul class="font-if">
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Upload up to two images relevant to the proposed project (e.g., Gantt chart, graphical abstract, conceptual diagram, or workflow).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
+
+                <div class="row box-shadow-2 mt-5 p-3 mb-5">
+
+                    <div class="row mx-5 mt-3">
+                        <div class="col-md-12">
+                            <h4 class="color-theme">
+                                <b>Project Images</b>
+                            </h4>
+                        </div>
+                    </div>
+
+                    <!-- Image 1 Upload -->
+                    <div class="row mx-5 mt-3">
+                        <div class="col-md-6">
+                            <div ng-hide="proposalStage || isCurrentUserSubmitted">
+                                <label class="font-if pt-2">Image 1 (jpg/jpeg/png, 5 kb-30 kb)</label>
+                                <div class="input-group input-group-lg">
+                                    <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage || isCurrentUserSubmitted" id="Image 1" class="form-control"
+                                    />
+                                    <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
+                                        <button class="btn btn-success" ng-click="uploadImageFile('Image 1', image1Doc ? image1Doc.userDocument.Id : '', '', '30720', '5120')"
+                                            type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div ng-show="image1Doc && image1Doc.userDocument.Status__c=='Uploaded'">
+                                <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image1Doc)">View Image 1</a>
+                            </div>
+                        </div>
+
+                        <!-- Image 2 Upload -->
+                        <div class="col-md-6">
+                            <div ng-hide="proposalStage || isCurrentUserSubmitted">
+                                <label class="font-if pt-2">Image 2 (jpg/jpeg/png, 5 kb-30 kb)</label>
+                                <div class="input-group input-group-lg">
+                                    <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage || isCurrentUserSubmitted" id="Image 2" class="form-control"
+                                    />
+                                    <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
+                                        <button class="btn btn-success" ng-click="uploadImageFile('Image 2', image2Doc ? image2Doc.userDocument.Id : '', '', '30720', '5120')"
+                                            type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div ng-show="image2Doc && image2Doc.userDocument.Status__c=='Uploaded'">
+                                <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image2Doc)">View Image 2</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Preview Modal -->
+                    <div class="modal" id="filePreview">
+                        <div class="modal-dialog" style="min-width:120rem">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">
+                                        <div class="d-flex" style="background:unset;">
+                                            <h3 style="text-align: center">
+                                                <b>{{selectedFile.userDocument.Name}}</b>
+                                            </h3>
+                                        </div>
+                                    </h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe style="width:100%;height:75vh;border: 0px;border-radius: 10px;" id="file_frame" title="File"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- <div class="row m-5 " ng-if="!proposalStage || !isCurrentUserSubmitted "> -->
                 <div class="row m-5 " ng-if="!proposalStage && !isCurrentUserSubmitted ">

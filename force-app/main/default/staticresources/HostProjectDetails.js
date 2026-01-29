@@ -18,6 +18,20 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $rootScope.isCurrentUserSubmitted;
      $rootScope.candidateId;
      $scope.objKeyword = [];
+     $scope.image1Doc = null;
+     $scope.image2Doc = null;
+     $scope.allDocs = [];
+     $scope.selectedFile = null;
+     $scope.showSpinnereditProf = false;
+
+     var maxStringSize = 6000000;
+     var chunkSize = 750000;
+     var attachment = '';
+     var attachmentName = '';
+     var fileSize = 0;
+     var positionIndex = 0;
+     var doneUploading = false;
+     var maxFileSize = 0;
 
      // Get proposalId from LocalStorage
      if (localStorage.getItem('proposalId')) {
@@ -654,25 +668,231 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      }
 
      // --------------------- PROJECT PROPOSAL UPLOAD FUNCTIONALITY ----------------------- //
-     // $scope.getProjectDetails = function () {
-     //      debugger;
-     //      ApplicantPortal_Contoller.getAllUserDoc($rootScope.proposalId, function (result, event) {
-     //           debugger;
-     //           console.log('result : ', result);
-     //           if (event.status) {
-     //                $scope.allDocs = result;
-     //                for (var i = 0; i < $scope.allDocs.length; i++) {
-     //                     if ($scope.allDocs[i].userDocument.Name == 'project Description') {
-     //                          $scope.doc = $scope.allDocs[i];
-     //                     }
-     //                }
-     //                $scope.$apply();
-     //           }
-     //      }, {
-     //           escape: true
-     //      })
-     // }
-     //$scope.getProjectdetils();
+     $scope.getProjectDetails = function () {
+          debugger;
+          if (!$rootScope.proposalId) {
+               console.log('Proposal Id not available yet, skipping getProjectDetails call');
+               return;
+          }
+          $scope.selectedFile = '';
+          $('#file_frame').attr('src', '');
+          console.log('Calling getAllProposalDoc with proposalId:', $rootScope.proposalId);
+          ApplicantPortal_Contoller.getAllProposalDoc($rootScope.proposalId, function (result, event) {
+               debugger;
+               console.log('result return onload :: ');
+               console.log(result);
+               console.log('event:', event);
+               if (event.status) {
+                    $scope.allDocs = result;
+                    $scope.image1Doc = null;
+                    $scope.image2Doc = null;
+                    for (var i = 0; i < $scope.allDocs.length; i++) {
+                         if ($scope.allDocs[i].userDocument.Name == 'Image 1') {
+                              $scope.image1Doc = $scope.allDocs[i];
+                         }
+                         if ($scope.allDocs[i].userDocument.Name == 'Image 2') {
+                              $scope.image2Doc = $scope.allDocs[i];
+                         }
+                    }
+                    $scope.$apply();
+               } else {
+                    console.log('Error in getAllProposalDoc:', event.message);
+               }
+          }, {
+               escape: true
+          })
+     }
+     $scope.getProjectDetails();
+
+     // Removed duplicate - using the one below that handles Attachments
+
+     $scope.uploadImageFile = function (type, userDocId, fileId, maxSize, minFileSize) {
+          debugger;
+          $scope.showSpinnereditProf = true;
+          var file;
+          file = document.getElementById(type).files[0];
+          if (!file) {
+               swal('Info', 'You must choose a file before trying to upload it', 'info');
+               $scope.showSpinnereditProf = false;
+               return;
+          }
+          fileName = file.name;
+          var typeOfFile = fileName.split(".");
+          lengthOfType = typeOfFile.length;
+          if (typeOfFile[lengthOfType - 1] == "jpg" || typeOfFile[lengthOfType - 1] == "jpeg" || typeOfFile[lengthOfType - 1] == "png") {
+          } else {
+               swal('Info', 'Please choose jpg/jpeg/png file only.', 'info');
+               $scope.showSpinnereditProf = false;
+               return;
+          }
+          console.log(file);
+          maxFileSize = maxSize;
+          if (file != undefined) {
+               if (file.size <= maxFileSize) {
+                    if (file.size < minFileSize) {
+                         swal('Info', 'Your file is too small. Please try again.', 'info');
+                         $scope.showSpinnereditProf = false;
+                         return;
+                    }
+                    attachmentName = file.name;
+                    const myArr = attachmentName.split(".");
+
+                    // If userDocId is empty, we need to create Proposal_Document__c first
+                    if (!userDocId || userDocId == '') {
+                         $scope.createProposalDocument(type, function (createdDocId) {
+                              if (createdDocId) {
+                                   var fileReader = new FileReader();
+                                   fileReader.onloadend = function (e) {
+                                        attachment = window.btoa(this.result);  //Base 64 encode the file before sending it
+                                        positionIndex = 0;
+                                        fileSize = attachment.length;
+                                        $scope.showSpinnereditProf = false;
+                                        console.log("Total Attachment Length: " + fileSize);
+                                        doneUploading = false;
+                                        debugger;
+                                        if (fileSize < maxStringSize) {
+                                             $scope.uploadImageAttachment(type, createdDocId, null);
+                                        } else {
+                                             swal('Info', 'Base 64 Encoded file is too large.  Maximum size is ' + maxStringSize + ' your file is ' + fileSize + '.', 'info');
+                                             return;
+                                        }
+                                   }
+                                   fileReader.onerror = function (e) {
+                                        swal('Info', 'There was an error reading the file.  Please try again.', 'info');
+                                        $scope.showSpinnereditProf = false;
+                                        return;
+                                   }
+                                   fileReader.onabort = function (e) {
+                                        swal('Info', 'There was an error reading the file.  Please try again.', 'info');
+                                        $scope.showSpinnereditProf = false;
+                                        return;
+                                   }
+                                   fileReader.readAsBinaryString(file);  //Read the body of the file
+                              } else {
+                                   swal('Info', 'Failed to create document record. Please try again.', 'info');
+                                   $scope.showSpinnereditProf = false;
+                              }
+                         });
+                    } else {
+                         var fileReader = new FileReader();
+                         fileReader.onloadend = function (e) {
+                              attachment = window.btoa(this.result);  //Base 64 encode the file before sending it
+                              positionIndex = 0;
+                              fileSize = attachment.length;
+                              $scope.showSpinnereditProf = false;
+                              console.log("Total Attachment Length: " + fileSize);
+                              doneUploading = false;
+                              debugger;
+                              if (fileSize < maxStringSize) {
+                                   $scope.uploadImageAttachment(type, userDocId, null);
+                              } else {
+                                   swal('Info', 'Base 64 Encoded file is too large.  Maximum size is ' + maxStringSize + ' your file is ' + fileSize + '.', 'info');
+                                   return;
+                              }
+                         }
+                         fileReader.onerror = function (e) {
+                              swal('Info', 'There was an error reading the file.  Please try again.', 'info');
+                              $scope.showSpinnereditProf = false;
+                              return;
+                         }
+                         fileReader.onabort = function (e) {
+                              swal('Info', 'There was an error reading the file.  Please try again.', 'info');
+                              $scope.showSpinnereditProf = false;
+                              return;
+                         }
+                         fileReader.readAsBinaryString(file);  //Read the body of the file
+                    }
+               } else {
+                    swal('Info', 'Your file is too large.  Please try again.', 'info');
+                    $scope.showSpinnereditProf = false;
+                    return;
+               }
+          } else {
+               swal('Info', 'You must choose a file before trying to upload it', 'info');
+               $scope.showSpinnereditProf = false;
+               return;
+          }
+     }
+
+     $scope.createProposalDocument = function (docName, callback) {
+          debugger;
+          if (!$rootScope.proposalId) {
+               swal('Info', 'Proposal Id not available.', 'info');
+               callback(null);
+               return;
+          }
+          // Create Proposal_Document__c record by uploading empty attachment
+          // This will create the record, then we'll upload the actual file
+          // Note: The backend method creates Proposal_Document__c but doesn't set Name/Proposals__c
+          // We'll need to query after creation to get the ID
+          ApplicantPortal_Contoller.doCUploadAttachmentProjectDet('', docName, '', '', function (result, event) {
+               debugger;
+               if (event.status && result) {
+                    // Query to get the created Proposal_Document__c ID
+                    // Since we can't easily get it from result, we'll refresh and find it
+                    setTimeout(function () {
+                         $scope.getProjectDetails();
+                         var docId = null;
+                         // Wait a bit for the query to complete
+                         setTimeout(function () {
+                              if (docName == 'Image 1' && $scope.image1Doc) {
+                                   docId = $scope.image1Doc.userDocument.Id;
+                              } else if (docName == 'Image 2' && $scope.image2Doc) {
+                                   docId = $scope.image2Doc.userDocument.Id;
+                              }
+                              if (docId) {
+                                   callback(docId);
+                              } else {
+                                   swal('Info', 'Document record created but could not be found. Please try uploading again.', 'info');
+                                   callback(null);
+                              }
+                         }, 1000);
+                    }, 500);
+               } else {
+                    swal('Info', 'Failed to create document record. Please try again.', 'info');
+                    callback(null);
+               }
+          }, { escape: true });
+     }
+
+     $scope.uploadImageAttachment = function (type, userDocId, fileId) {
+          debugger;
+          var attachmentBody = "";
+          if (fileSize <= positionIndex + chunkSize) {
+               debugger;
+               attachmentBody = attachment.substring(positionIndex);
+               doneUploading = true;
+          } else {
+               attachmentBody = attachment.substring(positionIndex, positionIndex + chunkSize);
+          }
+          console.log("Uploading " + attachmentBody.length + " chars of " + fileSize);
+          ApplicantPortal_Contoller.doCUploadAttachmentProjectDet(
+               attachmentBody, attachmentName, fileId, userDocId,
+               function (result, event) {
+                    console.log(result);
+                    if (event.type === 'exception') {
+                         console.log("exception");
+                         console.log(event);
+                    } else if (event.status) {
+                         if (doneUploading == true) {
+                              $scope.getProjectDetails();
+                              swal(
+                                   'Success',
+                                   'Uploaded Successfully!',
+                                   'success'
+                              )
+                              $scope.getProjectDetails();
+                         }
+                         $scope.showUplaodUserDoc = false;
+                    } else {
+                         debugger;
+                         positionIndex += chunkSize;
+                         $scope.uploadImageAttachment(type, userDocId, result);
+                    }
+               },
+               { buffer: true, escape: true, timeout: 120000 }
+          );
+     }
 
      $scope.uploadFile = function (type, userDocId, good, fileId, fileSizeFun) {
           debugger;
@@ -877,18 +1097,23 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           $scope.selectedFile = fileContent;
 
           console.log('selectedFile---', $scope.selectedFile);
-          var jhj = $scope.selectedFile.userDocument.Attachments[0].Id;
-          console.log(jhj);
-          // $scope.filesrec = $sce.trustAsResourceUrl(window.location.origin + '/ApplicantDashboard/servlet/servlet.FileDownload?file=' + $scope.selectedFile.userDocument.Attachments[0].Id);
-          $scope.filesrec = window.location.origin + '/ApplicantDashboard/servlet/servlet.FileDownload?file=' + $scope.selectedFile.userDocument.Attachments[0].Id;
-          // $('#file_frame').attr('src', $scope.selectedFile.ContentDistribution.DistributionPublicUrl);
-          $('#file_frame').attr('src', $scope.filesrec);
 
-          var myModal = new bootstrap.Modal(document.getElementById('filePreview'))
+          // Check if ContentDistribution exists (for newer uploads) or use Attachments (for older)
+          if ($scope.selectedFile.ContentDistribution && $scope.selectedFile.ContentDistribution.DistributionPublicUrl) {
+               $('#file_frame').attr('src', $scope.selectedFile.ContentDistribution.DistributionPublicUrl);
+          } else if ($scope.selectedFile.userDocument && $scope.selectedFile.userDocument.Attachments && $scope.selectedFile.userDocument.Attachments.length > 0) {
+               var attachmentId = $scope.selectedFile.userDocument.Attachments[0].Id;
+               $scope.filesrec = window.location.origin + '/ApplicantDashboard/servlet/servlet.FileDownload?file=' + attachmentId;
+               $('#file_frame').attr('src', $scope.filesrec);
+          } else {
+               swal('Info', 'File preview not available.', 'info');
+               return;
+          }
+
+          var myModal = new bootstrap.Modal(document.getElementById('filePreview'));
           myModal.show('slow');
-          $scope.$apply();
 
-          //.ContentDistribution.DistributionPublicUrl
+          // Don't call $apply() here - ng-click already triggers digest cycle automatically
      }
 
 
