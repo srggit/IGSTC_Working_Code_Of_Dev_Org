@@ -10,6 +10,31 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     $scope.grantsHandledValue = ''; // Current selected value from Grants_Handled__c
     $scope.grantsHandledPickList = []; // Picklist values for Grants_Handled__c
     $scope.showGrantsTable = false; // Controls table visibility
+    $scope.activeApplicationsField = ''; // RTF field for Active applications funded by DST-BMFTR
+
+    // RTF character counting array (index 0 for Active Applications field)
+    $scope.objRtf = [
+        { charCount: 0, maxCharLimit: 1000, errorStatus: false }  // Active Applications
+    ];
+
+    // CKEditor configuration
+    $scope.config = {};
+    $scope.config.toolbarGroups = [
+        { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+        { name: 'clipboard', groups: ['clipboard', 'undo'] },
+        { name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing'] },
+        { name: 'forms', groups: ['forms'] },
+        { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph'] },
+        { name: 'links', groups: ['links'] },
+        { name: 'insert', groups: ['insert'] },
+        { name: 'styles', groups: ['styles'] },
+        { name: 'colors', groups: ['colors'] },
+        { name: 'document', groups: ['mode', 'document', 'doctools'] },
+        { name: 'tools', groups: ['tools'] },
+        { name: 'others', groups: ['others'] },
+        { name: 'about', groups: ['about'] }
+    ];
+    $scope.config.removeButtons = 'BGColor,Anchor,Subscript,Superscript,Paste,Copy,Cut,Undo,Redo';
 
 
 
@@ -91,6 +116,17 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
                         $scope.grantsHandledValue = $scope.existingGrants[0].Applicant_Proposal_Association__r.Grants_Handled__c || '';
                         // Show table if Grants_Handled__c is 'Yes'
                         $scope.showGrantsTable = ($scope.grantsHandledValue === 'Yes');
+
+                        // Load Active_applications_funded_by_DST_BMFTR__c from first grant record (if exists)
+                        if ($scope.existingGrants.length > 0 && $scope.existingGrants[0].Active_applications_funded_by_DST_BMFTR__c) {
+                            var activeAppsValue = $scope.existingGrants[0].Active_applications_funded_by_DST_BMFTR__c;
+                            // Decode HTML entities
+                            activeAppsValue = activeAppsValue ? activeAppsValue.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('lt;', '<').replaceAll('&gt;', '>').replaceAll('gt;', '>').replaceAll('&amp;', '&').replaceAll('amp;', '&').replaceAll('&quot;', '\'') : activeAppsValue;
+                            $scope.activeApplicationsField = activeAppsValue;
+                            // Initialize character count
+                            $scope.readCharacter($scope.activeApplicationsField, 0);
+                        }
+
                         $scope.$applyAsync();
                     } else {
                         // No grants records - fetch APA directly to get Grants_Handled__c value
@@ -302,6 +338,14 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
             swal("Info", "Please select a valid Grants Handled option.", "info");
             return;
         }
+
+        // Validate RTF field character limit
+        if ($scope.showGrantsTable) {
+            if ($scope.objRtf[0].charCount > 1000 || $scope.objRtf[0].errorStatus) {
+                swal("Info", "Maximum 1000 characters allowed for Active applications funded by DST-BMFTR.", "info");
+                return;
+            }
+        }
         // Show spinner on button
         $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
         $("#btnPreview").prop('disabled', true);
@@ -356,7 +400,8 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
                         "startDate": startDate || "",
                         "endDate": endDate || "",
                         "Application": $rootScope.proposalId,
-                        "apaId": $rootScope.apaId
+                        "apaId": $rootScope.apaId,
+                        "activeApplications": $scope.activeApplicationsField || ""  // Add RTF field value
                     };
 
                     $scope.grantList.push(grantApplication);
@@ -456,6 +501,26 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     $scope.removeClass = function (controlid, index) {
         var controlIdfor = controlid + "" + index;
         $("#" + controlIdfor + "").removeClass('border-theme');
+    }
+
+    // RTF Character counting function (similar to HostProjectDetails.js)
+    $scope.readCharacter = function (event, index) {
+        try {
+            var rtfString = event.toString().replace(/<[^>]*>|\s/g, '').replace(/\s+/g, '').replace(/&ndash;/g, '-').replace(/&euro;/g, '1').replace(/&amp;/g, '1').replace(/&#39;/g, '1').replace(/&quot;/g, '1').replace(/&nbsp;/g, '').replace(/&mdash;/g, '-').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&bull;/g, '');
+            charLength = rtfString.length;
+            if (charLength > 0) {
+                $scope.objRtf[index].charCount = charLength;
+                if (charLength > $scope.objRtf[index].maxCharLimit) {
+                    $scope.objRtf[index].errorStatus = true;
+                } else {
+                    $scope.objRtf[index].errorStatus = false;
+                }
+            }
+            else {
+                $scope.objRtf[index].charCount = 0;
+                $scope.objRtf[index].errorStatus = false;
+            }
+        } catch (e) { }
     }
 
 });

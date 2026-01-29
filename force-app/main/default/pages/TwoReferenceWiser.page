@@ -468,7 +468,7 @@
                             </div>
 
                             <div class="col-md-4 mt-3">
-                                <label class="font-if">Email
+                                <label class="font-if">Signatory Email
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
@@ -478,7 +478,7 @@
                             </div>
                         </div>
 
-                        <div class="row mt-4">
+                        <!-- <div class="row mt-4">
                             <div class="col-md-4 mt-3">
                                 <label class="font-if">Institution
                                     <span class="text-danger me-2">*</span>
@@ -507,7 +507,7 @@
                                     ng-disabled="proposalStage || isCurrentUserSubmitted"
                                     ng-focus="removeClass('signEmailistName')" />
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>

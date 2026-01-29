@@ -336,7 +336,7 @@
 
                 <div class="row box-shadow-2 mt-5 mx-5 p-3 mb-5">
                     <div class="row mt-5" style="margin-left: -1px">
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label class="font-if">Acceptance letter from the pairing collaborator on an official letter head with signature and
                                 seal.
                                 <br/>Upload in pdf format with size less than 1 mb
@@ -354,13 +354,15 @@
 
                             <div class="col-md-3" ng-show="doc.userDocument.Status__c=='Uploaded'">
                                 <a class="blue-btn float-end mt-4 py-3" ng-click="filePreviewHandler(doc)">View</a>
-                                <!-- <a class="blue-btn float-end mt-4 py-3" href="{{doc.ContentDistribution.DistributionPublicUrl}}" target="_blank">View</a> -->
+                                <!-- <a class="blue-btn float-end mt-4 py-3" href="{{doc.ContentDistribution.DistributionPublicUrl}}" target="_blank">View</a>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-6 mb-3">
-                            <label class="font-if mb-2">No objection certificate/ Endorsement letter from the present organization of the applicant.
-                                <br/>Upload in pdf format with size less than 1 mb
+                            <label class="font-if mb-2">
+                                <b>No Objection Certificate (NOC)</b>
+                                <br/> Upload No Objection Certificate (NOC) from the authorised signatory/head of the parent/present
+                                organisation confirming institutional consent for participation. (Max size 1 MB)
                                 <span class="text-danger me-2">*</span>
                             </label>
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
@@ -380,8 +382,12 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 mb-3 mt-5">
-                            <label class="font-if">Upload the project proposal in a PDF format with a min of 30Kb and max 1Mb.
+                        <div class="col-md-6 mb-3">
+                            <label class="font-if">
+                                <b> Project Proposal PDF </b>
+                                <br/> Complete and upload the Project Proposal as a single PDF file, consistent with the details
+                                and figures/images (if any) provided (if any) in the Paired Project Details section of the
+                                application. (Max size 5 MB &amp; 8 pages including references and images)
                                 <span class="text-danger me-2">*</span>
                             </label>
                             <div class="col-md-9 mt-4" style="padding-left: 0px !important; padding-right: 0px !important">
@@ -389,7 +395,7 @@
                                     <input type="file" accept=".pdf" ng-disabled="proposalStage || isCurrentUserSubmitted" id="{{projectProposal.userDocument.Name}}"
                                         class="form-control " />
                                     <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
-                                        <button class="btn btn-success" ng-click="uploadFile(projectProposal.userDocument.Name,projectProposal.userDocument.Id,'','1048576','30720')"
+                                        <button class="btn btn-success" ng-click="uploadFile(projectProposal.userDocument.Name,projectProposal.userDocument.Id,'','5242880','30720')"
                                             type="button">Upload</button>
                                     </span>
                                 </div>

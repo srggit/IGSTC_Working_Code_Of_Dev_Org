@@ -27,6 +27,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     const TRAVEL_COST_EURO = 1500;
     const TRAVEL_COST_INR = 100000; // Fixed ₹1,00,000 for India
 
+    $scope.timeUnits = ['Hour', 'Day', 'Week', 'Month'];
+
     // Function to get max research amount based on mailing country
     $scope.getMaxResearchAmount = function () {
         if ($scope.mailingCountry === 'India' || $rootScope.mailingCountry === 'India') {
@@ -83,12 +85,16 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         hoursYear1: 0,
         hoursYear2: 0,
         hoursYear3: 0,
+        hoursUnit: 'Hour',
         totalYear1: 0,
         totalYear2: 0,
         totalYear3: 0,
         totalAmount: 0,
         researchStaffType: 'Research staff 1', // Track the backend type name
-        expenseHeadIds: [] // Store Expense_Head__c IDs for deletion
+        expenseHeadIds: [], // Store Expense_Head__c IDs for deletion
+        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
+        descriptionCost: '', // Description for Cost (Index__c = 2)
+        descriptionHours: '' // Description for Hours (Index__c = 3)
     }];
 
     // Aggregate totals for all Research Staff records
@@ -2122,6 +2128,11 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
             for (var i = 0; i < $scope.budgetResearchStaffList.length; i++) {
                 var staff = $scope.budgetResearchStaffList[i];
+                // Ensure hoursUnit is initialized only if it's truly undefined/null/empty
+                // Don't reset if it's already been set from backend data
+                if (!staff.hoursUnit || (staff.hoursUnit === '' || staff.hoursUnit === null || staff.hoursUnit === undefined)) {
+                    staff.hoursUnit = 'Hour';
+                }
                 $scope.researchStaffRows.push({ staff: staff, index: i, rowType: 'positions' });
                 $scope.researchStaffRows.push({ staff: staff, index: i, rowType: 'cost' });
                 $scope.researchStaffRows.push({ staff: staff, index: i, rowType: 'hours' });
@@ -2163,12 +2174,16 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             hoursYear1: 0,
             hoursYear2: 0,
             hoursYear3: 0,
+            hoursUnit: 'Hour',
             totalYear1: 0,
             totalYear2: 0,
             totalYear3: 0,
             totalAmount: 0,
             researchStaffType: 'Research staff ' + nextIndex, // Track the backend type name
-            expenseHeadIds: [] // Store Expense_Head__c IDs for deletion (empty for new records)
+            expenseHeadIds: [], // Store Expense_Head__c IDs for deletion (empty for new records)
+            descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
+            descriptionCost: '', // Description for Cost (Index__c = 2)
+            descriptionHours: '' // Description for Hours (Index__c = 3)
         });
         $scope.updateResearchStaffRows();
         $scope.recalculateAll();
@@ -2400,9 +2415,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                 positionsYear1: 0, positionsYear2: 0, positionsYear3: 0,
                                 costYear1: 0, costYear2: 0, costYear3: 0,
                                 hoursYear1: 0, hoursYear2: 0, hoursYear3: 0,
+                                hoursUnit: 'Hour',
                                 totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                                 researchStaffType: 'Research staff ' + newIndex, // Track the backend type name
-                                expenseHeadIds: [] // Store Expense_Head__c IDs for deletion
+                                expenseHeadIds: [], // Store Expense_Head__c IDs for deletion
+                                descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
+                                descriptionCost: '', // Description for Cost (Index__c = 2)
+                                descriptionHours: '' // Description for Hours (Index__c = 3)
                             });
                         }
 
@@ -2424,6 +2443,32 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         } else {
                             // Initialize empty array if no IDs found
                             staff.expenseHeadIds = [];
+                        }
+
+                        // Load Expense_Description_2__c from line item based on Index__c
+                        // Index__c = 1 → No. of Positions → descriptionPositions
+                        // Index__c = 2 → Cost → descriptionCost
+                        // Index__c = 3 → Hours → descriptionHours
+                        if (item.Expense_Description_2__c != null && item.Expense_Description_2__c !== undefined && item.Expense_Description_2__c !== '') {
+                            var descriptionValue = typeof item.Expense_Description_2__c === 'string' ? item.Expense_Description_2__c.trim() : String(item.Expense_Description_2__c);
+                            if (descriptionValue !== '') {
+                                if (item.Index__c === 1 || (item.Index__c != null && String(item.Index__c) === '1')) {
+                                    // No. of Positions
+                                    if (!staff.descriptionPositions || staff.descriptionPositions === '') {
+                                        staff.descriptionPositions = descriptionValue;
+                                    }
+                                } else if (item.Index__c === 2 || (item.Index__c != null && String(item.Index__c) === '2')) {
+                                    // Cost
+                                    if (!staff.descriptionCost || staff.descriptionCost === '') {
+                                        staff.descriptionCost = descriptionValue;
+                                    }
+                                } else if (item.Index__c === 3 || (item.Index__c != null && String(item.Index__c) === '3')) {
+                                    // Hours
+                                    if (!staff.descriptionHours || staff.descriptionHours === '') {
+                                        staff.descriptionHours = descriptionValue;
+                                    }
+                                }
+                            }
                         }
 
                         // Map line items based on Index__c and Description
@@ -2454,6 +2499,16 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                             }
                             if ($rootScope.proposalDurationMonths === 36) {
                                 staff.hoursYear3 = item.Year3_Expense__c || item.Person_Month__c || 0;
+                            }
+                            // Load Time_Units__c value from backend
+                            // Set the value if it exists in the item (all years should have the same value)
+                            // Always set if value exists, since all years should have the same value
+                            if (item.Time_Units__c != null && item.Time_Units__c !== undefined && item.Time_Units__c !== '') {
+                                var timeUnitValue = typeof item.Time_Units__c === 'string' ? item.Time_Units__c.trim() : String(item.Time_Units__c);
+                                if (timeUnitValue !== '') {
+                                    staff.hoursUnit = timeUnitValue;
+                                    console.log('Loaded Time_Units__c for Research Staff:', staff.researchStaffType, 'Value:', timeUnitValue);
+                                }
                             }
                         }
                     } else if (expenseType === 'Consumables' || expenseType === 'Consumables/Materials') {
@@ -2514,9 +2569,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         positionsYear1: 0, positionsYear2: 0, positionsYear3: 0,
                         costYear1: 0, costYear2: 0, costYear3: 0,
                         hoursYear1: 0, hoursYear2: 0, hoursYear3: 0,
+                        hoursUnit: 'Hour',
                         totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                         researchStaffType: 'Research staff 1',
-                        expenseHeadIds: []
+                        expenseHeadIds: [],
+                        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
+                        descriptionCost: '', // Description for Cost (Index__c = 2)
+                        descriptionHours: '' // Description for Hours (Index__c = 3)
                     }];
                 } else {
                     // Records exist in backend - remove any records without expenseHeadIds (empty/default records)
@@ -2544,9 +2603,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         positionsYear1: 0, positionsYear2: 0, positionsYear3: 0,
                         costYear1: 0, costYear2: 0, costYear3: 0,
                         hoursYear1: 0, hoursYear2: 0, hoursYear3: 0,
+                        hoursUnit: 'Hour',
                         totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                         researchStaffType: 'Research staff 1',
-                        expenseHeadIds: []
+                        expenseHeadIds: [],
+                        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
+                        descriptionCost: '', // Description for Cost (Index__c = 2)
+                        descriptionHours: '' // Description for Hours (Index__c = 3)
                     }];
                     $scope.updateResearchStaffRows();
                 }
@@ -2595,6 +2658,34 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             return;
         }
 
+        // Validate description fields length (max 250 characters)
+        if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+            for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
+                let staff = $scope.budgetResearchStaffList[i];
+                let staffNumber = i + 1;
+
+                if (staff.descriptionPositions && staff.descriptionPositions.length > 250) {
+                    swal("Description Length Error",
+                        "Research Staff " + staffNumber + " - 'No. of Positions' description cannot exceed 250 characters. Current length: " + staff.descriptionPositions.length + " characters.",
+                        "warning");
+                    return;
+                }
+
+                if (staff.descriptionCost && staff.descriptionCost.length > 250) {
+                    swal("Description Length Error",
+                        "Research Staff " + staffNumber + " - 'Cost' description cannot exceed 250 characters. Current length: " + staff.descriptionCost.length + " characters.",
+                        "warning");
+                    return;
+                }
+
+                if (staff.descriptionHours && staff.descriptionHours.length > 250) {
+                    swal("Description Length Error",
+                        "Research Staff " + staffNumber + " - 'Hours' description cannot exceed 250 characters. Current length: " + staff.descriptionHours.length + " characters.",
+                        "warning");
+                    return;
+                }
+            }
+        }
 
         // Prepare line items for saving
         var allExpenseLineItems = [];
@@ -2788,7 +2879,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     Year2_Expense__c: 0,
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.positionsYear1 || 0,
-                    Expense_Type__c: researchStaffType
+                    Expense_Type__c: researchStaffType,
+                    Expense_Description_2__c: staff.descriptionPositions || ''
                 };
                 // Only include Expense_Head__c if it's not null/undefined/empty
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
@@ -2806,7 +2898,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: staff.positionsYear2 || 0,
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.positionsYear2 || 0,
-                        Expense_Type__c: researchStaffType
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionPositions || ''
                     };
                     // Only include Expense_Head__c if it's not null/undefined/empty
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
@@ -2825,7 +2918,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: 0,
                         Year3_Expense__c: staff.positionsYear3 || 0,
                         Total_Expense__c: staff.positionsYear3 || 0,
-                        Expense_Type__c: researchStaffType
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionPositions || ''
                     };
                     // Only include Expense_Head__c if it's not null/undefined/empty
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
@@ -2844,7 +2938,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     Year2_Expense__c: 0,
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.costYear1 || 0,
-                    Expense_Type__c: researchStaffType
+                    Expense_Type__c: researchStaffType,
+                    Expense_Description_2__c: staff.descriptionCost || ''
                 };
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
                     costYear1Item.Expense_Head__c = year1HeadId;
@@ -2861,7 +2956,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: staff.costYear2 || 0,
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.costYear2 || 0,
-                        Expense_Type__c: researchStaffType
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionCost || ''
                     };
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
                         costYear2Item.Expense_Head__c = year2HeadId;
@@ -2879,7 +2975,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: 0,
                         Year3_Expense__c: staff.costYear3 || 0,
                         Total_Expense__c: staff.costYear3 || 0,
-                        Expense_Type__c: researchStaffType
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionCost || ''
                     };
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
                         costYear3Item.Expense_Head__c = year3HeadId;
@@ -2897,7 +2994,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     Year2_Expense__c: 0,
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.hoursYear1 || 0,
-                    Expense_Type__c: researchStaffType
+                    Time_Units__c: staff.hoursUnit || 'Hour',
+                    Expense_Type__c: researchStaffType,
+                    Expense_Description_2__c: staff.descriptionHours || ''
                 };
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
                     hoursYear1Item.Expense_Head__c = year1HeadId;
@@ -2914,7 +3013,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: staff.hoursYear2 || 0,
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.hoursYear2 || 0,
-                        Expense_Type__c: researchStaffType
+                        Time_Units__c: staff.hoursUnit || 'Hour',
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionHours || ''
                     };
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
                         hoursYear2Item.Expense_Head__c = year2HeadId;
@@ -2932,7 +3033,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: 0,
                         Year3_Expense__c: staff.hoursYear3 || 0,
                         Total_Expense__c: staff.hoursYear3 || 0,
-                        Expense_Type__c: researchStaffType
+                        Time_Units__c: staff.hoursUnit || 'Hour',
+                        Expense_Type__c: researchStaffType,
+                        Expense_Description_2__c: staff.descriptionHours || ''
                     };
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
                         hoursYear3Item.Expense_Head__c = year3HeadId;

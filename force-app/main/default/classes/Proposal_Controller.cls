@@ -4125,6 +4125,11 @@ return e.getMessage() + e.getLineNumber();
                             newELI.Expense_Head__c = targetHead.Id;
                             newELI.Index__c = eli.Index__c;
                             newELI.Expense_Type__c = eli.Expense_Type__c;
+                            newELI.Expense_Description_2__c = eli.Expense_Description_2__c; // Map Expense_Description_2__c field
+                            // Map Time_Units__c field for hours line items (Index__c = 3)
+                            if(eli.Index__c != null && (eli.Index__c == 3 || String.valueOf(eli.Index__c) == '3')) {
+                                newELI.Time_Units__c = eli.Time_Units__c;
+                            }
                             
                             // Set year-specific expense values based on the Expense_Head__c's year
                             // Frontend sends: Year 1 line item has Year1_Expense__c populated, Year 2 has Year2_Expense__c, etc.
@@ -4244,6 +4249,10 @@ return e.getMessage() + e.getLineNumber();
                         newELI.Expense_Head__c = targetHead.Id;
                         newELI.Index__c = eli.Index__c != null ? eli.Index__c : 1;
                         newELI.Expense_Type__c = eli.Expense_Type__c;
+                        // Map Time_Units__c field for hours line items (Index__c = 3)
+                        if(eli.Index__c != null && (eli.Index__c == 3 || String.valueOf(eli.Index__c) == '3')) {
+                            newELI.Time_Units__c = eli.Time_Units__c;
+                        }
                         
                         // Store only the year-specific value in this line item
                         Decimal expenseValue = 0;
@@ -4530,6 +4539,7 @@ return e.getMessage() + e.getLineNumber();
                                                      Year1_Expense__c, Year2_Expense__c, Year3_Expense__c,
                                                      Year1_Approved_Amount__c, Year2_Approved_Amount__c, Year3_Approved_Amount__c,
                                                      Total_Expense__c, Index__c, Expense_Type__c, Expense_Head__c,
+                                                     Time_Units__c, Expense_Description_2__c,
                                                      Expense_Head__r.Name, Expense_Head__r.Yearly_Expense__r.Year__c
                                                      FROM Expense_Line_Item__c 
                                                      WHERE Expense_Head__c IN :headIds 
@@ -4563,6 +4573,14 @@ return e.getMessage() + e.getLineNumber();
                         existing.Year3_Expense__c = eli.Year3_Expense__c;
                         existing.Year3_Approved_Amount__c = eli.Year3_Approved_Amount__c;
                     }
+                    // Preserve Time_Units__c if it exists in the new item and not already set in existing
+                    if(eli.Time_Units__c != null && eli.Time_Units__c != '' && (existing.Time_Units__c == null || existing.Time_Units__c == '')) {
+                        existing.Time_Units__c = eli.Time_Units__c;
+                    }
+                    // Preserve Expense_Description_2__c if it exists in the new item and not already set in existing
+                    if(eli.Expense_Description_2__c != null && eli.Expense_Description_2__c != '' && (existing.Expense_Description_2__c == null || existing.Expense_Description_2__c == '')) {
+                        existing.Expense_Description_2__c = eli.Expense_Description_2__c;
+                    }
                     // Recalculate total
                     existing.Total_Expense__c = (existing.Year1_Expense__c != null ? existing.Year1_Expense__c : 0) +
                                                 (existing.Year2_Expense__c != null ? existing.Year2_Expense__c : 0) +
@@ -4580,6 +4598,8 @@ return e.getMessage() + e.getLineNumber();
                     consolidated.Index__c = eli.Index__c;
                     consolidated.Expense_Type__c = eli.Expense_Head__r.Name;
                     consolidated.Expense_Head__c = eli.Expense_Head__c; // Preserve Expense_Head__c ID for frontend to determine year
+                    consolidated.Time_Units__c = eli.Time_Units__c; // Preserve Time_Units__c field
+                    consolidated.Expense_Description_2__c = eli.Expense_Description_2__c; // Preserve Expense_Description_2__c field
                     
                     if(eli.Expense_Head__r.Yearly_Expense__r.Year__c == '1') {
                         consolidated.Year1_Expense__c = eli.Year1_Expense__c;

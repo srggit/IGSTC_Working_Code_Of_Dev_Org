@@ -10,6 +10,8 @@
                 var userId = '{!$CurrentPage.parameters.id}'
             </script>
             <apex:stylesheet value="{!$Resource.ApplicantPortalCSS}" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/textAngular/1.5.16/textAngular.css" crossorigin="anonymous"
+            />
         </head>
 
         <body>
@@ -424,6 +426,34 @@
                             </tbody>
 
                         </table>
+                    </div>
+                </div>
+
+                <!-- Active Applications Funded by DST-BMFTR RTF Field -->
+                <div class="row mt-5 mx-5" ng-show="showGrantsTable">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-if color-theme">
+                                Active applications funded by DST-BMFTR (max 1000 characters without space)
+                                <span class="required-asterisk text-danger">*</span>
+                                <br/>
+                                <i>Please provide details of any active applications funded by DST and/or BMFTR that overlap
+                                    scientifically or technically with the proposed project. If yes, provide project title,
+                                    funding agency, reference number, duration, and your role. (Max. characters 1000 without
+                                    space)
+                                </i>
+                            </label>
+                            <br />
+                            <small class="label-rtf">
+                                <b>To use RTF more efficiently, make sure you write your content in word document first and
+                                    then copy paste here</b>
+                            </small>
+                            <ng-ckeditor name="ckEditorActiveApplications" maxlength="1000" ng-change="readCharacter(activeApplicationsField, 0)" ng-model="activeApplicationsField"
+                                ng-config="config" ng-disabled="proposalStage || isCurrentUserSubmitted"></ng-ckeditor>
+                            <span>Total characters : {{objRtf[0].charCount}}</span>
+                            <span class="text-danger" ng-if="objRtf[0].errorStatus">maximum character limit is 1000
+                            </span>
+                        </div>
                     </div>
                 </div>
 

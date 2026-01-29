@@ -2186,7 +2186,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
     }
        
     public static List<Expense_Head__c> getExpenseRecords(String ProposalId){
-        list<Expense_Head__c> allExpHead = [select name,id,Proposals__c,Proposals__r.Total_funding_requested_from_IGSTC__c,(select name,Description__c,Currency_Type__c,Expense_Head__c,Expense_Type__c,Year1_Expense__c,Year2_Expense__c,Year3_Expense__c from Expense_Line_Items__r) from Expense_Head__c where Proposals__c =:ProposalId];
+        list<Expense_Head__c> allExpHead = [select name,id,Proposals__c,Proposals__r.Total_funding_requested_from_IGSTC__c,(select name,Description__c,Currency_Type__c,Expense_Head__c,Expense_Type__c,Year1_Expense__c,Year2_Expense__c,Year3_Expense__c,Time_Units__c from Expense_Line_Items__r) from Expense_Head__c where Proposals__c =:ProposalId];
           
           return allExpHead;
       }
@@ -2292,7 +2292,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
                     (SELECT Id, Name, Description__c, Expense_Head__c, Expense_Type__c,
                             Year1_Expense__c, Year2_Expense__c, Year3_Expense__c,
                             Total_Expense__c, Position__c, Person_Month__c, Salary_Month__c,
-                            Number__c, Unit_Price__c, Multiplier__c, Index__c
+                            Number__c, Unit_Price__c, Multiplier__c, Index__c, Time_Units__c
                      FROM Expense_Line_Items__r
                      ORDER BY Index__c ASC)
                 FROM Expense_Head__c 

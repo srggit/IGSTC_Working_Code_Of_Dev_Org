@@ -107,12 +107,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                 $scope.allDocs = result;
                 var uploadCount = 0;
                 for (var i = 0; i < $scope.allDocs.length; i++) {
-                    if ($scope.allDocs[i].userDocument.Name == 'Acceptance letter') {
-                        $scope.doc = $scope.allDocs[i];
-                        if ($scope.allDocs[i].userDocument.Status__c == 'Uploaded') {
-                            uploadCount = uploadCount + 1;
-                        }
-                    } else if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
+                    if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
                         $scope.noObjection = $scope.allDocs[i];
                         if ($scope.allDocs[i].userDocument.Status__c == 'Uploaded') {
                             uploadCount = uploadCount + 1;
@@ -128,6 +123,12 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                             uploadCount = uploadCount + 1;
                         }
                     }
+                    // else if ($scope.allDocs[i].userDocument.Name == 'Acceptance letter') {
+                    //     $scope.doc = $scope.allDocs[i];
+                    //     if ($scope.allDocs[i].userDocument.Status__c == 'Uploaded') {
+                    //         uploadCount = uploadCount + 1;
+                    //     }
+                    // }
                 }
                 $scope.$apply();
             }
@@ -152,7 +153,7 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
             return;
         }
         console.log(file);
-        maxFileSize = maxSize;
+        var maxFileSize = maxSize;
         if (file != undefined) {
             if (file.size <= maxFileSize) {
                 if (minFileSize && file.size < minFileSize) {
@@ -193,7 +194,8 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
                 fileReader.readAsBinaryString(file);  //Read the body of the file
 
             } else {
-                swal('Info', 'Your file is too large.  Please try again.', 'info');
+                var maxSizeMB = (maxFileSize / (1024 * 1024)).toFixed(0);
+                swal('Info', 'Your file is too large. Maximum file size is ' + maxSizeMB + ' MB. Please try again.', 'info');
                 return;
                 // alert("Your file is too large.  Please try again.");
                 $scope.showSpinnereditProf = false;
@@ -329,25 +331,36 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
     $scope.saveandNext = function () {
         debugger;
 
-        for (var i = 0; i < $scope.allDocs.length; i++) {
+        // Validate project proposal upload
+        if (!$scope.projectProposal || !$scope.projectProposal.userDocument || $scope.projectProposal.userDocument.Status__c != 'Uploaded') {
+            swal('Info', 'Please upload the project proposal.', 'info');
+            return;
+        }
 
+        for (var i = 0; i < $scope.allDocs.length; i++) {
+            if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
+                if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
+                    swal('Info', 'Please upload no objection certificate.', 'info');
+                    return;
+                }
+            }
             // if($scope.allDocs[i].userDocument.Name == 'Signature of the Host'){
             //     if($scope.allDocs[i].userDocument.Status__c != 'Uploaded'){
             //         swal('info','Please upload signature of the host.','info');
             //         return;
             //     }
             // }else
-            if ($scope.allDocs[i].userDocument.Name == 'Acceptance letter') {
-                if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
-                    swal('Info', 'Please upload Acceptance Letter.', 'info');
-                    return;
-                }
-            } else if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
-                if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
-                    swal('Info', 'Please upload no objection certificate.', 'info');
-                    return;
-                }
-            }
+            // if ($scope.allDocs[i].userDocument.Name == 'Acceptance letter') {
+            //     if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
+            //         swal('Info', 'Please upload Acceptance Letter.', 'info');
+            //         return;
+            //     }
+            // } else if ($scope.allDocs[i].userDocument.Name == 'No objection certificate') {
+            //     if ($scope.allDocs[i].userDocument.Status__c != 'Uploaded') {
+            //         swal('Info', 'Please upload no objection certificate.', 'info');
+            //         return;
+            //     }
+            // }
         }
 
         swal({

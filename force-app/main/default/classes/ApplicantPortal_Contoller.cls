@@ -2462,6 +2462,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
                         Account__c,
                         Application__c,
                         Currency__c,
+                        Active_applications_funded_by_DST_BMFTR__c,
                         Applicant_Proposal_Association__c,
                         Applicant_Proposal_Association__r.Grants_Handled__c,
                         Applicant_Proposal_Association__r.Contact__c,
@@ -2544,6 +2545,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
                 grantsRec.Role_in_the_Project__c = wrap.role;
                 grantsRec.Starting_Date__c = wrap.startDate;
                 grantsRec.End_Date__c = wrap.endDate;
+                grantsRec.Active_applications_funded_by_DST_BMFTR__c = wrap.activeApplications;  // Map RTF field
                 if(wrap.id != null){
                     grantsRec.id = wrap.id;
                 }
@@ -2582,6 +2584,7 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
         String endDate;
         String role;
         String apaId;
+        String activeApplications;  // Active applications funded by DST-BMFTR RTF field
         // Integer startingday;
         // Integer startingmonth;
         // Integer startingyear;

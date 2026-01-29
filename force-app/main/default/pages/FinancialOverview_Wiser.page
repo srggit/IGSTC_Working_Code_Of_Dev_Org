@@ -441,7 +441,7 @@
                             <!-- Research Stay -->
                             <tr>
                                 <td rowspan="2">
-                                    Research stay (India/Germany)
+                                    <b>Research stay (India/Germany)</b>
                                     <br/>
                                     <span class="sub-text section-title">(per diem @ € 2300/month)</span>
                                 </td>
@@ -490,7 +490,8 @@
                             </tr>
 
                             <tr>
-                                <td class="">Travel to Host Country
+                                <td class="">
+                                    <b>Travel to Host Country</b>
                                     <span class="sub-text section-title">(India/Germany)</span>
                                 </td>
                                 <td></td>
@@ -613,11 +614,47 @@
                                     Research staff
                                 </td>
                                 <!-- <td ng-if="row.index !== 0 || row.rowType !== 'positions'"></td> -->
-                                <td></td>
+                                <td>
+                                    <div ng-if="row.rowType === 'positions'">
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionPositions" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        />
+                                        <small ng-if="row.staff.descriptionPositions && row.staff.descriptionPositions.length > 250" class="text-danger">
+                                            Max limit: 250 characters (Current: {{row.staff.descriptionPositions.length}})
+                                        </small>
+                                        <!-- <small ng-if="!row.staff.descriptionPositions || row.staff.descriptionPositions.length <= 250" class="text-muted">
+                                            {{row.staff.descriptionPositions ? row.staff.descriptionPositions.length : 0}}/250 characters
+                                        </small> -->
+                                    </div>
+                                    <div ng-if="row.rowType === 'cost'">
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionCost" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        />
+                                        <small ng-if="row.staff.descriptionCost && row.staff.descriptionCost.length > 250" class="text-danger">
+                                            Max limit: 250 characters (Current: {{row.staff.descriptionCost.length}})
+                                        </small>
+                                        <!-- <small ng-if="!row.staff.descriptionCost || row.staff.descriptionCost.length <= 250" class="text-muted">
+                                            {{row.staff.descriptionCost ? row.staff.descriptionCost.length : 0}}/250 characters
+                                        </small> -->
+                                    </div>
+                                    <div ng-if="row.rowType === 'hours'">
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionHours" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        />
+                                        <small ng-if="row.staff.descriptionHours && row.staff.descriptionHours.length > 250" class="text-danger">
+                                            Max limit: 250 characters (Current: {{row.staff.descriptionHours.length}})
+                                        </small>
+                                        <!-- <small ng-if="!row.staff.descriptionHours || row.staff.descriptionHours.length <= 250" class="text-muted">
+                                            {{row.staff.descriptionHours ? row.staff.descriptionHours.length : 0}}/250 characters
+                                        </small> -->
+                                    </div>
+                                </td>
                                 <td>
                                     <span ng-if="row.rowType === 'positions'">No. of positions</span>
                                     <span ng-if="row.rowType === 'cost'">Cost</span>
-                                    <span ng-if="row.rowType === 'hours'">Number of hour/week/days/month</span>
+                                    <span ng-if="row.rowType === 'hours'">
+                                        Number of hour/week/days/month
+                                        <select ng-model="row.staff.hoursUnit" ng-options="unit for unit in timeUnits" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                            class="form-control" style="margin-top: 5px; min-width: 100px;">
+                                        </select>
+                                    </span>
                                     <span ng-if="row.rowType === 'total'" class="orange-text bold">Total Amount for Research Staff {{row.index + 1}}</span>
                                 </td>
                                 <td>
