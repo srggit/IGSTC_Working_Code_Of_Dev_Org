@@ -37,17 +37,6 @@
                                 <div class="progress-success w-100"></div>
                             </div>
                             <ul>
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('HostProjectDetails')">
-                                        <div class="icon-circle">
-                                            <!-- <i class="far fa-address-card"></i> -->
-                                            <i class="fas fa-file-invoice"></i>
-                                        </div>
-                                        <span>Paired Project Details</span>
-                                    </a>
-                                </li>
-
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
@@ -56,6 +45,17 @@
                                             <i class="far fa-address-card"></i>
                                         </div>
                                         <span>Pairing Details</span>
+                                    </a>
+                                </li>
+
+                                <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('HostProjectDetails')">
+                                        <div class="icon-circle">
+                                            <!-- <i class="far fa-address-card"></i> -->
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
                                     </a>
                                 </li>
 
@@ -143,19 +143,9 @@
                         </div>
                         <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
                             <div class="progress">
-                                <div class="progress-success wp-3"></div>
+                                <div class="progress-success wp-2"></div>
                             </div>
                             <ul>
-
-                                <li class="active">
-                                    <a>
-                                        <div class="icon-circle">
-                                            <!-- <i class="fas fa-user-alt"></i> -->
-                                            <i class="fas fa-file-invoice"></i>
-                                        </div>
-                                        <span>Paired Project Details</span>
-                                    </a>
-                                </li>
 
                                 <li class="active">
                                     <a>
@@ -166,6 +156,15 @@
                                     </a>
                                 </li>
 
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <!-- <i class="fas fa-user-alt"></i> -->
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
+                                    </a>
+                                </li>
                                 <!-- <li >
                                     <a>
                                         <div class="icon-circle">
@@ -521,7 +520,7 @@
                                     1.
                                     If there is a problem in saving
                                     pages or lag in the application, kindly press "CTRL+Shift+R" in one go and try
-                                    again. If the problem persists, <br />&nbsp;&nbsp;&nbsp;&nbsp; please contact us.
+                                    again. If the problem persists, please contact us.
                                 </li>
                                 <br />
                                 <li>

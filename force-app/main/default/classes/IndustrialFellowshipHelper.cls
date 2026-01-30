@@ -1757,7 +1757,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
     }
 
     public static contact getContactInfoWiser(string conId){
-        Contact conRec = [SELECT Id,Salutation,FirstName,Institution_Name__c,LastName,Country__c,MailingCity,MailingState,MailingCountry,MailingPostalCode, MailingStreet,Nationality__c,Institute_Name__c,Department,Country_Code__c,Designation__c,Phone,Email, Homepage_URL__c,Gender__c, Birthdate,Proposals__c,Profile_Pic_Attachment_Id__c,Account.Name,AccountId, Uploaded__c,PassportNo__c,(select name,id from Attachments Order By CreatedDate DESC limit 1) FROM Contact WHERE Id=: conId];
+        Contact conRec = [SELECT Id,Salutation,Title,FirstName,Institution_Name__c,LastName,Country__c,MailingCity,MailingState,MailingCountry,MailingPostalCode, MailingStreet,Nationality__c,Institute_Name__c,Department,Country_Code__c,Designation__c,Phone,Email, Homepage_URL__c,Gender__c, Birthdate,Proposals__c,Profile_Pic_Attachment_Id__c,Account.Name,AccountId, Uploaded__c,PassportNo__c,(select name,id from Attachments Order By CreatedDate DESC limit 1) FROM Contact WHERE Id=: conId];
         return conRec;
     }
 

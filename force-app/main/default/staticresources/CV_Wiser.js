@@ -3,10 +3,42 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
     $scope.siteURL = siteURL;
     $scope.contactData = {};
     $scope.proposalStage = false;
+    $scope.isCurrentUserSubmitted = false;
     $scope.objRtf = [{ charCount: 0, maxCharLimit: 0, errorStatus: false }];
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
     $scope.objRtf.push({ charCount: 0, maxCharLimit: 0, errorStatus: false });
+
+    // Function to update editor lock state based on current conditions
+    $scope.updateEditorLockState = function () {
+        // 🔐 Lock editor condition: disabled if proposalStage is true OR isCurrentUserSubmitted is true
+        $scope.isEditorLocked = ($scope.proposalStage || $scope.isCurrentUserSubmitted);
+
+        // 🔒 Apply lock to CKEditor instances (with retry mechanism)
+        $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
+    };
+
+    $scope.toggleCkEditorReadOnly = function (isReadOnly) {
+        var retryCount = 0;
+        var maxRetries = 10;
+
+        function tryToggle() {
+            if (CKEDITOR && CKEDITOR.instances && Object.keys(CKEDITOR.instances).length > 0) {
+                Object.keys(CKEDITOR.instances).forEach(function (instanceName) {
+                    try {
+                        CKEDITOR.instances[instanceName].setReadOnly(isReadOnly);
+                    } catch (e) {
+                        console.log('Error setting read-only for instance:', instanceName, e);
+                    }
+                });
+            } else if (retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(tryToggle, 200);
+            }
+        }
+
+        tryToggle();
+    };
 
     $scope.getDataFromLocalStorage = function () {
         debugger;
@@ -36,6 +68,8 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                 if (event.status && result) {
                     $scope.proposalStage = (result.proposalStage != 'Draft' && result.proposalStage != null && result.proposalStage != undefined);
                     $rootScope.proposalStage = $scope.proposalStage;
+                    // Update editor lock state after proposal stage is fetched
+                    $scope.updateEditorLockState();
                     $scope.$apply();
                 }
             }, { escape: true });
@@ -184,6 +218,8 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                     }
                 }
                 */
+                // Update editor lock state after CV data is loaded
+                $scope.updateEditorLockState();
                 $scope.$apply();
             }
         })
@@ -310,20 +346,31 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                 try {
                     if (event.status) {
                         debugger;
-                        swal({
-                            title: "SUCCESS",
-                            text: 'Your CV Details has been Saved successfully.',
-                            icon: "success",
-                            button: "ok!",
-                        });
-                        // Swal.fire(
-                        //     'Success',
-                        //     'your CV Details has been Saved successfully.',
-                        //     'success'
-                        // );
-                        // $scope.redirectPageURL('Declaration_Wiser');
-                        $scope.redirectPageURL('FinancialOverview_wiser');
-                        $scope.$apply();
+                        // Use Swal.fire with promise handling for better error handling
+                        if (typeof Swal !== 'undefined' && Swal.fire) {
+                            Swal.fire({
+                                title: "SUCCESS",
+                                text: 'Your CV Details has been Saved successfully.',
+                                icon: "success",
+                                confirmButtonText: "OK"
+                            }).then(function () {
+                                // Redirect after user clicks OK
+                                $scope.redirectPageURL('FinancialOverview_wiser');
+                                $scope.$apply();
+                            });
+                        } else {
+                            // Fallback to old swal with callback
+                            swal({
+                                title: "SUCCESS",
+                                text: 'Your CV Details has been Saved successfully.',
+                                icon: "success",
+                                button: "ok!",
+                            }, function () {
+                                // Redirect after user clicks OK
+                                $scope.redirectPageURL('FinancialOverview_wiser');
+                                $scope.$apply();
+                            });
+                        }
                     } else {
                         // Re-enable button on error
                         $scope.restoreButtonState();
@@ -490,26 +537,21 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
 
                 if (event.status) {
                     $rootScope.isCurrentUserSubmitted = result;
+                    $scope.isCurrentUserSubmitted = result;
 
-                    // 🔐 Lock editor condition
-                    $scope.isEditorLocked = ($scope.proposalStage || result);
-
-                    // 🔒 Apply lock to CKEditor
-                    $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
+                    // Update editor lock state after applicant status is fetched
+                    $scope.updateEditorLockState();
+                    $scope.$apply();
+                } else {
+                    // If fetch fails, assume not submitted
+                    $rootScope.isCurrentUserSubmitted = false;
+                    $scope.isCurrentUserSubmitted = false;
+                    $scope.updateEditorLockState();
+                    $scope.$apply();
                 }
             },
             { escape: true }
         );
     };
     $scope.getApplicantStatusFromAPA();
-
-    $scope.toggleCkEditorReadOnly = function (isReadOnly) {
-        setTimeout(function () {
-            if (CKEDITOR.instances) {
-                Object.keys(CKEDITOR.instances).forEach(function (instanceName) {
-                    CKEDITOR.instances[instanceName].setReadOnly(isReadOnly);
-                });
-            }
-        }, 0);
-    };
 });

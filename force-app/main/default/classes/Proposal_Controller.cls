@@ -5785,24 +5785,34 @@ return null;
     // }
     ////********************************************************** */
     
-    public static List<Contact> getPairingDetailsinWiser(String hashcode, String proposalId){
+    public static List<ContactWithAPAWrapper> getPairingDetailsinWiser(String hashcode, String proposalId){
         // Get the contact by hashcode
         Contact conRec = [SELECT Id, FirstName, LastName, Email, AccountId, Account.Name,MailingCountry, Is_Primary__c, Birthdate FROM Contact WHERE Login_Hash_Code__c = :hashcode  LIMIT 1];
         System.debug('conRec : ' + conRec);
 
         // Query if contact has any junction records
-        List<Applicant_Proposal_Association__c> associations = [
-            SELECT Id, Name, Proposals__c, Is_Signatory__c, Contact__c, Contact__r.Name
-            FROM Applicant_Proposal_Association__c 
-            WHERE Proposals__c =: proposalId
-            AND Is_Signatory__c = false
-        ];
+        List<Applicant_Proposal_Association__c> associations = new List<Applicant_Proposal_Association__c>();
+        if(String.isNotBlank(proposalId)){
+            associations = [
+                SELECT Id, Name, Proposals__c, Is_Signatory__c, Contact__c, Contact__r.Name, Is_Coordinator__c
+                FROM Applicant_Proposal_Association__c 
+                WHERE Proposals__c =: proposalId
+                AND Is_Signatory__c = false
+            ];
+        }
         System.debug('associations : ' + associations);
         
         List<Contact> conList;
+        Map<Id, Boolean> contactIdToIsCoordinator = new Map<Id, Boolean>();
+        
         if (!associations.isEmpty()) {
             // Existing proposal from junction
             //Id proposalId = associations[0].Proposals__c;
+            
+            // Build map of Contact Id to Is_Coordinator__c
+            for(Applicant_Proposal_Association__c apa : associations){
+                contactIdToIsCoordinator.put(apa.Contact__c, apa.Is_Coordinator__c != null ? apa.Is_Coordinator__c : false);
+            }
             
             // Query contacts linked via junction for that proposal
             conList = [
@@ -5812,11 +5822,48 @@ return null;
         } else {       
             // Return only the single contact just linked newly
             conList = new List<Contact>{conRec};
+            // For new contact, check if there's an existing APA
+            if(String.isNotBlank(proposalId)){
+                List<Applicant_Proposal_Association__c> existingAPA = [
+                    SELECT Id, Contact__c, Is_Coordinator__c
+                    FROM Applicant_Proposal_Association__c 
+                    WHERE Contact__c = :conRec.Id 
+                    AND Proposals__c = :proposalId
+                    AND Is_Signatory__c = false
+                    LIMIT 1
+                ];
+                if(!existingAPA.isEmpty()){
+                    contactIdToIsCoordinator.put(conRec.Id, existingAPA[0].Is_Coordinator__c != null ? existingAPA[0].Is_Coordinator__c : false);
+                } else {
+                    // Default to false if no APA exists yet
+                    contactIdToIsCoordinator.put(conRec.Id, false);
+                }
+            } else {
+                contactIdToIsCoordinator.put(conRec.Id, false);
+            }
         }
         System.debug('conList : ' + conList);
         
-        return conList;
+        // Build wrapper list
+        List<ContactWithAPAWrapper> wrapperList = new List<ContactWithAPAWrapper>();
+        for(Contact con : conList){
+            ContactWithAPAWrapper wrapper = new ContactWithAPAWrapper();
+            wrapper.contact = con;
+            wrapper.isCoordinator = contactIdToIsCoordinator.get(con.Id) != null ? contactIdToIsCoordinator.get(con.Id) : false;
+            wrapper.isLoggedInContact = (con.Id == conRec.Id); // Identify logged-in contact
+            wrapperList.add(wrapper);
+        }
+        
+        return wrapperList;
     }
+    
+    // Wrapper class for Contact with APA information
+    public class ContactWithAPAWrapper {
+        public Contact contact { get; set; }
+        public Boolean isCoordinator { get; set; }
+        public Boolean isLoggedInContact { get; set; }
+    }
+    
     /*  public static List<Contact> getPairingDetails(string hashcode, string campaignId){
 Contact conRec = [SELECT Id,FirstName,LastName,Email,AccountId,Proposals__r.Yearly_Call__r.Pecfar_age_limit__c,Proposals__r.Yearly_Call__r.Date_of_Birth_PECFAR__c,Account.Name,Account.Proposals__c,MailingCountry,Is_Primary__c,Birthdate,Proposals__c,Proposals__r.Campaign__r.Result_Announcement_Date__c FROM Contact WHERE Login_Hash_Code__c=: hashcode];
 Application_Proposal__c app = New Application_Proposal__c();
@@ -6185,12 +6232,16 @@ public class insertPairingWrapper {
 //////**********************************New Method Added By Karthik For Pairing Page
 
 
-public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapperPairing> contactList, String campaignId, String yearlyCall, String proposalId) {
+public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapperPairing> contactList, String campaignId, String yearlyCall, String proposalId, String coordinatorContactId, String loggedInContactHashcode) {
     insertPairingWrapperinWiser dataWrapper = new insertPairingWrapperinWiser();
     
     try {
-        system.debug('size ---> ' + contactList.size());
-        system.debug('proposalId passed ---> ' + proposalId);
+        System.debug('=== insertPairingDetailsinWiser START ===');
+        //System.debug('contactList size: ' + (contactList != null ? contactList.size() : 'null'));
+        System.debug('campaignId: ' + campaignId);
+        System.debug('yearlyCall: ' + yearlyCall);
+        System.debug('proposalId passed: ' + proposalId);
+        System.debug('contactList: ' + contactList);
         
         // Step 1: Upsert Accounts
         List<Account> accList = new List<Account>();
@@ -6233,31 +6284,64 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
         
         List<Contact> newContacts = new List<Contact>();
         List<Contact> existingContacts = new List<Contact>();
-        System.debug('$#newContacts=====>'+newContacts);
-        System.debug('$#existingContacts=====>'+existingContacts);
+        Id existingContactId = null;
+        System.debug('=== DEBUG: Starting contact processing ===');
+        System.debug('$#contList size: ' + contList.size());
+        System.debug('$#contList: ' + contList);
+        System.debug('$#newContacts (initial): ' + newContacts);
+        System.debug('$#existingContacts (initial): ' + existingContacts);
+        System.debug('$#existingContactId (initial): ' + existingContactId);
+        
         for(Contact c : contList) {
+            System.debug('=== Processing Contact ===');
+            System.debug('Contact Id: ' + c.Id);
+            System.debug('Contact Name: ' + c.FirstName + ' ' + c.LastName);
+            System.debug('Contact Email: ' + c.Email);
             if(c.Id == null) {
                 newContacts.add(c);
+                System.debug('Added to newContacts');
             } else {
                 existingContacts.add(c);
+                existingContactId = c.Id;
+                System.debug('Added to existingContacts, existingContactId set to: ' + existingContactId);
             }
         }
         
+        System.debug('=== After contact separation ===');
+        System.debug('$#newContacts size: ' + newContacts.size());
+        System.debug('$#newContacts: ' + newContacts);
+        System.debug('$#existingContacts size: ' + existingContacts.size());
+        System.debug('$#existingContacts: ' + existingContacts);
+        System.debug('$#existingContactId: ' + existingContactId);
+        
         if(!newContacts.isEmpty()) {
+            System.debug('=== Inserting new contacts ===');
+            System.debug('New contacts to insert: ' + newContacts);
             insert newContacts;
+            System.debug('New contacts inserted successfully. Count: ' + newContacts.size());
         }
         if(!existingContacts.isEmpty()) {
+            System.debug('=== Updating existing contacts ===');
+            System.debug('Existing contacts to update: ' + existingContacts);
             update existingContacts;
+            System.debug('Existing contacts updated successfully. Count: ' + existingContacts.size());
         }
         
         // Collect all final contact Ids
         Set<Id> contactIds = new Set<Id>();
+        System.debug('=== Collecting contact IDs ===');
         for(Contact c : newContacts) {
+            System.debug('Adding new contact ID: ' + c.Id);
             contactIds.add(c.Id);
         }
         for(Contact c : existingContacts) {
+            System.debug('Adding existing contact ID: ' + c.Id);
             contactIds.add(c.Id);
         }
+        System.debug('=== Final contactIds set ===');
+        System.debug('contactIds size: ' + contactIds.size());
+        System.debug('contactIds: ' + contactIds);
+        System.debug('existingContactId: ' + existingContactId);
         
         // Step 3: Handle Proposal - Use existing proposal if provided, otherwise create/find one
         Id wiserRtTd = Utility.getProposalRecordType('WISER');
@@ -6313,57 +6397,208 @@ public static insertPairingWrapperinWiser insertPairingDetailsinWiser(List<wrapp
         }
         
         // Step 4: Create APAs for both contacts (ensure two APAs are created)
+        System.debug('=== Step 4: Creating APAs ===');
+        System.debug('singleProposal.Id: ' + singleProposal.Id);
+        System.debug('contactIds size: ' + contactIds.size());
+        System.debug('contactIds: ' + contactIds);
+        System.debug('existingContactId: ' + existingContactId);
+        
         Applicant_Proposal_Association__c association;
         List<Applicant_Proposal_Association__c> assocToInsert = new List<Applicant_Proposal_Association__c>();
 
         if (!contactIds.isEmpty()) {
             // Fetch existing associations for all contacts for this proposal
+            System.debug('=== Fetching existing APAs ===');
             Map<Id, Applicant_Proposal_Association__c> existingAssocMap = new Map<Id, Applicant_Proposal_Association__c>();
 
             for (Applicant_Proposal_Association__c apa : [
-                SELECT Id, Contact__c, Proposals__c
+                SELECT Id, Contact__c, Proposals__c, Is_Coordinator__c
                 FROM Applicant_Proposal_Association__c
                 WHERE Contact__c IN :contactIds
                 AND Proposals__c = :singleProposal.Id
             ]) {
                 existingAssocMap.put(apa.Contact__c, apa);
+                System.debug('Found existing APA - Contact: ' + apa.Contact__c + ', Proposal: ' + apa.Proposals__c + ', Is_Coordinator__c: ' + apa.Is_Coordinator__c);
             }
+            System.debug('existingAssocMap size: ' + existingAssocMap.size());
+            System.debug('existingAssocMap keys: ' + existingAssocMap.keySet());
 
+            // Use the coordinator contact ID passed from frontend (pairingDetails.Id - first block contact)
+            Id coordinatorId = null;
+            if(String.isNotBlank(coordinatorContactId)) {
+                coordinatorId = coordinatorContactId;
+                System.debug('Coordinator contact ID (from pairingDetails): ' + coordinatorId);
+            } else {
+                // Fallback: if not provided, use first contact in list
+                if (!contList.isEmpty()) {
+                    coordinatorId = contList[0].Id;
+                    System.debug('Coordinator contact ID (fallback to first contact): ' + coordinatorId);
+                }
+            }
+            
             // Create associations for contacts that don't have one yet
             // This ensures both contacts get an APA
+            System.debug('=== Creating new APAs ===');
             for (Id conId : contactIds) {
+                System.debug('Processing contactId: ' + conId);
+                System.debug('existingAssocMap.containsKey(conId): ' + existingAssocMap.containsKey(conId));
+                System.debug('Is coordinator contact: ' + (conId == coordinatorId));
+                
                 if (!existingAssocMap.containsKey(conId)) {
-                    assocToInsert.add(new Applicant_Proposal_Association__c(
-                        Contact__c = conId,
-                        Proposals__c = singleProposal.Id
-                    ));
+                    if(conId == coordinatorId) {
+                        // Set Is_Coordinator__c = true for coordinator contact (pairingDetails - first block)
+                        System.debug('Creating APA with Is_Coordinator__c = true for coordinator contact: ' + conId);
+                        assocToInsert.add(new Applicant_Proposal_Association__c(
+                            Contact__c = conId,
+                            Proposals__c = singleProposal.Id,
+                            Is_Coordinator__c = true
+                        ));
+                    } else {
+                        // Set Is_Coordinator__c = false for other contacts
+                        System.debug('Creating APA with Is_Coordinator__c = false for contact: ' + conId);
+                        assocToInsert.add(new Applicant_Proposal_Association__c(
+                            Contact__c = conId,
+                            Proposals__c = singleProposal.Id,
+                            Is_Coordinator__c = false
+                        ));
+                    }
+                } else {
+                    System.debug('APA already exists for contact: ' + conId);
+                }
+            }
+            
+            // Update existing APAs that need coordinator status changes
+            // Re-query APAs that need updating to ensure all fields are available
+            List<Applicant_Proposal_Association__c> assocToUpdate = new List<Applicant_Proposal_Association__c>();
+            if (!existingAssocMap.isEmpty() && coordinatorId != null) {
+                // Re-query existing APAs with all required fields to avoid SObjectException
+                List<Applicant_Proposal_Association__c> apasToCheck = [
+                    SELECT Id, Contact__c, Proposals__c, Is_Coordinator__c
+                    FROM Applicant_Proposal_Association__c
+                    WHERE Id IN :existingAssocMap.values()
+                ];
+                
+                Map<Id, Applicant_Proposal_Association__c> apaMapById = new Map<Id, Applicant_Proposal_Association__c>();
+                for (Applicant_Proposal_Association__c apa : apasToCheck) {
+                    apaMapById.put(apa.Id, apa);
+                }
+                
+                for (Id conId : contactIds) {
+                    if (existingAssocMap.containsKey(conId)) {
+                        Applicant_Proposal_Association__c existingAPA = existingAssocMap.get(conId);
+                        Applicant_Proposal_Association__c apaToUpdate = apaMapById.get(existingAPA.Id);
+                        
+                        if (apaToUpdate != null) {
+                            Boolean needsUpdate = false;
+                            
+                            // Get current Is_Coordinator__c value (now guaranteed to be queried)
+                            Boolean currentIsCoordinator = (apaToUpdate.Is_Coordinator__c != null) ? apaToUpdate.Is_Coordinator__c : false;
+                            
+                            if(conId == coordinatorId && !currentIsCoordinator) {
+                                // Coordinator contact should have Is_Coordinator__c = true
+                                apaToUpdate.Is_Coordinator__c = true;
+                                needsUpdate = true;
+                                System.debug('Will update existing APA - setting Is_Coordinator__c = true for coordinator contact: ' + conId);
+                            } else if(conId != coordinatorId && currentIsCoordinator) {
+                                // Other contacts should have Is_Coordinator__c = false
+                                apaToUpdate.Is_Coordinator__c = false;
+                                needsUpdate = true;
+                                System.debug('Will update existing APA - setting Is_Coordinator__c = false for contact: ' + conId);
+                            }
+                            
+                            if (needsUpdate) {
+                                assocToUpdate.add(apaToUpdate);
+                            }
+                        }
+                    }
                 }
             }
 
             // Insert missing associations (will create APAs for contacts that don't have one)
+            System.debug('=== Inserting APAs ===');
+            System.debug('assocToInsert size: ' + assocToInsert.size());
+            System.debug('assocToInsert: ' + assocToInsert);
             if (!assocToInsert.isEmpty()) {
                 insert assocToInsert;
                 System.debug('Created associations count: ' + assocToInsert.size());
+                for(Applicant_Proposal_Association__c apa : assocToInsert) {
+                    System.debug('Inserted APA - Id: ' + apa.Id + ', Contact: ' + apa.Contact__c + ', Is_Coordinator__c: ' + apa.Is_Coordinator__c);
+                }
+            }
+            
+            // Update existing APAs to ensure correct coordinator status
+            System.debug('=== Updating existing APAs ===');
+            System.debug('assocToUpdate size: ' + assocToUpdate.size());
+            if (!assocToUpdate.isEmpty()) {
+                update assocToUpdate;
+                System.debug('Updated associations count: ' + assocToUpdate.size());
+                for(Applicant_Proposal_Association__c apa : assocToUpdate) {
+                    System.debug('Updated APA - Id: ' + apa.Id + ', Contact: ' + apa.Contact__c + ', Is_Coordinator__c: ' + apa.Is_Coordinator__c);
+                }
             }
 
             // Maintain reference-style single association (first available) for backward compatibility
-            if (!existingAssocMap.isEmpty()) {
+            // Priority: updated APAs > existing APAs > newly inserted APAs
+            if (!assocToUpdate.isEmpty()) {
+                association = assocToUpdate[0];
+            } else if (!existingAssocMap.isEmpty()) {
                 association = existingAssocMap.values()[0];
             } else if (!assocToInsert.isEmpty()) {
                 association = assocToInsert[0];
             }
         }
         
+        // Query for the logged-in contact's APA specifically
+        // This ensures only one APA is returned for the currently logged-in user and proposal
+        if (String.isNotBlank(loggedInContactHashcode) && singleProposal.Id != null) {
+            try {
+                // First, get the logged-in contact using hashcode
+                Contact loggedInContact = [SELECT Id FROM Contact WHERE Login_Hash_Code__c = :loggedInContactHashcode LIMIT 1];
+                
+                if (loggedInContact != null && loggedInContact.Id != null) {
+                    // Query for APA where Proposal = Created Proposal Id AND Contact = Logged-in Contact Id
+                    List<Applicant_Proposal_Association__c> loggedInAPAs = [
+                        SELECT Id, Contact__c, Proposals__c, Is_Coordinator__c, Is_Signatory__c
+                        FROM Applicant_Proposal_Association__c
+                        WHERE Proposals__c = :singleProposal.Id
+                        AND Contact__c = :loggedInContact.Id
+                        LIMIT 1
+                    ];
+                    
+                    if (!loggedInAPAs.isEmpty()) {
+                        association = loggedInAPAs[0];
+                        System.debug('Using logged-in contact APA: ' + association.Id + ' for Contact: ' + loggedInContact.Id);
+                    } else {
+                        System.debug('No APA found for logged-in contact with hashcode: ' + loggedInContactHashcode);
+                    }
+                }
+            } catch (Exception e) {
+                System.debug('Error finding logged-in contact APA: ' + e.getMessage());
+                // Fall back to existing association if query fails
+            }
+        }
+        
         // Populate wrapper with results
+        System.debug('=== Finalizing wrapper ===');
+        System.debug('singleProposal.Id: ' + singleProposal.Id);
+        System.debug('association: ' + association);
+        System.debug('association.Id: ' + (association != null ? association.Id : 'null'));
+        
         dataWrapper.proposalId = singleProposal.Id;
         dataWrapper.proposal = singleProposal;
-        dataWrapper.apa = association;        
+        dataWrapper.apa = association;
+        
+        System.debug('=== insertPairingDetailsinWiser SUCCESS ===');
         return dataWrapper;
         
     } catch (Exception e) {
         // Log the error properly
-        System.debug('Error in insertPairingDetails at line ' + e.getLineNumber() + ': ' + e.getMessage());
+        System.debug('=== ERROR in insertPairingDetailsinWiser ===');
+        System.debug('Error Type: ' + e.getTypeName());
+        System.debug('Error Message: ' + e.getMessage());
+        System.debug('Error Line Number: ' + e.getLineNumber());
         System.debug('Stack trace: ' + e.getStackTraceString());
+        System.debug('=== END ERROR ===');
         
         throw new AuraHandledException('Error inserting pairing details: ' + e.getMessage());
     }
@@ -8444,33 +8679,116 @@ public static String insertFellowship_DetailsWithTheme(Contact proposalDetails, 
         }
     }
     
-    @RemoteAction
-    public static List<Contact> checkEmail(String email, String contId) {
-        List<Contact> conRec = new List<Contact>();
-        try {
-            if (String.isBlank(email)) {
-                return conRec;
-            }
-            
-            if (String.isNotBlank(contId)) {
-                conRec = [
-                    SELECT Id, FirstName, LastName, Email, Birthdate, MailingCountry, Account.Name, Nationality__c, Account_BillingCity__c, AccountName__c, Institution__c, Designation__c, Account.BillingStreet, Account.BillingCity, Account.BillingState, Account.BillingCountry, Account.BillingPostalCode, MobilePhone
-                    FROM Contact
-                    WHERE Email = :email
-                    AND Id != :contId
-                ];
-            } else {
-                conRec = [
-                    SELECT Id, FirstName, LastName, Email, Birthdate, MailingCountry, Account.Name, Nationality__c, Account_BillingCity__c, AccountName__c, Institution__c, Designation__c, Account.BillingStreet, Account.BillingCity, Account.BillingState, Account.BillingCountry, Account.BillingPostalCode, MobilePhone
-                    FROM Contact
-                    WHERE Email = :email
-                ];
-            }
-            return conRec;
-        } catch (Exception e) {
-            return new List<Contact>(); // never return null
+    // Wrapper class for checkEmail method to return contacts and error message
+    public class CheckEmailWrapper {
+        public List<Contact> contacts {get; set;}
+        public String errorMessage {get; set;}
+        
+        public CheckEmailWrapper() {
+            this.contacts = new List<Contact>();
+            this.errorMessage = null;
         }
     }
+    
+    @RemoteAction
+    public static CheckEmailWrapper checkEmail(String email, String contId, String oppMailingCountry, String yearlyCallId) {
+        
+        CheckEmailWrapper wrapper = new CheckEmailWrapper();
+        
+        try {
+
+            if (String.isBlank(email)) {
+                return wrapper;
+            }
+
+            List<Contact> conRec = new List<Contact>();
+
+            if (String.isNotBlank(email)) {
+                // First query contact by email only (without MailingCountry filter)
+                conRec = [
+                    SELECT Id, FirstName, LastName, Email, Birthdate, MailingCountry, Account.Name, Nationality__c, Account_BillingCity__c, AccountName__c, Institution__c, 
+                    Designation__c, Account.BillingStreet, Account.BillingCity, Account.BillingState, Account.BillingCountry, Account.BillingPostalCode, MobilePhone
+                    FROM Contact
+                    WHERE Email = :email
+                    LIMIT 1
+                ];
+                System.debug('Contact found  : ' + conRec);
+
+                // Check if contact exists
+                if(conRec.isEmpty()) {
+                    wrapper.contacts = conRec;
+                    return wrapper;
+                }
+
+                Contact foundContact = conRec[0];
+                Id contactId = foundContact.Id;
+
+                YealyCall__c yearlyCall = new YealyCall__c();
+                Id yearId = null;
+                Boolean isCurrentYear = false;
+                
+                if(String.isNotBlank(yearlyCallId)){
+                    yearlyCall = [SELECT Id, Name, Campaign__c, Campaign__r.Name, Years__c, Years__r.Is_Active__c, Years__r.Is_Current_Year__c 
+                        FROM YealyCall__c 
+                        WHERE Id = :yearlyCallId 
+                        LIMIT 1
+                    ];
+                    System.debug('Yearly Call found  : ' + yearlyCall);
+                    
+                    if(yearlyCall != null && yearlyCall.Years__c != null) {
+                        yearId = yearlyCall.Years__c;
+                        isCurrentYear = yearlyCall.Years__r.Is_Current_Year__c;
+                    }
+                }
+
+                // Priority 1: Check if contact has already applied for any other programme in the current year
+                // This check should come first before country validation
+                if(yearId != null && isCurrentYear && contactId != null) {
+                    List<Applicant_Proposal_Association__c> existingAPAs = [
+                        SELECT Id, Name, Proposals__c, Proposals__r.Name, Proposals__r.Campaign__r.Name, 
+                               Proposals__r.yearly_Call__r.Name, Contact__c, Contact__r.Name, Contact__r.Email, Contact__r.MailingCountry
+                        FROM Applicant_Proposal_Association__c 
+                        WHERE Contact__c = :contactId
+                        AND Proposals__r.yearly_Call__r.Years__c = :yearId
+                        LIMIT 1
+                    ];
+                    System.debug('Existing APA found  : ' + existingAPAs);
+                    
+                    if(!existingAPAs.isEmpty()) {
+                        Applicant_Proposal_Association__c existingAPA = existingAPAs[0];
+                        String errorMessage = 'This Contact has already applied for a campaign in the current year. ';
+                        if(existingAPA.Proposals__r != null && existingAPA.Proposals__r.Campaign__r != null) {
+                            errorMessage += 'Campaign: ' + existingAPA.Proposals__r.Campaign__r.Name;
+                            System.debug('Error Message  : ' + errorMessage);
+                        }
+                        // Set error message in wrapper - this takes priority
+                        wrapper.errorMessage = errorMessage;
+                        wrapper.contacts = conRec; // Still return the contact found
+                        return wrapper;
+                    }
+                }
+
+                // Priority 2: Check if contact's MailingCountry matches the opposite country requirement
+                // This check comes after the programme application check
+                if(String.isNotBlank(oppMailingCountry) && foundContact.MailingCountry != oppMailingCountry) {
+                    String errorMessage = 'Required Country : ' + oppMailingCountry + '\n';
+                    errorMessage += 'The second member must be from the opposite country of the first member.';
+                    wrapper.errorMessage = errorMessage;
+                    wrapper.contacts = conRec; // Still return the contact found
+                    return wrapper;
+                }
+                
+                wrapper.contacts = conRec;
+            }
+            return wrapper;
+        } catch (Exception e) {
+            System.debug('Error Message  : ' + e.getMessage());
+            wrapper.errorMessage = 'An error occurred: ' + e.getMessage();
+            return wrapper;
+        }
+    }
+
+
     
     
     public static string getConForHostNationality(string userId){

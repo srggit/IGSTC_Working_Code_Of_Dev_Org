@@ -1302,14 +1302,14 @@ public static List<YealyCall__c> getActiveCampaignIf(String yearlyCallId) {
 
     ///*************************New Method aaded by Karthik 
     @RemoteAction
-    public static List<Contact> getPairingDetailsinWiser(string hashcode, String campaignId){
-        return Proposal_Controller.getPairingDetailsinWiser(hashcode,campaignId);
+    public static List<Proposal_Controller.ContactWithAPAWrapper> getPairingDetailsinWiser(string hashcode, String proposalId){
+        return Proposal_Controller.getPairingDetailsinWiser(hashcode, proposalId);
     }
 
 
     @RemoteAction
-    public static Proposal_Controller.insertPairingWrapperinWiser insertPairingDetailsinWiser(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall, String proposalId){
-        return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall, proposalId);
+    public static Proposal_Controller.insertPairingWrapperinWiser insertPairingDetailsinWiser(List<Proposal_Controller.wrapperPairing> contactList,String campaignId,String yearlyCall, String proposalId, String coordinatorContactId, String loggedInContactHashcode){
+        return Proposal_Controller.insertPairingDetailsinWiser(contactList,campaignId,yearlyCall, proposalId, coordinatorContactId, loggedInContactHashcode);
     }
     
     @RemoteAction
@@ -2300,9 +2300,14 @@ userDocc.Id = udId;
         return Proposal_Controller.getAllContacts();
     }
     
+    // @RemoteAction
+    // public static List<Contact> checkEmail(string email, string contId,){
+    //     return Proposal_Controller.checkEmail(email, contId);
+    // }
+
     @RemoteAction
-    public static List<Contact> checkEmail(string email, string contId){
-        return Proposal_Controller.checkEmail(email, contId);
+    public static Proposal_Controller.CheckEmailWrapper checkEmail(String email, String contId, String oppMailingCountry, String yearlyCallId){
+        return Proposal_Controller.checkEmail(email, contId, oppMailingCountry, yearlyCallId);
     }
     
     @RemoteAction
@@ -2648,49 +2653,118 @@ public static WrapperProposalDet getPECFARProposalDetails(string proposalId){
             
             System.debug('Contact : ' + signatoryContact);
             System.debug('Account Id : ' + accountId);
-            System.debug('Contact Account Id : '+ signatoryContact.AccountId);
             System.debug('Proposal Id : ' + proposalId);
             System.debug('APA Id : ' + apaId);
+            System.debug('Signatory APA Id : ' + signatoryAPAId);
 
+            // Handle null checks
+            if(signatoryContact == null){
+                return 'Signatory Contact data is required';
+            }
+            
+            if(String.isBlank(accountId)){
+                return 'Account Id is required';
+            }
+
+            // Set Contact fields
             signatoryContact.AccountId = accountId;
-            signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
-            signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
-            // signatoryContact.Signatory_Emailist_Name__c = signatoryContact.Signatory_Emailist_Name__c;
-            upsert signatoryContact;
-            System.debug('Contact Inserted Successfully : ' + signatoryContact.Id);
+            
+            // Map signatory fields to Contact standard fields
+            if(String.isNotBlank(signatoryContact.Signatory_First_Name__c)){
+                signatoryContact.FirstName = signatoryContact.Signatory_First_Name__c;
+            }
+            if(String.isNotBlank(signatoryContact.Signatory_Last_Name__c)){
+                signatoryContact.LastName = signatoryContact.Signatory_Last_Name__c;
+            }
+            
+            // Preserve signatory-specific custom fields (they should already be on the Contact object)
+            // Signatory_Salutation__c, Signatory_Institution__c, Signatory_Designation__c, Email are preserved
+            
+            // Check if Contact exists by Email (if Email is provided and no Id exists)
+            if(String.isBlank(signatoryContact.Id) && String.isNotBlank(signatoryContact.Email)){
+                List<Contact> existingContacts = [
+                    SELECT Id, AccountId 
+                    FROM Contact 
+                    WHERE Email = :signatoryContact.Email 
+                    LIMIT 1
+                ];
+                if(!existingContacts.isEmpty()){
+                    signatoryContact.Id = existingContacts[0].Id;
+                    // Update AccountId if it's different
+                    signatoryContact.AccountId = accountId;
+                }
+            }
+            
+            // Insert or Update Contact
+            if(String.isNotBlank(signatoryContact.Id)){
+                update signatoryContact;
+            } else {
+                insert signatoryContact;
+            }
+            System.debug('Contact Inserted/Updated Successfully : ' + signatoryContact.Id);
 
-            Applicant_Proposal_Association__c signatoryAPA = new Applicant_Proposal_Association__c(
-                Id = signatoryAPAId,
-                Contact__c = signatoryContact.Id,
-                // Proposals__c = proposalId,
-                Is_Signatory__c = true,
-                Signatory_Emailist_Name__c = apaRecord.Signatory_Emailist_Name__c
-            );
-            upsert signatoryAPA;
-            System.debug('APA Inserted Successfully : ' + signatoryAPA.Id);
+            // Handle APA Record creation/update
+            Applicant_Proposal_Association__c signatoryAPA;
+            
+            if(String.isNotBlank(signatoryAPAId)){
+                // Update existing APA
+                signatoryAPA = new Applicant_Proposal_Association__c(
+                    Id = signatoryAPAId,
+                    Contact__c = signatoryContact.Id,
+                    Is_Signatory__c = true
+                );
+                if(apaRecord != null && String.isNotBlank(apaRecord.Signatory_Emailist_Name__c)){
+                    signatoryAPA.Signatory_Emailist_Name__c = apaRecord.Signatory_Emailist_Name__c;
+                }
+                update signatoryAPA;
+            } else {
+                // Create new APA
+                signatoryAPA = new Applicant_Proposal_Association__c(
+                    Contact__c = signatoryContact.Id,
+                    Proposals__c = proposalId,
+                    Is_Signatory__c = true
+                );
+                if(apaRecord != null && String.isNotBlank(apaRecord.Signatory_Emailist_Name__c)){
+                    signatoryAPA.Signatory_Emailist_Name__c = apaRecord.Signatory_Emailist_Name__c;
+                }
+                insert signatoryAPA;
+            }
+            System.debug('APA Inserted/Updated Successfully : ' + signatoryAPA.Id);
             
             return signatoryAPA.Id;
         }catch(DmlException e){
-            return e.getMessage()+e.getLineNumber();
+            System.debug('DML Exception: ' + e.getMessage() + ' at line ' + e.getLineNumber());
+            return 'Error: ' + e.getMessage() + ' at line ' + e.getLineNumber();
         }catch(Exception e){
-            return e.getMessage()+e.getLineNumber();
+            System.debug('Exception: ' + e.getMessage() + ' at line ' + e.getLineNumber());
+            return 'Error: ' + e.getMessage() + ' at line ' + e.getLineNumber();
         }
     }
 
     // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ------------ //
     @RemoteAction
     public static Applicant_Proposal_Association__c getSignatoryContactAPADetails(String proposalId, String apaId, String accountId){
-        Applicant_Proposal_Association__c signatoryAPA = [
-            SELECT Id, Contact__r.Salutation, Contact__r.Signatory_Salutation__c, Contact__r.Institution_Name__c, Contact__r.LastName, 
-            Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Email, 
-            Contact__r.Account.Name, Contact__r.AccountId, Contact__r.Signatory_First_Name__c, Contact__r.Signatory_Last_Name__c, 
-            Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c, Signatory_Emailist_Name__c
-            FROM Applicant_Proposal_Association__c 
-            WHERE Is_Signatory__c = true
-            AND  Contact__r.AccountId =: accountId
-            LIMIT 1
-        ];
-        return signatoryAPA;
+        try {
+            List<Applicant_Proposal_Association__c> signatoryAPAList = [
+                SELECT Id, Contact__r.Salutation, Contact__r.Signatory_Salutation__c, Contact__r.Institution_Name__c, Contact__r.LastName, 
+                Contact__r.Institute_Name__c, Contact__r.Department, Contact__r.Designation__c, Contact__r.Email, 
+                Contact__r.Account.Name, Contact__r.AccountId, Contact__r.Signatory_First_Name__c, Contact__r.Signatory_Last_Name__c, 
+                Contact__r.Signatory_Institution__c, Contact__r.Signatory_Designation__c, Is_Signatory__c, Proposals__c, Signatory_Emailist_Name__c
+                FROM Applicant_Proposal_Association__c 
+                WHERE Is_Signatory__c = true
+                AND  Contact__r.AccountId =: accountId
+                LIMIT 1
+            ];
+            
+            if (signatoryAPAList.isEmpty()) {
+                return null;
+            }
+            
+            return signatoryAPAList[0];
+        } catch (Exception e) {
+            System.debug('Error in getSignatoryContactAPADetails: ' + e.getMessage());
+            return null;
+        }
     }
 
     // -------------- METHOD TO GET THE SIGNATORY SALUTATION PICKLIST VALUES --------------- //

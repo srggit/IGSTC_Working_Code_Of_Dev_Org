@@ -19,6 +19,16 @@
                                 <div class="progress-success w-100"></div>
                             </div>
                             <ul>
+                                <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
+                                        <div class="icon-circle">
+                                            <i class="far fa-address-card"></i>
+                                        </div>
+                                        <span>Pairing Details</span>
+                                    </a>
+                                </li>
+
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
                                     <a ng-click="redirectPageURL('HostProjectDetails')">
@@ -27,16 +37,6 @@
                                             <i class="fas fa-file-invoice"></i>
                                         </div>
                                         <span>Paired Project Details</span>
-                                    </a>
-                                </li>
-
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('ProjectDetailsInWiserPage')">
-                                        <div class="icon-circle">
-                                            <i class="far fa-address-card"></i>
-                                        </div>
-                                        <span>Pairing Details</span>
                                     </a>
                                 </li>
 
@@ -87,18 +87,6 @@
                                 <div class="progress-success w-100"></div>
                             </div>
                             <ul>
-
-
-                                <li class="active">
-                                    <a>
-                                        <div class="icon-circle">
-                                            <!-- <i class="far fa-address-card"></i> -->
-                                            <i class="fas fa-file-invoice"></i>
-                                        </div>
-                                        <span>Paired Project Details</span>
-                                    </a>
-                                </li>
-
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
@@ -109,6 +97,15 @@
                                     </a>
                                 </li>
 
+                                <li class="active">
+                                    <a>
+                                        <div class="icon-circle">
+                                            <!-- <i class="far fa-address-card"></i> -->
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
+                                    </a>
+                                </li>
                                 <!-- <li class="active">
                                     <a>
                                         <div class="icon-circle">
@@ -144,8 +141,6 @@
                                         <span>Financial Overview</span>
                                     </a>
                                 </li>
-
-
                             </ul>
                         </div>
                     </div>

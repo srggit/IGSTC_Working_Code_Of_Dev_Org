@@ -181,7 +181,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $scope.getContactHostInfo();
      $scope.previousPage = function () {
           debugger;
-          // $scope.redirectPageURL('FinancialOverview_wiser');
+          $scope.redirectPageURL('ProjectDetailsInWiserPage');
           // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/FinancialOverview_wiser');
           window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=' + $rootScope.candidateId;
      }
@@ -397,7 +397,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                return;
           }
 
-          var keyword = ""; startDay
+          var keyword = "";
           for (var i = 0; i < $scope.objKeyword.length; i++) {
                if ($scope.objKeyword[i].keyword != '' && $scope.objKeyword[i].keyword != undefined) {
                     if (i == 0)
@@ -468,17 +468,27 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           delete ($scope.objContact.Actual_Application_End_Date__c);
           delete $scope.objContact._charLimitMap;
 
+          // Validate that proposalId is available for upsert
+          if (!$rootScope.proposalId) {
+               swal("Info", "Proposal Id is required. Please go back to the previous page.", "info");
+               $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
+               $("#btnPreview").prop('disabled', false);
+               return;
+          }
+
           // Show spinner on button
           $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
           $("#btnPreview").prop('disabled', true);
 
-          // New method to create a Proposal
+          console.log('Saving Host Project Information with Proposal Id:', $rootScope.proposalId);
+
+          // Upsert Proposal using the Proposal Id from the first page
           IndustrialFellowshipController.saveHostProjectInformation(
                $scope.objContact,
                $rootScope.proposalId,
                $rootScope.candidateId,
                $rootScope.yearlyCallId,
-               parseInt($rootScope.yearlyCallIdstartDay, 10),
+               parseInt(startDay, 10),
                parseInt(startMonth, 10),
                parseInt(startYear, 10),
                parseInt(endDay, 10),
@@ -494,8 +504,8 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                     if (event.status) {
 
                          // Saving the ProposalId in Local Storage
-                         localStorage.setItem('proposalId', result.proposalId);
-                         localStorage.setItem('apaId', result.apa.Id);
+                         // localStorage.setItem('proposalId', result.proposalId);
+                         // localStorage.setItem('apaId', result.apa.Id);
                          swal({
                               title: "SUCCESS",
                               text: 'Paired Project Details have been saved successfully.',
@@ -506,8 +516,8 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                          // Fetch documents
                          // $scope.getProjectDetails();
                          // $scope.redirectPageURL('TwoReferenceWiser');
-                         $scope.redirectPageURL('ProjectDetailsInWiserPage');
-                         // $scope.redirectPageURL('WiserApplicationPage');
+                         // $scope.redirectPageURL('ProjectDetailsInWiserPage');
+                         $scope.redirectPageURL('WiserApplicationPage');
                          // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/TwoReferenceWiser');
 
                     } else {

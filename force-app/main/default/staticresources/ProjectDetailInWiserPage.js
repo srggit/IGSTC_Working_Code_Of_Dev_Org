@@ -80,6 +80,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             $rootScope.contactId = localStorage.getItem('contactId');
             $scope.contactId = $rootScope.contactId;
         }
+
     }
     $scope.getDataFromLocalStorage();
 
@@ -347,22 +348,26 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
             if (event.status) {
                 if (result != null) {
                     for (var i = 0; i < result.length; i++) {
-                        if (result[i].Birthdate != null || result[i].Birthdate != undefined) {
+                        // Extract contact from wrapper (new structure) or use result directly (backward compatibility)
+                        var contactData = result[i].contact || result[i];
+                        var isCoordinator = result[i].isCoordinator != null ? result[i].isCoordinator : false;
+
+                        if (contactData.Birthdate != null || contactData.Birthdate != undefined) {
                             $scope.birthDatepresent[i] = true;
-                            result[i].Birthdate = new Date(result[i].Birthdate);
+                            contactData.Birthdate = new Date(contactData.Birthdate);
                         } else {
                             $scope.birthDatepresent[i] = false;
                         }
 
-                        if (result[i].Account != undefined) {
-                            if (result[i].FirstName != undefined || result[i].FirstName != '') {
-                                result[i].FirstName = result[i].FirstName ? result[i].FirstName.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : result[i].FirstName;
+                        if (contactData.Account != undefined) {
+                            if (contactData.FirstName != undefined || contactData.FirstName != '') {
+                                contactData.FirstName = contactData.FirstName ? contactData.FirstName.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : contactData.FirstName;
                             }
-                            if (result[i].LastName != undefined || result[i].LastName != '') {
-                                result[i].LastName = result[i].LastName ? result[i].LastName.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : result[i].LastName;
+                            if (contactData.LastName != undefined || contactData.LastName != '') {
+                                contactData.LastName = contactData.LastName ? contactData.LastName.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : contactData.LastName;
                             }
-                            if (result[i].Account.Name != undefined || result[i].Account.Name != '') {
-                                result[i].Account.Name = result[i].Account.Name ? result[i].Account.Name.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : result[i].Account.Name;
+                            if (contactData.Account.Name != undefined || contactData.Account.Name != '') {
+                                contactData.Account.Name = contactData.Account.Name ? contactData.Account.Name.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : contactData.Account.Name;
                             }
                         }
                     }
@@ -381,26 +386,62 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                         // "Campaign__c":$scope.campaigntype
                     };
                 } else {
-                    for (var i = 0; i < result.length; i++) {
-                        if (result[i].Is_Primary__c == true) {
-                            $scope.pairingDetails = result[i];
-                            // Ensure Account object exists
-                            if (!$scope.pairingDetails.Account) {
-                                $scope.pairingDetails.Account = { Name: "" };
-                            }
-                            if ($scope.pairingDetails.MailingCountry == "India") {
-                                $scope.pairList.MailingCountry = "Germany";
-                                $scope.country2 = "German";
-                                $scope.country1 = "Indian";
-                            } else {
-                                $scope.pairList.MailingCountry = "India";
-                                $scope.country2 = "Indian";
-                                $scope.country1 = "German";
-                            }
-                        } else if (result[i].Is_Primary__c == false) {
-                            // Create a copy to avoid reference issues
-                            $scope.pairList = angular.copy(result[i]);
+                    // First, check if there's a coordinator (APA exists)
+                    var hasCoordinator = false;
+                    var coordinatorContact = null;
+                    var loggedInContact = null;
+                    var nonCoordinatorContacts = [];
 
+                    for (var i = 0; i < result.length; i++) {
+                        // Extract contact from wrapper (new structure) or use result directly (backward compatibility)
+                        var contactData = result[i].contact || result[i];
+                        var isCoordinator = result[i].isCoordinator != null ? result[i].isCoordinator : false;
+                        var isLoggedInContact = result[i].isLoggedInContact != null ? result[i].isLoggedInContact : false;
+
+                        if (isCoordinator == true) {
+                            hasCoordinator = true;
+                            coordinatorContact = contactData;
+                        }
+
+                        // Track logged-in contact separately
+                        if (isLoggedInContact == true) {
+                            loggedInContact = contactData;
+                        }
+
+                        // Track all non-coordinator contacts (including logged-in if not coordinator)
+                        if (isCoordinator == false) {
+                            nonCoordinatorContacts.push(contactData);
+                        }
+                    }
+
+                    // Logic: If coordinator exists, show coordinator in first block; otherwise show logged-in contact
+                    if (hasCoordinator && coordinatorContact) {
+                        // Coordinator exists - show coordinator in first block
+                        $scope.pairingDetails = coordinatorContact;
+                        // Ensure Account object exists
+                        if (!$scope.pairingDetails.Account) {
+                            $scope.pairingDetails.Account = { Name: "" };
+                        }
+                        if ($scope.pairingDetails.MailingCountry == "India") {
+                            $scope.pairList.MailingCountry = "Germany";
+                            $scope.country2 = "German";
+                            $scope.country1 = "Indian";
+                        } else {
+                            $scope.pairList.MailingCountry = "India";
+                            $scope.country2 = "Indian";
+                            $scope.country1 = "German";
+                        }
+
+                        // Find the non-coordinator contact for second block
+                        var secondContact = null;
+                        if (loggedInContact && loggedInContact.Id != coordinatorContact.Id) {
+                            secondContact = loggedInContact;
+                        } else if (nonCoordinatorContacts.length > 0) {
+                            secondContact = nonCoordinatorContacts[0];
+                        }
+
+                        if (secondContact) {
+                            $scope.pairList = angular.copy(secondContact);
                             // Ensure Account object exists and has Name property
                             if (!$scope.pairList.Account || typeof $scope.pairList.Account !== 'object') {
                                 $scope.pairList.Account = { Name: "" };
@@ -415,9 +456,57 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                             $scope.pairList.Id = $scope.pairList.Id || "";
                             $scope.pairList.AccountId = $scope.pairList.AccountId || "";
 
-                            console.log('pairList after assignment:', JSON.stringify($scope.pairList));
-                            console.log('pairList.Account:', $scope.pairList.Account);
-                            console.log('pairList.Account.Name:', $scope.pairList.Account ? $scope.pairList.Account.Name : 'Account is null');
+                            if ($scope.pairList.MailingCountry == "Germany") {
+                                $scope.pairingDetails.MailingCountry = "India";
+                                $scope.country1 = "Indian";
+                                $scope.country2 = "German";
+                            } else {
+                                $scope.pairingDetails.MailingCountry = "Germany";
+                                $scope.country1 = "German";
+                                $scope.country2 = "Indian";
+                            }
+                        }
+                    } else if (loggedInContact) {
+                        // No coordinator exists (first time) - show logged-in contact in first block
+                        $scope.pairingDetails = loggedInContact;
+                        // Ensure Account object exists
+                        if (!$scope.pairingDetails.Account) {
+                            $scope.pairingDetails.Account = { Name: "" };
+                        }
+                        if ($scope.pairingDetails.MailingCountry == "India") {
+                            $scope.pairList.MailingCountry = "Germany";
+                            $scope.country2 = "German";
+                            $scope.country1 = "Indian";
+                        } else {
+                            $scope.pairList.MailingCountry = "India";
+                            $scope.country2 = "Indian";
+                            $scope.country1 = "German";
+                        }
+
+                        // Find another contact for second block (not the logged-in contact)
+                        var secondContact = null;
+                        for (var j = 0; j < nonCoordinatorContacts.length; j++) {
+                            if (nonCoordinatorContacts[j].Id != loggedInContact.Id) {
+                                secondContact = nonCoordinatorContacts[j];
+                                break;
+                            }
+                        }
+
+                        if (secondContact) {
+                            $scope.pairList = angular.copy(secondContact);
+                            // Ensure Account object exists and has Name property
+                            if (!$scope.pairList.Account || typeof $scope.pairList.Account !== 'object') {
+                                $scope.pairList.Account = { Name: "" };
+                            } else if (!$scope.pairList.Account.hasOwnProperty('Name') || $scope.pairList.Account.Name === null || $scope.pairList.Account.Name === undefined) {
+                                $scope.pairList.Account.Name = $scope.pairList.Account.Name || "";
+                            }
+
+                            // Ensure all required fields have default values if missing
+                            $scope.pairList.FirstName = $scope.pairList.FirstName || "";
+                            $scope.pairList.LastName = $scope.pairList.LastName || "";
+                            $scope.pairList.Email = $scope.pairList.Email || "";
+                            $scope.pairList.Id = $scope.pairList.Id || "";
+                            $scope.pairList.AccountId = $scope.pairList.AccountId || "";
 
                             if ($scope.pairList.MailingCountry == "Germany") {
                                 $scope.pairingDetails.MailingCountry = "India";
@@ -701,12 +790,33 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
         $("#btnPreview").prop('disabled', true);
 
-        ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, $rootScope.proposalId, function (result, event) {
+        // Get the coordinator contact ID (first block contact - pairingDetails)
+        var coordinatorContactId = ($scope.pairingDetails && $scope.pairingDetails.Id) ? $scope.pairingDetails.Id : null;
+
+        // Get the logged-in contact hashcode (candidateId) to return their specific APA
+        var loggedInContactHashcode = $rootScope.candidateId || null;
+
+        ApplicantPortal_Contoller.insertPairingDetailsinWiser($scope.conList, $rootScope.campaignId, $rootScope.yearlyCallId, $rootScope.proposalId, coordinatorContactId, loggedInContactHashcode, function (result, event) {
             if (event.status) {
                 debugger;
+                console.log("Result In insertPairingDetailsinWiser ::", result);
+
                 // Restore button
                 $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
                 $("#btnPreview").prop('disabled', false);
+
+                // Saving the ProposalId and APAId in Local Storage (similar to saveHostProjectInformation)
+                if (result && result.proposalId) {
+                    localStorage.setItem('proposalId', result.proposalId);
+                    $rootScope.proposalId = result.proposalId;
+                    console.log('Saved proposalId to localStorage:', result.proposalId);
+                }
+
+                if (result && result.apa && result.apa.Id) {
+                    localStorage.setItem('apaId', result.apa.Id);
+                    $rootScope.apaId = result.apa.Id;
+                    console.log('Saved apaId to localStorage:', result.apa.Id);
+                }
 
                 swal({
                     title: "Pairing Details",
@@ -715,7 +825,8 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                     button: "ok!",
                 }).then((value) => {
                     $scope.getPairingDetailsinWiser(false); // Don't show spinner on refresh
-                    $scope.redirectPageURL('WiserApplicationPage');
+                    // $scope.redirectPageURL('WiserApplicationPage');
+                    $scope.redirectPageURL('HostProjectDetails');
                 });
                 //  Swal.fire(
                 //      'Success',
@@ -742,8 +853,8 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     }
 
     $scope.redirectToApplicantPortal = function () {
-        $scope.redirectPageURL('HostProjectDetails');
-        // window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
+        // $scope.redirectPageURL('HostProjectDetails');
+        window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=%27 + $rootScope.candidateId'
     };
 
     $scope.valid = function (value) {
@@ -1092,23 +1203,62 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
         if (contId == undefined) {
             contId = "";
         }
-        ApplicantPortal_Contoller.checkEmail(email, contId, function (result, event) {
+
+        // Determine opposite MailingCountry based on first contact's MailingCountry
+        var oppMailingCountry = "";
+        if ($scope.pairingDetails && $scope.pairingDetails.MailingCountry) {
+            if ($scope.pairingDetails.MailingCountry == "India") {
+                oppMailingCountry = "Germany";
+            } else {
+                oppMailingCountry = "India";
+            }
+        } else {
+            // Default to India if pairingDetails is not available
+            oppMailingCountry = "India";
+        }
+
+        ApplicantPortal_Contoller.checkEmail(email, contId, oppMailingCountry, $rootScope.yearlyCallId, function (result, event) {
             debugger;
             if (event.status) {
                 debugger;
-                if (result && result.length > 0) {
+                // Check for error message first (if contact has already applied for a campaign in current year)
+                if (result && result.errorMessage) {
+                    // Show error message - contact has already applied
+                    $scope.emailCheck = false;
+                    $scope.pairList.Id = '';
+                    $scope.pairList.FirstName = '';
+                    $scope.pairList.LastName = '';
+                    $scope.pairList.Birthdate = '';
+                    $scope.pairList.Account = { Name: '' };
+                    $scope.pairList.AccountId = '';
+                    // Keep the email that was entered
+                    $scope.pairList.Email = email;
+
+                    swal({
+                        title: "Application Already Exists",
+                        text: result.errorMessage,
+                        icon: "error",
+                        button: "OK"
+                    });
+                    $scope.$apply();
+                    return;
+                }
+
+                // Check if contacts exist in the wrapper
+                if (result && result.contacts && result.contacts.length > 0) {
                     // Contact exists - populate pairList with contact data including Id
-                    $scope.pairList.Id = result[0].Id || '';
-                    $scope.pairList.FirstName = result[0].FirstName || '';
-                    $scope.pairList.LastName = result[0].LastName || '';
-                    $scope.pairList.Email = result[0].Email || email;
-                    $scope.pairList.Birthdate = result[0].Birthdate
-                        ? new Date(Number(result[0].Birthdate))
+                    var contact = result.contacts[0];
+                    $scope.pairList.Id = contact.Id || '';
+                    $scope.pairList.FirstName = contact.FirstName || '';
+                    $scope.pairList.LastName = contact.LastName || '';
+                    $scope.pairList.Email = contact.Email || email;
+                    $scope.pairList.Birthdate = contact.Birthdate
+                        ? new Date(Number(contact.Birthdate))
                         : '';
-                    $scope.pairList.MailingCountry = result[0].MailingCountry || '';
+                    $scope.pairList.MailingCountry = contact.MailingCountry || '';
                     $scope.pairList.Campaign__c = $scope.campaigntype;
-                    $scope.pairList.Account = result[0].Account || { Name: '' };
-                    $scope.pairList.AccountId = result[0].AccountId || '';
+                    $scope.pairList.Account = contact.Account || { Name: '' };
+                    $scope.pairList.AccountId = contact.AccountId || '';
 
                     $scope.emailCheck = true;
 
@@ -1140,6 +1290,17 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
                         button: "OK"
                     });
                 }
+                $scope.$apply();
+            } else {
+                // Handle RemoteAction error
+                $scope.emailCheck = false;
+                $scope.pairList.Id = '';
+                swal({
+                    title: "Error",
+                    text: event.message || "An error occurred while checking the email.",
+                    icon: "error",
+                    button: "OK"
+                });
                 $scope.$apply();
             }
         })

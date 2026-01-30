@@ -1996,7 +1996,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             }
 
             // ---------- Per-year validation ----------
-            function isInvalidYear(days, durationMonths) {
+            // First check if user has started entering data (total days > 0)
+            const totalDays1 = (Number($scope.budgetResearchStay.daysYear1) || 0) +
+                (Number($scope.budgetResearchStay.daysYear2) || 0) +
+                (Number($scope.budgetResearchStay.daysYear3) || 0);
+            const hasUserStartedEnteringData = totalDays1 > 0;
+
+            function isInvalidYear(days, durationMonths, hasStartedEntering) {
                 // Don't validate if duration is not set yet
                 if (!durationMonths || (durationMonths !== 24 && durationMonths !== 36)) {
                     return false;
@@ -2005,12 +2011,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 // Convert days to number, default to 0 if undefined/null
                 const daysNum = Number(days) || 0;
 
-                // For 24 months: 0 is not allowed (both years mandatory)
-                if (durationMonths === 24 && daysNum === 0) {
-                    return true;
-                }
-                // For 36 months: 0 is allowed (but at least 2 years must be non-zero - checked separately)
-                if (durationMonths === 36 && daysNum === 0) {
+                // Don't validate 0 values unless user has started entering data
+                if (daysNum === 0) {
+                    // For 24 months: 0 is not allowed only if user has started entering data
+                    if (durationMonths === 24 && hasStartedEntering) {
+                        return true;
+                    }
+                    // For 36 months: 0 is allowed (but at least 2 years must be non-zero - checked separately)
                     return false;
                 }
                 // For non-zero values, check range
@@ -2020,28 +2027,24 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 return false;
             }
 
-            $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1, $rootScope.proposalDurationMonths);
+            $scope.researchStayError.year1 = isInvalidYear($scope.budgetResearchStay.daysYear1, $rootScope.proposalDurationMonths, hasUserStartedEnteringData);
 
             // Only validate Year 2 if duration is 24 or 36 months
             if ($rootScope.proposalDurationMonths >= 24) {
-                $scope.researchStayError.year2 = isInvalidYear($scope.budgetResearchStay.daysYear2, $rootScope.proposalDurationMonths);
+                $scope.researchStayError.year2 = isInvalidYear($scope.budgetResearchStay.daysYear2, $rootScope.proposalDurationMonths, hasUserStartedEnteringData);
             } else {
                 $scope.researchStayError.year2 = false;
             }
 
             // Only validate Year 3 if duration is 36 months
             if ($rootScope.proposalDurationMonths === 36) {
-                $scope.researchStayError.year3 = isInvalidYear($scope.budgetResearchStay.daysYear3, $rootScope.proposalDurationMonths);
+                $scope.researchStayError.year3 = isInvalidYear($scope.budgetResearchStay.daysYear3, $rootScope.proposalDurationMonths, hasUserStartedEnteringData);
             } else {
                 $scope.researchStayError.year3 = false;
             }
 
             // ---------- Mandatory years validation ----------
             // Only validate mandatory years if user has started entering data (total days > 0)
-            const totalDays1 = (Number($scope.budgetResearchStay.daysYear1) || 0) +
-                (Number($scope.budgetResearchStay.daysYear2) || 0) +
-                (Number($scope.budgetResearchStay.daysYear3) || 0);
-            const hasUserStartedEnteringData = totalDays1 > 0;
 
             // For 24 months: Both Year 1 and Year 2 are mandatory (cannot be 0)
             if ($rootScope.proposalDurationMonths === 24 && hasUserStartedEnteringData) {

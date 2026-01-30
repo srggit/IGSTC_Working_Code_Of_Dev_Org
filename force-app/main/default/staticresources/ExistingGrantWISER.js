@@ -11,6 +11,8 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     $scope.grantsHandledPickList = []; // Picklist values for Grants_Handled__c
     $scope.showGrantsTable = false; // Controls table visibility
     $scope.activeApplicationsField = ''; // RTF field for Active applications funded by DST-BMFTR
+    $scope.proposalStage = false; // Initialize proposal stage
+    $scope.isCurrentUserSubmitted = false; // Initialize applicant submission status
 
     // RTF character counting array (index 0 for Active Applications field)
     $scope.objRtf = [
@@ -65,9 +67,15 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
 
             if (event.status) {
                 $rootScope.isCurrentUserSubmitted = result;
-                CKEDITOR.config.readOnly = true;
+                $scope.isCurrentUserSubmitted = result;
+                // Only set CKEditor to read-only if the applicant has actually submitted
+                CKEDITOR.config.readOnly = result === true;
             } else {
                 console.log('Error in fetchApplicantStatus:', event.message);
+                // On error, default to false (not submitted)
+                $rootScope.isCurrentUserSubmitted = false;
+                $scope.isCurrentUserSubmitted = false;
+                CKEDITOR.config.readOnly = false;
             }
         }, {
             escape: true

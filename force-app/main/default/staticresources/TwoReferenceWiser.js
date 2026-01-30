@@ -9,6 +9,8 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
      var mapForIndex = new Map();
      var indexNum;
      $scope.objContact;;
+     $scope.proposalStage = false; // Initialize proposal stage
+     $scope.isCurrentUserSubmitted = false; // Initialize applicant submission status
 
      debugger;
 
@@ -57,9 +59,15 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
 
                if (event.status) {
                     $rootScope.isCurrentUserSubmitted = result;
-                    CKEDITOR.config.readOnly = true;
+                    $scope.isCurrentUserSubmitted = result;
+                    // Only set CKEditor to read-only if the applicant has actually submitted
+                    CKEDITOR.config.readOnly = result === true;
                } else {
                     console.log('Error in fetchApplicantStatus:', event.message);
+                    // On error, default to false (not submitted)
+                    $rootScope.isCurrentUserSubmitted = false;
+                    $scope.isCurrentUserSubmitted = false;
+                    CKEDITOR.config.readOnly = false;
                }
           }, {
                escape: true
@@ -286,7 +294,49 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
                $rootScope.accountId,
                function (result, event) {
 
-                    if (!event.status || !result) return;
+                    if (!event.status) {
+                         // If there's an error or no signatory exists, initialize empty structure
+                         $scope.objContact = {
+                              Contact__r: {
+                                   Signatory_Salutation__c: '',
+                                   Signatory_First_Name__c: '',
+                                   Signatory_Last_Name__c: '',
+                                   Signatory_Institution__c: '',
+                                   Signatory_Designation__c: '',
+                                   Email: '',
+                                   Institution_Name__c: '',
+                                   Designation__c: '',
+                                   Account: {
+                                        Name: ''
+                                   }
+                              },
+                              Signatory_Emailist_Name__c: ''
+                         };
+                         $scope.$applyAsync();
+                         return;
+                    }
+
+                    // If result is null (no signatory exists), initialize empty structure
+                    if (!result) {
+                         $scope.objContact = {
+                              Contact__r: {
+                                   Signatory_Salutation__c: '',
+                                   Signatory_First_Name__c: '',
+                                   Signatory_Last_Name__c: '',
+                                   Signatory_Institution__c: '',
+                                   Signatory_Designation__c: '',
+                                   Email: '',
+                                   Institution_Name__c: '',
+                                   Designation__c: '',
+                                   Account: {
+                                        Name: ''
+                                   }
+                              },
+                              Signatory_Emailist_Name__c: ''
+                         };
+                         $scope.$applyAsync();
+                         return;
+                    }
 
                     // 🔒 SAFE INITIALIZATION
                     result.Contact__r = result.Contact__r || {};
@@ -424,25 +474,25 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
           }
 
           // Institution_Name__c validation
-          if (!contact.Institution_Name__c || contact.Institution_Name__c.trim() === '') {
-               swal("Info", "Please enter Institution.", "info");
-               angular.element('#signInstitution2').addClass('error-border');
-               return;
-          }
+          // if (!contact.Institution_Name__c || contact.Institution_Name__c.trim() === '') {
+          //      swal("Info", "Please enter Institution.", "info");
+          //      angular.element('#signInstitution2').addClass('error-border');
+          //      return;
+          // }
 
           // Designation__c validation
-          if (!contact.Designation__c || contact.Designation__c.trim() === '') {
-               swal("Info", "Please enter Designation.", "info");
-               angular.element('#signDesignation2').addClass('error-border');
-               return;
-          }
+          // if (!contact.Designation__c || contact.Designation__c.trim() === '') {
+          //      swal("Info", "Please enter Designation.", "info");
+          //      angular.element('#signDesignation2').addClass('error-border');
+          //      return;
+          // }
 
           // Signatory Emailst Name validation
-          if (!$scope.objContact.Signatory_Emailist_Name__c || $scope.objContact.Signatory_Emailist_Name__c.trim() === '') {
-               swal("Info", "Please enter Signatory Emailist Name.", "info");
-               angular.element('#signEmailistName').addClass('error-border');
-               return;
-          }
+          // if (!$scope.objContact.Signatory_Emailist_Name__c || $scope.objContact.Signatory_Emailist_Name__c.trim() === '') {
+          //      swal("Info", "Please enter Signatory Emailist Name.", "info");
+          //      angular.element('#signEmailistName').addClass('error-border');
+          //      return;
+          // }
 
 
 
@@ -471,38 +521,130 @@ angular.module('cp_app').controller('twoReferencePageCtrl', function ($scope, $r
           // })
 
           // ------------ METHOD UPDATED TO SAVE SIGNATORY DETAILS ALSO ------------ //
+          // Ensure objContact is initialized
+          if (!$scope.objContact) {
+               $scope.objContact = {
+                    Contact__r: {
+                         Signatory_Salutation__c: '',
+                         Signatory_First_Name__c: '',
+                         Signatory_Last_Name__c: '',
+                         Signatory_Institution__c: '',
+                         Signatory_Designation__c: '',
+                         Email: '',
+                         Institution_Name__c: '',
+                         Designation__c: '',
+                         Account: {
+                              Name: ''
+                         }
+                    },
+                    Signatory_Emailist_Name__c: ''
+               };
+          }
+
+          // Ensure Contact__r exists
+          if (!$scope.objContact.Contact__r) {
+               $scope.objContact.Contact__r = {
+                    Signatory_Salutation__c: '',
+                    Signatory_First_Name__c: '',
+                    Signatory_Last_Name__c: '',
+                    Signatory_Institution__c: '',
+                    Signatory_Designation__c: '',
+                    Email: '',
+                    Institution_Name__c: '',
+                    Designation__c: '',
+                    Account: {
+                         Name: ''
+                    }
+               };
+          }
+
           delete ($scope.objContact['Contact__c']);
           delete ($scope.objContact['Is_Signatory__c']);
 
           var signatoryAPAId = $scope.objContact && $scope.objContact.Id ? $scope.objContact.Id : null;
 
+          // Prepare Contact object for Apex - ensure it has the correct structure
+          var signatoryContact = angular.copy($scope.objContact.Contact__r);
+
+          // Remove nested Account object if it exists (not needed for Contact upsert)
+          if (signatoryContact.Account) {
+               delete signatoryContact.Account;
+          }
+
+          // Copy signatory fields to Contact fields if needed
+          if (signatoryContact.Signatory_Salutation__c) {
+               signatoryContact.Salutation = signatoryContact.Signatory_Salutation__c;
+          }
+          if (signatoryContact.Signatory_Institution__c) {
+               signatoryContact.Institution_Name__c = signatoryContact.Signatory_Institution__c;
+          }
+          if (signatoryContact.Signatory_Designation__c) {
+               signatoryContact.Designation__c = signatoryContact.Signatory_Designation__c;
+          }
+
+          // If Contact has no Id (new contact), ensure we don't pass undefined Id
+          // The Id will be set by Apex after insert
+          if (!signatoryContact.Id) {
+               // Explicitly remove Id for new contacts
+               delete signatoryContact.Id;
+          }
+
+          // Prepare APA record object
+          var apaRecordObj = {
+               Signatory_Emailist_Name__c: $scope.objContact.Signatory_Emailist_Name__c || ''
+          };
+
           // Show spinner on button
           $("#btnPreview").html('<i class="fa-solid fa-spinner fa-spin-pulse me-3"></i>Please wait...');
           $("#btnPreview").prop('disabled', true);
 
-          ApplicantPortal_Contoller.insertParticipantsReferences($scope.ParticipantList, $rootScope.proposalId, $rootScope.apaId, $scope.objContact.Contact__r, $scope.objContact, signatoryAPAId, $rootScope.accountId, function (result, event) {
+          ApplicantPortal_Contoller.insertParticipantsReferences($scope.ParticipantList, $rootScope.proposalId, $rootScope.apaId, signatoryContact, apaRecordObj, signatoryAPAId, $rootScope.accountId, function (result, event) {
 
                // Restore button
                $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
                $("#btnPreview").prop('disabled', false);
 
-               if (event.status && result != null) {
-                    console.log('Result ::' + result);
+               console.log('Result:', result);
+               console.log('Event status:', event.status);
+               console.log('Event message:', event.message);
 
-                    localStorage.setItem("signatoryAPAId", result);
-
+               // Check if result is an error (starts with "Error:")
+               if (result && typeof result === 'string' && (result.startsWith('Error:') || result.startsWith('Error'))) {
                     swal({
-                         title: "Details Saved",
-                         text: 'References & Signatory details have been saved successfully.',
-                         icon: "success",
+                         title: "Error",
+                         text: result,
+                         icon: "error",
                          button: "ok!",
                     });
-                    $scope.redirectPageURL('AttachmentsInWiser');
-                    //    window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/ProjectHandleGrantApplicationWiser');
+                    return;
+               }
+
+               if (event.status && result != null && result != '') {
+                    // Check if result is a valid Id (18 characters)
+                    if (result.length == 18 || result.length == 15) {
+                         localStorage.setItem("signatoryAPAId", result);
+
+                         swal({
+                              title: "Details Saved",
+                              text: 'References & Signatory details have been saved successfully.',
+                              icon: "success",
+                              button: "ok!",
+                         }).then(function () {
+                              $scope.redirectPageURL('AttachmentsInWiser');
+                         });
+                    } else {
+                         // Result might be an error message
+                         swal({
+                              title: "Error",
+                              text: result || "An error occurred while saving.",
+                              icon: "error",
+                              button: "ok!",
+                         });
+                    }
                } else {
                     swal({
                          title: "Error",
-                         text: "Exception!",
+                         text: event.message || result || "An error occurred while saving. Please try again.",
                          icon: "error",
                          button: "ok!",
                     });

@@ -67,16 +67,6 @@
                                 </ul> -->
 
                             <ul>
-                                <!-- Pair Project Details -->
-                                <li class="active pb-cursor">
-                                    <a ng-click="redirectPageURL('HostProjectDetails')">
-                                        <div class="icon-circle">
-                                            <!-- <i class="far fa-address-card"></i> -->
-                                            <i class="fas fa-file-invoice"></i>
-                                        </div>
-                                        <span>Paired Project Details</span>
-                                    </a>
-                                </li>
 
                                 <!-- Not Confirmed Yet -->
                                 <li class="active pb-cursor">
@@ -86,6 +76,17 @@
                                             <i class="far fa-address-card"></i>
                                         </div>
                                         <span>Pairing Details</span>
+                                    </a>
+                                </li>
+
+                                <!-- Pair Project Details -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('HostProjectDetails')">
+                                        <div class="icon-circle">
+                                            <!-- <i class="far fa-address-card"></i> -->
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <span>Paired Project Details</span>
                                     </a>
                                 </li>
 
@@ -129,17 +130,17 @@
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
-                                            <i class="fas fa-user-alt"></i>
+                                            <i class="fas fa-file-invoice"></i>
                                         </div>
-                                        <span>Paired Project Details</span>
+                                        <span>Pairing Details</span>
                                     </a>
                                 </li>
                                 <li class="active">
                                     <a>
                                         <div class="icon-circle">
-                                            <i class="fas fa-file-invoice"></i>
+                                            <i class="fas fa-user-alt"></i>
                                         </div>
-                                        <span>Pairing Details</span>
+                                        <span>Paired Project Details</span>
                                     </a>
                                 </li>
                                 <li class="active">
@@ -435,13 +436,12 @@
                         <div class="form-group">
                             <label class="font-if color-theme">
                                 Active applications funded by DST-BMFTR (max 1000 characters without space)
-                                <span class="required-asterisk text-danger">*</span>
                                 <br/>
-                                <i>Please provide details of any active applications funded by DST and/or BMFTR that overlap
+                                <small class="label-rtf">Please provide details of any active applications funded by DST and/or BMFTR that overlap
                                     scientifically or technically with the proposed project. If yes, provide project title,
                                     funding agency, reference number, duration, and your role. (Max. characters 1000 without
                                     space)
-                                </i>
+                                </small>
                             </label>
                             <br />
                             <small class="label-rtf">

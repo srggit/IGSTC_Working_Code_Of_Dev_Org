@@ -219,8 +219,14 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 					delete $scope.objContact.Attachments;
 				}
 
-				if (result.Salutation != undefined || result.Salutation != '') {
-					$scope.objContact.Salutation = $scope.objContact.Salutation ? $scope.objContact.Salutation.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : $scope.objContact.Salutation;
+				// Handle Salutation - use Title if Salutation is empty/null
+				if (result.Salutation != undefined && result.Salutation != null && result.Salutation != '') {
+					$scope.objContact.Salutation = result.Salutation.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
+				} else if (result.Title != undefined && result.Title != null && result.Title != '') {
+					// If Salutation is empty, use Title value for display
+					$scope.objContact.Salutation = result.Title.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
+					// Store original Title for reference
+					$scope.objContact.Title = result.Title;
 				}
 				if (result.FirstName != undefined || result.FirstName != '') {
 					$scope.objContact.FirstName = $scope.objContact.FirstName ? $scope.objContact.FirstName.replace(/&amp;/g, '&').replaceAll('&amp;amp;', '&').replaceAll('&amp;gt;', '>').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&') : $scope.objContact.FirstName;
@@ -317,12 +323,12 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 			birthMonth = $scope.objContact.Birthdate.getUTCMonth() + 1;
 			birthDay = $scope.objContact.Birthdate.getDate();
 		}
-		var age = moment().diff('' + birthYear + '-' + birthMonth + '-' + birthDay + '', 'years');
-		if (age < 21) {
-			swal("Info", "Age should not be less than 20 years", "info");
-			$("#txtDOB").addClass('border-theme');
-			return;
-		}
+		// var age = moment().diff('' + birthYear + '-' + birthMonth + '-' + birthDay + '', 'years');
+		// if (age < 21) {
+		// 	swal("Info", "Age should not be less than 20 years", "info");
+		// 	$("#txtDOB").addClass('border-theme');
+		// 	return;
+		// }
 
 		//   if ($scope.objContact.Gender__c == undefined || $scope.objContact.Gender__c == "") {
 		//     swal("info", "Please Enter Gender.","info");
@@ -442,6 +448,12 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		// $scope.objContact.MailingStreet = $scope.MailingStreet1+','+$scope.MailingStreet2; 
 
 		$scope.objContact['State__c'] = $scope.objContact['MailingState'];
+
+		// If Salutation is empty/null, use Title value and update Salutation
+		if (($scope.objContact.Salutation == undefined || $scope.objContact.Salutation == null || $scope.objContact.Salutation == "")
+			&& $scope.objContact.Title != undefined && $scope.objContact.Title != null && $scope.objContact.Title != "") {
+			$scope.objContact.Salutation = $scope.objContact.Title;
+		}
 
 		if ($scope.objContact.Uploaded__c == false) {
 			swal('Info', 'Please upload image.', 'info');
