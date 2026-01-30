@@ -15,7 +15,8 @@
                 <div class="row mx-5">
                     <div class="col-md-12">
 
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage">
+                            <!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -84,7 +85,8 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage">
+                            <!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -188,7 +190,8 @@
 
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage">
+                            <!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -240,7 +243,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage">
+                            <!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -334,7 +338,37 @@
                     <div class="col-md-12 alert bg-color-list" role="alert">
                         <ul class="font-if">
                             <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>Click on upload button to upload the signature</li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Click on upload button to upload the signature.
+                            </li>
+                            <br/>
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Both the applicants (from India &amp; Germany) must individually complete their part of the application and jointly the paired
+                                project details, within the same application.
+                            </li>
+                            <br />
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                If you wish to make any changes in the application, you may do so before final submission.
+                            </li>
+                            <br />
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                The final submission of the application will be done by the Primary applicant only.
+                            </li>
+                            <br />
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                It is the responsibility of the Primary applicant to make sure that the application is completed by the paired applicant
+                                before final submission.
+                            </li>
+                            <br />
+                            <li>
+                                <i class="fa-solid fa-circle text-success me-3"></i>
+                                Once final submission is done, the application cannot be further edited.
+                            </li>
+                            <br />
                         </ul>
                     </div>
                 </div>
@@ -371,9 +405,11 @@
                                 <div ng-hide="proposalStage" style="margin-right: -60px;">
                                     <label class="font-if pt-2">{{doc.userDocument.Name}} (jpg/jpeg, 5 kb-30 kb)</label>
                                     <div class="input-group input-group-lg float-end">
-                                        <input type="file" accept=".jpg,.jpeg" ng-disabled="proposalStage || isCurrentUserSubmitted" id="{{doc.userDocument.Name}}"
-                                            class="form-control float-end" />
-                                        <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
+                                        <!-- ng-disabled="proposalStage || isCurrentUserSubmitted" -->
+                                        <input type="file" accept=".jpg,.jpeg" ng-disabled="proposalStage" id="{{doc.userDocument.Name}}" class="form-control float-end"
+                                        />
+                                        <!-- ng-hide="proposalStage || isCurrentUserSubmitted" -->
+                                        <span class="input-group-btn" ng-hide="proposalStage">
                                             <button class="btn btn-success" ng-click="uploadFile(doc.userDocument.Name,doc.userDocument.Id,'','30720','5120')" type="button">Upload</button>
                                         </span>
                                     </div>
@@ -388,7 +424,8 @@
                     </div>
                 </div>
 
-                <div class="row m-5" ng-if="!proposalStage && !isCurrentUserSubmitted">
+                <div class="row m-5" ng-if="!proposalStage">
+                    <!-- && !isCurrentUserSubmitted -->
                     <div class="col-md-12">
                         <button class="blue-btn float-end" id="btnPreview" ng-click="finalSubmitWiser()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Submit</button>

@@ -56,32 +56,32 @@ angular.module('cp_app').controller('WISERgrant_ctrl', function ($scope, $rootSc
     }
     $scope.getDataFromLocalStorage();
 
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
-        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-            debugger;
+    // $scope.getApplicantStatusFromAPA = function () {
+    //     debugger;
+    //     ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+    //         debugger;
 
-            console.log('result return onload :: ');
-            console.log(result);
-            console.log('event:', event);
+    //         console.log('result return onload :: ');
+    //         console.log(result);
+    //         console.log('event:', event);
 
-            if (event.status) {
-                $rootScope.isCurrentUserSubmitted = result;
-                $scope.isCurrentUserSubmitted = result;
-                // Only set CKEditor to read-only if the applicant has actually submitted
-                CKEDITOR.config.readOnly = result === true;
-            } else {
-                console.log('Error in fetchApplicantStatus:', event.message);
-                // On error, default to false (not submitted)
-                $rootScope.isCurrentUserSubmitted = false;
-                $scope.isCurrentUserSubmitted = false;
-                CKEDITOR.config.readOnly = false;
-            }
-        }, {
-            escape: true
-        });
-    }
-    $scope.getApplicantStatusFromAPA();
+    //         if (event.status) {
+    //             $rootScope.isCurrentUserSubmitted = result;
+    //             $scope.isCurrentUserSubmitted = result;
+    //             // Only set CKEditor to read-only if the applicant has actually submitted
+    //             CKEDITOR.config.readOnly = result === true;
+    //         } else {
+    //             console.log('Error in fetchApplicantStatus:', event.message);
+    //             // On error, default to false (not submitted)
+    //             $rootScope.isCurrentUserSubmitted = false;
+    //             $scope.isCurrentUserSubmitted = false;
+    //             CKEDITOR.config.readOnly = false;
+    //         }
+    //     }, {
+    //         escape: true
+    //     });
+    // }
+    // $scope.getApplicantStatusFromAPA();
 
     /**
      * Fetches proposal stage from Apex on page load

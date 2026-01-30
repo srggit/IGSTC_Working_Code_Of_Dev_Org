@@ -14,7 +14,7 @@
             <div class="container mt-5">
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -82,7 +82,7 @@
 
                             </ul>
                         </div>
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -148,7 +148,7 @@
 
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -202,7 +202,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage">
                             <div class="progress">
                                 <div class="progress-success wp-0"></div>
                             </div>
@@ -258,28 +258,144 @@
 
                 <div class="row mt-5 mx-5">
                     <div class="col-md-12">
-                        <div class="alert bg-color-list font-if" role="alert" ng-show="accDetails.Contacts[0].MailingCountry == 'India'">
+                        <div class="alert bg-color-list font-if" role="alert" ng-show="accDetails && accDetails.Contacts && accDetails.Contacts[0] && accDetails.Contacts[0].MailingCountry == 'India'">
                             <i class="fa-solid fa-circle-info text-success me-2"></i>
-                            Indian awardee -
-                            <ul>
-                                <li class="ps-4">
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Travel (including visa fee and insurance) approximately ₹ 1 lakh.</li>
-                                <li class="ps-4">
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Project cost up to ₹ 13 lakhs/year (including research staff, consumables, contingency
-                                    and per diem @ € 2300/month in Germany).</li>
-                            </ul>
+                            <b>Indian awardee</b>
+                            <div ng-show="!showFullInfoBox">
+                                <ul>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Travel support (including visa fee and insurance) up to ₹ 1 lakh/visit.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Research stay in Germany per diem @ € 2300/30 days on pro rata basis according to the number of days spent in Germany, equivalent
+                                        funds in INR will be provided as per an appropriate exchange rate determined by IGSTC.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        The remaining amount per year is dedicated for Research costs (including research staff, consumables, minor equipment, contingency
+                                        and overheads up to 10% (if required)).
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Total funding including all heads will be limited to
+                                        <b>₹ 13 lakhs/year</b>.
+                                    </li>
+                                    <br/>
+                                </ul>
+                                <a href="javascript:void(0);" ng-click="showFullInfoBox = true" class="text-primary" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                    <i class="fa-solid fa-chevron-down me-1"></i>Show more
+                                </a>
+                            </div>
+                            <div ng-show="showFullInfoBox">
+                                <ul>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Travel support (including visa fee and insurance) up to ₹ 1 lakh/visit.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Research stay in Germany per diem @ € 2300/30 days on pro rata basis according to the number of days spent in Germany, equivalent
+                                        funds in INR will be provided as per an appropriate exchange rate determined by IGSTC.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        The remaining amount per year is dedicated for Research costs (including research staff, consumables, minor equipment, contingency
+                                        and overheads up to 10% (if required)).
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Total funding including all heads will be limited to
+                                        <b>₹ 13 lakhs/year</b>.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        <b>Please provide a detailed Description for each Expense Head, specifying the items
+                                            considered under each category.</b>
+                                    </li>
+                                    <br/>
+                                </ul>
+                                <a href="javascript:void(0);" ng-click="showFullInfoBox = false" class="text-primary mt-2" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                    <i class="fa-solid fa-chevron-up me-1"></i>Show less
+                                </a>
+                            </div>
                         </div>
 
-                        <div class="alert bg-color-list font-if" role="alert" ng-hide="accDetails.Contacts[0].MailingCountry == 'India'">
+                        <div class="alert bg-color-list font-if" role="alert" ng-show="accDetails && accDetails.Contacts && accDetails.Contacts[0] && accDetails.Contacts[0].MailingCountry == 'Germany'">
                             <i class="fa-solid fa-circle-info text-success me-2"></i>
-                            German awardee -
-                            <ul>
-                                <li class="ps-4">
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Travel (including visa fee and insurance) approximately € 1500.</li>
-                                <li class="ps-4">
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Project cost up to € 14500/year (including research staff, consumables, contingency
-                                    and per diem @ € 2300/month in India).</li>
-                            </ul>
+                            <b>German awardee</b>
+                            <div ng-show="!showFullInfoBox">
+                                <ul>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Travel (including visa fee and insurance) up to € 1500/visit.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Research stay per diem @ € 2300/30 days in India/Germany on pro rata basis according to the number of days spent in India.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        The remaining amount per year is dedicated for Research costs (including research staff, consumables, minor equipment, contingency
+                                        and overheads up to 10% (if required)).
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Total funding including all heads will be limited to
+                                        <b>€ 16000/year</b>.
+                                    </li>
+                                    <br/>
+                                </ul>
+                                <a href="javascript:void(0);" ng-click="showFullInfoBox = true" class="text-primary" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                    <i class="fa-solid fa-chevron-down me-1"></i>Show more
+                                </a>
+                            </div>
+                            <div ng-show="showFullInfoBox">
+                                <ul>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Travel (including visa fee and insurance) up to € 1500/visit.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Research stay per diem @ € 2300/30 days in India/Germany on pro rata basis according to the number of days spent in India.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        The remaining amount per year is dedicated for Research costs (including research staff, consumables, minor equipment, contingency
+                                        and overheads up to 10% (if required)).
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        Total funding including all heads will be limited to
+                                        <b>€ 16000/year</b>.
+                                    </li>
+                                    <br/>
+                                    <li class="ps-4">
+                                        <i class="fa-solid fa-circle text-success me-3"></i>
+                                        <b>Please provide a detailed Description for each Expense Head, specifying the items
+                                            considered under each category.</b>
+                                    </li>
+                                    <br/>
+                                </ul>
+                                <a href="javascript:void(0);" ng-click="showFullInfoBox = false" class="text-primary mt-2" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                    <i class="fa-solid fa-chevron-up me-1"></i>Show less
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -443,21 +559,21 @@
                                 <td></td>
                                 <td class="orange-text">No. of days</td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear1" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year1">
                                         Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
                                 <td ng-show="Showyear2">
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear2" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year2">
                                         Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
                                     </span>
                                 </td>
                                 <td ng-show="Showyear3">
-                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetResearchStay.daysYear3" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                     <span class="text-danger" ng-if="researchStayError.year3">
                                         Stay must be between 10–{{proposalDurationMonths === 24 ? 30 : 45}} days
@@ -538,7 +654,7 @@
                                 <td></td>
                                 <td>Percentage of Overheads</td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="onOverheadChange(1)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear1" ng-change="onOverheadChange(1)" ng-disabled="proposalStage"
                                         min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear1 > 10">
@@ -546,7 +662,7 @@
                                     </small>
                                 </td>
                                 <td ng-show="Showyear2">
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="onOverheadChange(2)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear2" ng-change="onOverheadChange(2)" ng-disabled="proposalStage"
                                         min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear2 > 10">
@@ -555,7 +671,7 @@
 
                                 </td>
                                 <td ng-show="Showyear3">
-                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="onOverheadChange(3)" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetOverhead.percentageYear3" ng-change="onOverheadChange(3)" ng-disabled="proposalStage"
                                         min="0" max="10" ng-model-options="{ allowInvalid: true }" />
 
                                     <small class="text-danger" ng-if="budgetOverhead.percentageYear3 > 10">
@@ -611,8 +727,7 @@
                                 <!-- <td ng-if="row.index !== 0 || row.rowType !== 'positions'"></td> -->
                                 <td>
                                     <div ng-if="row.rowType === 'positions'">
-                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionPositions" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        />
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionPositions" ng-disabled="proposalStage" />
                                         <small ng-if="row.staff.descriptionPositions && row.staff.descriptionPositions.length > 250" class="text-danger">
                                             Max limit: 250 characters (Current: {{row.staff.descriptionPositions.length}})
                                         </small>
@@ -621,8 +736,7 @@
                                         </small> -->
                                     </div>
                                     <div ng-if="row.rowType === 'cost'">
-                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionCost" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        />
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionCost" ng-disabled="proposalStage" />
                                         <small ng-if="row.staff.descriptionCost && row.staff.descriptionCost.length > 250" class="text-danger">
                                             Max limit: 250 characters (Current: {{row.staff.descriptionCost.length}})
                                         </small>
@@ -631,8 +745,7 @@
                                         </small> -->
                                     </div>
                                     <div ng-if="row.rowType === 'hours'">
-                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionHours" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                        />
+                                        <input type="text" class="form-control tbl-input" ng-model="row.staff.descriptionHours" ng-disabled="proposalStage" />
                                         <small ng-if="row.staff.descriptionHours && row.staff.descriptionHours.length > 250" class="text-danger">
                                             Max limit: 250 characters (Current: {{row.staff.descriptionHours.length}})
                                         </small>
@@ -643,10 +756,10 @@
                                 </td>
                                 <td>
                                     <span ng-if="row.rowType === 'positions'">No. of positions</span>
-                                    <span ng-if="row.rowType === 'cost'">Cost</span>
+                                    <span ng-if="row.rowType === 'cost'">Renumeration/Fellowship</span>
                                     <span ng-if="row.rowType === 'hours'">
                                         Number of hour/week/days/month
-                                        <select ng-model="row.staff.hoursUnit" ng-options="unit for unit in timeUnits" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                        <select ng-model="row.staff.hoursUnit" ng-options="unit for unit in timeUnits" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                             class="form-control" style="margin-top: 5px; min-width: 100px;">
                                         </select>
                                     </span>
@@ -654,31 +767,31 @@
                                 </td>
                                 <td>
                                     <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear1" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear1" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear1" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear1, 2) : (row.staff.totalYear1
                                         | number:2))}}</span>
                                 </td>
                                 <td ng-show="Showyear2">
                                     <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear2" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear2" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear2" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear2, 2) : (row.staff.totalYear2
                                         | number:2))}}</span>
                                 </td>
                                 <td ng-show="Showyear3">
                                     <input ng-if="row.rowType === 'positions'" type="number" class="tbl-input" ng-model="row.staff.positionsYear3" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'cost'" type="number" class="tbl-input" ng-model="row.staff.costYear3" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <input ng-if="row.rowType === 'hours'" type="number" class="tbl-input" ng-model="row.staff.hoursYear3" ng-change="recalculateAll()"
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                        ng-disabled="proposalStage" />
                                     <span ng-if="row.rowType === 'total'" class="orange-text" style="text-align: right; display: block;">{{(mailingCountry === 'India' ? formatIndianNumber(row.staff.totalYear3, 2) : (row.staff.totalYear3
                                         | number:2))}}</span>
                                 </td>
@@ -714,15 +827,15 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year1" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td ng-show="Showyear2">
-                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year2" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td ng-show="Showyear3">
-                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetConsumables.year3" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td class="orange-text bold" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(budgetConsumables.total, 2) : (budgetConsumables.total
@@ -734,15 +847,15 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year1" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td ng-show="Showyear2">
-                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year2" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td ng-show="Showyear3">
-                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="minorEquipment.year3" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
                                 </td>
                                 <td class="orange-text bold" style="text-align: right;">{{(mailingCountry === 'India' ? formatIndianNumber(minorEquipment.total, 2) : (minorEquipment.total
@@ -759,7 +872,7 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year1" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year1" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
 
                                     <span class="text-danger" ng-if="contingencyError.year1">
@@ -769,7 +882,7 @@
                                     </span>
                                 </td>
                                 <td ng-show="Showyear2">
-                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year2" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year2" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
 
                                     <span class="text-danger" ng-if="contingencyError.year2">
@@ -779,7 +892,7 @@
                                     </span>
                                 </td>
                                 <td ng-show="Showyear3">
-                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year3" ng-change="recalculateAll()" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <input type="number" class="tbl-input" ng-model="budgetContingency.year3" ng-change="recalculateAll()" ng-disabled="proposalStage"
                                     />
 
                                     <span class="text-danger" ng-if="contingencyError.year3">

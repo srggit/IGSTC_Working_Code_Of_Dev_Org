@@ -28,6 +28,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
     const TRAVEL_COST_INR = 100000; // Fixed ₹1,00,000 for India
 
     $scope.timeUnits = ['Hour', 'Day', 'Week', 'Month'];
+    $scope.showFullInfoBox = false; // Initialize info box as collapsed
 
     // Function to get max research amount based on mailing country
     $scope.getMaxResearchAmount = function () {
@@ -285,49 +286,49 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         console.log('Year visibility set - Duration:', $rootScope.proposalDurationMonths, 'Years:', $scope.numberOfYears);
     };
 
-    $scope.getApplicantStatusFromAPA = function () {
+    // $scope.getApplicantStatusFromAPA = function () {
 
-        ApplicantPortal_Contoller.fetchApplicantStatusWithDuration(
-            $rootScope.apaId,
-            $rootScope.yearlyCallId,
-            function (result, event) {
+    //     ApplicantPortal_Contoller.fetchApplicantStatusWithDuration(
+    //         $rootScope.apaId,
+    //         $rootScope.yearlyCallId,
+    //         function (result, event) {
 
-                console.log('Result:', result);
-                console.log('Event:', event);
+    //             console.log('Result:', result);
+    //             console.log('Event:', event);
 
-                if (event.status && result) {
+    //             if (event.status && result) {
 
-                    // Status flag
-                    $rootScope.isCurrentUserSubmitted = result.applicantStatus === 'Submitted';
+    //                 // Status flag
+    //                 $rootScope.isCurrentUserSubmitted = result.applicantStatus === 'Submitted';
 
-                    // Duration months
-                    $rootScope.proposalDurationMonths = result.durationInMonths;
+    //                 // Duration months
+    //                 $rootScope.proposalDurationMonths = result.durationInMonths;
 
-                    // Set year visibility based on duration
-                    $scope.setYearVisibilityBasedOnDuration();
+    //                 // Set year visibility based on duration
+    //                 $scope.setYearVisibilityBasedOnDuration();
 
-                    // Euro exchange rate
-                    $rootScope.euroExchangeRate = result.euroExchangeRate;
-                    $scope.euroExchangeRate = result.euroExchangeRate;
+    //                 // Euro exchange rate
+    //                 $rootScope.euroExchangeRate = result.euroExchangeRate;
+    //                 $scope.euroExchangeRate = result.euroExchangeRate;
 
-                    // Mailing country
-                    $rootScope.mailingCountry = result.mailingCountry;
-                    $scope.mailingCountry = result.mailingCountry;
+    //                 // Mailing country
+    //                 $rootScope.mailingCountry = result.mailingCountry;
+    //                 $scope.mailingCountry = result.mailingCountry;
 
-                    // Lock editor only if submitted
-                    if ($rootScope.isCurrentUserSubmitted) {
-                        CKEDITOR.config.readOnly = true;
-                    }
+    //                 // Lock editor only if submitted
+    //                 if ($rootScope.isCurrentUserSubmitted) {
+    //                     CKEDITOR.config.readOnly = true;
+    //                 }
 
-                } else {
-                    console.error('fetchApplicantStatus failed:', event.message);
-                }
-            },
-            { escape: true }
-        );
-    };
+    //             } else {
+    //                 console.error('fetchApplicantStatus failed:', event.message);
+    //             }
+    //         },
+    //         { escape: true }
+    //     );
+    // };
 
-    $scope.getApplicantStatusFromAPA();
+    // $scope.getApplicantStatusFromAPA();
 
     $scope.getAccounts = function () {
         debugger;

@@ -807,26 +807,26 @@ angular.module('cp_app').controller('WiserApplicantInformation_Ctrl', function (
 		$rootScope.apaId = localStorage.getItem('apaId');
 	}
 
-	$scope.getApplicantStatusFromAPA = function () {
-		debugger;
-		ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-			debugger;
+	// $scope.getApplicantStatusFromAPA = function () {
+	// 	debugger;
+	// 	ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+	// 		debugger;
 
-			console.log('result return onload :: ');
-			console.log(result);
-			console.log('event:', event);
+	// 		console.log('result return onload :: ');
+	// 		console.log(result);
+	// 		console.log('event:', event);
 
-			if (event.status) {
-				$rootScope.isCurrentUserSubmitted = result;
-				CKEDITOR.config.readOnly = true;
-			} else {
-				console.log('Error in fetchApplicantStatus:', event.message);
-			}
-		}, {
-			escape: true
-		});
-	}
-	$scope.getApplicantStatusFromAPA();
+	// 		if (event.status) {
+	// 			$rootScope.isCurrentUserSubmitted = result;
+	// 			CKEDITOR.config.readOnly = true;
+	// 		} else {
+	// 			console.log('Error in fetchApplicantStatus:', event.message);
+	// 		}
+	// 	}, {
+	// 		escape: true
+	// 	});
+	// }
+	// $scope.getApplicantStatusFromAPA();
 
 });
 

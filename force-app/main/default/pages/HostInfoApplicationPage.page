@@ -6,35 +6,27 @@
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
             <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css" rel="stylesheet" />
             <apex:stylesheet value="{!$Resource.ApplicantPortalCSS}" />
             <script>
-            // var countryCode;
-            
-			// 	// $("#country-field").text('--Country Code--');    
-            // $(document).ready(function(){
-            // 	$( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
-            //       var $target = $( event.currentTarget );
-                    
-            //        console.log('XXX---',$target.text());
-            //        countryCode = $target.text();
-                    
-            //         let code = countryCode.split(' ');
-                    
-            //        console.log('XXX---',countryCode);
-            //         console.log('XXX2---',code[1]);
-                    
-                    
-            
-            //       $target.closest( '.btn-group' )
-            //          .find( '[data-bind="label"]' ).text( $target.text() )
-            //             .end()
-            //          .children( '.dropdown-toggle' ).dropdown( 'toggle' );
-            
-            //       return false;            
-            //    });});
+                // var countryCode;
+                // 	// $("#country-field").text('--Country Code--');
+                // $(document).ready(function(){
+                // 	$( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
+                //       var $target = $( event.currentTarget );
+                console.log('XXX---', $target.text());
+                //        countryCode = $target.text();
+                let code = countryCode.split(' ');
+                console.log('XXX---', countryCode);
+                //         console.log('XXX2---',code[1]);
+roup' )
+                //          .find( '[data-bind="label"]' ).text( $target.text() )
+                //             .end()
+                //          .children( '.dropdown-toggle' ).dropdown( 'toggle' );
+                //       return false;
+                //    });});
             </script>
-           
+
         </head>
 
         <body ng-init="getDependentPicklistValues()">
@@ -166,7 +158,7 @@
                                         <span>Pairing Details</span>
                                     </a>
                                 </li>
-                                <li >
+                                <li>
                                     <a>
                                         <div class="icon-circle">
                                             <i class="fa fa-home"></i>
@@ -174,7 +166,7 @@
                                         <span>Applicant Details</span>
                                     </a>
                                 </li>
-                                <li >
+                                <li>
                                     <a>
                                         <div class="icon-circle">
                                             <i class="fas fa-chart-line"></i>
@@ -191,7 +183,7 @@
                                     </a>
                                 </li> -->
                             </ul>
-                            
+
                             <!-- <ul>
                                 
                                 <li>
@@ -237,124 +229,125 @@
                                 </li>
                             </ul> -->
                         </div>
+                    </div>
+                </div>
+
+                <div class="row mx-5">
+                    <div class="col-md-12">
+                        <div class="tab-link" ng-show="proposalStage">
+                            <div class="progress">
+                                <div class="progress-success w-100"></div>
+                            </div>
+                            <ul>
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('TwoReferenceWiser')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-user-friends"></i>
+                                        </div>
+                                        <span>References</span>
+                                    </a>
+                                </li>
+
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('ExistingGrantWISER')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-money-bill"></i>
+                                        </div>
+                                        <span>Grant Details</span>
+                                    </a>
+                                </li>
+
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('AttachmentsInWiser')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-upload"></i>
+                                        </div>
+                                        <span>Attachments</span>
+                                    </a>
+                                </li>
+                                <!-- Change place from 3rd to 4th -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('CV_Wiser')">
+                                        <div class="icon-circle">
+                                            <i class="fa-solid fa-address-book"></i>
+                                        </div>
+                                        <span>Curriculum Vitae</span>
+                                    </a>
+                                </li>
+                                <!-- ************ -->
+                                <li class="active pb-cursor">
+                                    <a ng-click="redirectPageURL('Declaration_Wiser')">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <span>Declaration</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-link" ng-hide="proposalStage">
+                            <div class="progress">
+                                <div class="progress-success wp-0"></div>
+                            </div>
+                            <ul>
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-user-friends"></i>
+                                        </div>
+                                        <span>References</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-money-bill"></i>
+                                        </div>
+                                        <span>Grant Details</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-upload"></i>
+                                        </div>
+                                        <span>Attachments</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fa-solid fa-address-book"></i>
+                                        </div>
+                                        <span>Curriculum Vitae</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a>
+                                        <div class="icon-circle">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <span>Declaration</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-
-                    <div class="row mx-5">
-                        <div class="col-md-12">
-                            <div class="tab-link" ng-show="proposalStage">
-                                <div class="progress">
-                                    <div class="progress-success w-100"></div>
-                                </div>
-                                <ul>
-                                    <li class="active pb-cursor">
-                                        <a ng-click="redirectPageURL('TwoReferenceWiser')">
-                                            <div class="icon-circle">
-                                                <i class="fas fa-user-friends"></i>
-                                            </div>
-                                            <span>References</span>
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="active pb-cursor">
-                                        <a ng-click="redirectPageURL('ExistingGrantWISER')">
-                                            <div class="icon-circle">
-                                                <i class="fas fa-money-bill"></i>
-                                            </div>
-                                            <span>Grant Details</span>
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="active pb-cursor">
-                                        <a ng-click="redirectPageURL('AttachmentsInWiser')">
-                                            <div class="icon-circle">
-                                                <i class="fas fa-upload"></i>
-                                            </div>
-                                            <span>Attachments</span>
-                                        </a>
-                                    </li>
-                                    <!-- Change place from 3rd to 4th -->
-                                    <li class="active pb-cursor">
-                                        <a ng-click="redirectPageURL('CV_Wiser')">
-                                            <div class="icon-circle">
-                                                <i class="fa-solid fa-address-book"></i>
-                                            </div>
-                                            <span>Curriculum Vitae</span>
-                                        </a>
-                                    </li>
-                                    <!-- ************ -->
-                                    <li class="active pb-cursor">
-                                        <a ng-click="redirectPageURL('Declaration_Wiser')">
-                                            <div class="icon-circle">
-                                                <i class="fas fa-check"></i>
-                                            </div>
-                                            <span>Declaration</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-link" ng-hide="proposalStage">
-                                <div class="progress">
-                                    <div class="progress-success wp-0"></div>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a>
-                                            <div class="icon-circle">
-                                                <i class="fas fa-user-friends"></i>
-                                            </div>
-                                            <span>References</span>
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a>
-                                            <div class="icon-circle">
-                                                <i class="fas fa-money-bill"></i>
-                                            </div>
-                                            <span>Grant Details</span>
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a>
-                                            <div class="icon-circle">
-                                                <i class="fas fa-upload"></i>
-                                            </div>
-                                            <span>Attachments</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a>
-                                            <div class="icon-circle">
-                                                <i class="fa-solid fa-address-book"></i>
-                                            </div>
-                                            <span>Curriculum Vitae</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a>
-                                            <div class="icon-circle">
-                                                <i class="fas fa-check"></i>
-                                            </div>
-                                            <span>Declaration</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            </div>
-                        </div>
+                </div>
 
                 <form name="formPrjDet">
 
                     <div class="row mx-5">
                         <div class="col-md-12 alert bg-color-list" role="alert">
-                            <ul class="font-if"> 
-                           <!-- y<li><i class="fa-solid fa-circle text-success me-3"></i>If you are an Indian Applicant, the host must be from Germany.</li>
+                            <ul class="font-if">
+                                <!-- y<li><i class="fa-solid fa-circle text-success me-3"></i>If you are an Indian Applicant, the host must be from Germany.</li>
                               <li><i class="fa-solid fa-circle text-success me-3"></i>If you are a German Applicant, the host must be from India.</li> -->
-                              <li><i class="fa-solid fa-circle text-success me-3"></i>Click on upload button to upload the profile picture.</li>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>Click on upload button to upload the profile picture.</li>
                             </ul>
                         </div>
                     </div>
@@ -362,7 +355,7 @@
 
                     <div class="row mx-5 mt-3 px-2 py-5">
                         <div class="col-md-4">
-                            <div  ng-if="doc != undefined" class="image-preview d-flex align-items-center justify-content-center">
+                            <div ng-if="doc != undefined" class="image-preview d-flex align-items-center justify-content-center">
                                 <img class="mr-2 mb-2" style="max-height: 257px; max-width: 257px" src="{{imageSrc}}" alt="avatar" />
 
                             </div>
@@ -374,11 +367,14 @@
                                     <img class="mr-2 mb-2" style="max-height: 257px; max-width: 257px" src="{{imageSrc}}" alt="avatar" />
                                 </span>
                             </div>
-                            <small><b>Upload in jpg/jpeg format min 30 kb max 500kb</b></small>
+                            <small>
+                                <b>Upload in jpg/jpeg format min 30 kb max 500kb</b>
+                            </small>
                             <div class="custom-file-upload">
                                 <div class="input-group input-group-lg">
-                                    
-                                    <input class="form-control" type="file" accept=".jpg,.jpeg" id="profilePic" ng-disabled="proposalStage" ng-file-select="onFileSelect($files)" ng-model="imageSrc"/>
+
+                                    <input class="form-control" type="file" accept=".jpg,.jpeg" id="profilePic" ng-disabled="proposalStage" ng-file-select="onFileSelect($files)"
+                                        ng-model="imageSrc" />
                                     <span class="input-group-btn" ng-hide="proposalStage">
                                         <button type="button" class="btn btn-success" ng-click="uploadFile(docU.userDocument.Name,docU.userDocument.Id,'','512000','30720')">Upload</button>
                                     </span>
@@ -388,24 +384,36 @@
                         <div class="col-md-8">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <label class="font-if" for="txtName">Salutation<span class="text-danger me-2">*</span></label>
-                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-model="objContact.Salutation" ng-focus="removeClass('salutation')" id="salutation" />
+                                    <label class="font-if" for="txtName">Salutation
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-model="objContact.Salutation" ng-focus="removeClass('salutation')"
+                                        id="salutation" />
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="font-if" for="txtName">First Name<span class="text-danger me-2">*</span></label>
-                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-focus="removeClass('txtFirstName')" ng-model="objContact.FirstName" id="txtFirstName" />
+                                    <label class="font-if" for="txtName">First Name
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-focus="removeClass('txtFirstName')" ng-model="objContact.FirstName"
+                                        id="txtFirstName" />
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="font-if" for="txtName">Last Name<span class="text-danger me-2">*</span></label>
-                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-focus="removeClass('txtLastName')" ng-model="objContact.LastName" id="txtLastName" />
+                                    <label class="font-if" for="txtName">Last Name
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" ng-disabled="proposalStage" ng-focus="removeClass('txtLastName')" ng-model="objContact.LastName"
+                                        id="txtLastName" />
                                 </div>
                             </div>
 
                             <div class="row mt-4">
 
                                 <div class="col-md-6 mt-3">
-                                    <label class="font-if">Nationality<span class="text-danger me-2">*</span></label>
-                                    <select type="select" id="selectNatinality" ng-disabled="proposalStage" ng-focus="removeClass('selectNatinality')" class="form-control" ng-model="objContact.Nationality__c">
+                                    <label class="font-if">Nationality
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <select type="select" id="selectNatinality" ng-disabled="proposalStage" ng-focus="removeClass('selectNatinality')" class="form-control"
+                                        ng-model="objContact.Nationality__c">
                                         <option ng-selected="{{item==objContact.Nationality__c}}" ng-repeat="item in nationality" value="{{item}}">{{item}}</option>
                                     </select>
                                 </div>
@@ -429,8 +437,11 @@
                                 </div> -->
 
                                 <div class="col-md-6 mt-3" ng-show="objContact.MailingCountry == 'India'">
-                                    <label class="font-if">Phone No.<span class="text-danger me-2">*</span></label>
-                                    <input class="form-control" type="text" number="objContact.Phone" ng-focus="removeClass('txtPhoneI')" id="txtPhoneI" ng-model="objContact.Phone" ng-disabled="proposalStage" maxlength="10" />
+                                    <label class="font-if">Phone No.
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" number="objContact.Phone" ng-focus="removeClass('txtPhoneI')" id="txtPhoneI" ng-model="objContact.Phone"
+                                        ng-disabled="proposalStage" maxlength="10" />
                                 </div>
 
                                 <!-- <div class="col md-6 mt-3 mx-3" ng-show="objContact.MailingCountry == 'Germany'">
@@ -452,8 +463,11 @@
                                 </div> -->
 
                                 <div class="col-md-6 mt-3" ng-show="objContact.MailingCountry == 'Germany'">
-                                    <label class="font-if">Phone No.<span class="text-danger me-2">*</span></label>
-                                    <input class="form-control" type="text" ng-focus="removeClass('txtPhoneG')" id="txtPhoneG" ng-model="objContact.Phone" ng-disabled="proposalStage" />
+                                    <label class="font-if">Phone No.
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" ng-focus="removeClass('txtPhoneG')" id="txtPhoneG" ng-model="objContact.Phone" ng-disabled="proposalStage"
+                                    />
                                 </div>
 
                             </div>
@@ -466,26 +480,36 @@
                                 </div> -->
 
                                 <div class="col-md-12 mt-3">
-                                    <label class="font-if">Institution/Organization<span class="text-danger me-2">*</span></label>
-                                    <input class="form-control" type="text" ng-focus="removeClass('txtInstitution')" id="txtInstitution" ng-model="objContact.Account.Name" ng-disabled="proposalStage" />
+                                    <label class="font-if">Institution/Organization
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" ng-focus="removeClass('txtInstitution')" id="txtInstitution" ng-model="objContact.Account.Name"
+                                        ng-disabled="proposalStage" />
                                 </div>
 
                             </div>
 
                             <div class="row mt-4">
                                 <div class="col-md-6 mt-3">
-                                    <label class="font-if">Designation<span class="text-danger me-2">*</span></label>
-                                    <input class="form-control" type="text" ng-focus="removeClass('txtDesignation')" id="txtDesignation" ng-model="objContact.Designation__c" ng-disabled="proposalStage" /> 
+                                    <label class="font-if">Designation
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" ng-focus="removeClass('txtDesignation')" id="txtDesignation" ng-model="objContact.Designation__c"
+                                        ng-disabled="proposalStage" />
                                 </div>
 
                                 <div class="col-md-6 mt-3">
-                                    <label class="font-if">Department<span class="text-danger me-2">*</span></label>
-                                    <input class="form-control" type="text" ng-focus="removeClass('txtDepartment')" id="txtDepartment" ng-model="objContact.Department" ng-disabled="proposalStage" /> 
+                                    <label class="font-if">Department
+                                        <span class="text-danger me-2">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" ng-focus="removeClass('txtDepartment')" id="txtDepartment" ng-model="objContact.Department"
+                                        ng-disabled="proposalStage" />
                                 </div>
 
                                 <div class="col-md-12 mt-3">
                                     <label class="font-if">Homepage URL</label>
-                                    <input type="text" class="form-control" ng-model="objContact.Homepage_URL__c" ng-focus="removeClass('txtHomePage')" id="txtHomePage" ng-disabled="proposalStage" />
+                                    <input type="text" class="form-control" ng-model="objContact.Homepage_URL__c" ng-focus="removeClass('txtHomePage')" id="txtHomePage"
+                                        ng-disabled="proposalStage" />
                                 </div>
 
                             </div>
@@ -497,12 +521,17 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <h4 class="pb-3 color-theme"><b>Communication Address</b></h4>
+                                <h4 class="pb-3 color-theme">
+                                    <b>Communication Address</b>
+                                </h4>
                             </div>
-                            
+
                             <div class="col-md-12 mt-3">
-                                <label class="font-if">Line 1<span class="text-danger me-2">*</span></label>
-                                <input type="text" class="form-control" ng-focus="removeClass('txtStreet')" id="txtStreet" ng-model="MailingStreet1" ng-disabled="proposalStage" />
+                                <label class="font-if">Line 1
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <input type="text" class="form-control" ng-focus="removeClass('txtStreet')" id="txtStreet" ng-model="MailingStreet1" ng-disabled="proposalStage"
+                                />
                             </div>
                         </div>
 
@@ -515,13 +544,19 @@
 
                         <div class="row mt-5">
                             <div class="col-md-6 mt-3">
-                                <label class="font-if">City<span class="text-danger me-2">*</span></label>
-                                <input type="text" class="form-control" ng-focus="removeClass('txtCity')" id="txtCity" ng-model="objContact.MailingCity" ng-disabled="proposalStage" />
+                                <label class="font-if">City
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <input type="text" class="form-control" ng-focus="removeClass('txtCity')" id="txtCity" ng-model="objContact.MailingCity"
+                                    ng-disabled="proposalStage" />
                             </div>
 
                             <div class="col-md-6 mt-3">
-                                <label class="font-if">Country<span class="text-danger me-2">*</span></label>
-                                <select class="form-control" aria-label="Default select example" ng-focus="removeClass('txtCountry')" id="txtCountry" ng-model="objContact.MailingCountry"  ng-change="onCountryChange()">
+                                <label class="font-if">Country
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <select class="form-control" aria-label="Default select example" ng-focus="removeClass('txtCountry')" id="txtCountry" ng-model="objContact.MailingCountry"
+                                    ng-change="onCountryChange()">
                                     <option ng-repeat="staff in countrytype">{{staff}}</option>
                                 </select>
                             </div>
@@ -529,20 +564,29 @@
 
                         <div class="row mt-5" ng-cloak="true">
                             <div class="col-md-6 mt-3" ng-cloak="true">
-                                <label class="font-if">State<span class="text-danger me-2">*</span></label>
-                                <select class="form-control" ng-cloak="true" aria-label="Default select example" ng-focus="removeClass('txtState')" id="txtState" ng-model="objContact.MailingState" ng-disabled="proposalStage">
+                                <label class="font-if">State
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <select class="form-control" ng-cloak="true" aria-label="Default select example" ng-focus="removeClass('txtState')" id="txtState"
+                                    ng-model="objContact.MailingState" ng-disabled="proposalStage">
                                     <option ng-cloak="true" ng-repeat="staff in objContact.stateList">{{staff}}</option>
                                 </select>
-                             </div>
+                            </div>
 
                             <div class="col-md-6 mt-3" ng-show="objContact.MailingCountry == 'India'">
-                                <label class="font-if">Zip/Pin code<span class="text-danger me-2">*</span></label>
-                                <input type="text" number="objContact.MailingPostalCode" class="form-control" ng-focus="removeClass('txtPinCodeI')" id="txtPinCodeI" ng-model="objContact.MailingPostalCode" ng-disabled="proposalStage" />
+                                <label class="font-if">Zip/Pin code
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <input type="text" number="objContact.MailingPostalCode" class="form-control" ng-focus="removeClass('txtPinCodeI')" id="txtPinCodeI"
+                                    ng-model="objContact.MailingPostalCode" ng-disabled="proposalStage" />
                             </div>
 
                             <div class="col-md-6 mt-3" ng-show="objContact.MailingCountry == 'Germany'">
-                                <label class="font-if">Zip/Pin code<span class="text-danger me-2">*</span></label>
-                                <input type="text" class="form-control" ng-focus="removeClass('txtPinCodeG')" id="txtPinCodeG" ng-model="objContact.MailingPostalCode" ng-disabled="proposalStage" />
+                                <label class="font-if">Zip/Pin code
+                                    <span class="text-danger me-2">*</span>
+                                </label>
+                                <input type="text" class="form-control" ng-focus="removeClass('txtPinCodeG')" id="txtPinCodeG" ng-model="objContact.MailingPostalCode"
+                                    ng-disabled="proposalStage" />
                             </div>
                         </div>
 
@@ -567,9 +611,9 @@
                 </form>
 
 
-               
+
             </div>
-            
+
             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         </body>
     </div>

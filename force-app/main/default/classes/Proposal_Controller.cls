@@ -1615,14 +1615,41 @@ return appProposal;
                 );
             }
 
-            // Updating current APA to Submitted
+            // Query the APA to check if Is_Coordinator__c is true
+            Applicant_Proposal_Association__c currentAPA = [
+                SELECT Id, Is_Coordinator__c, Applicant_Status__c
+                FROM Applicant_Proposal_Association__c
+                WHERE Id = :apaId
+                LIMIT 1
+            ];
+
+            // Check if the current user is a coordinator
+            if (currentAPA.Is_Coordinator__c != true) {
+                resp.isCurrentUserSubmitted = false;
+                resp.isProposalCompleted = false;
+                resp.message = 'Primary Contact can only submit the application';
+                return resp;
+            }
+
+            // OLD LOGIC - Commented out as per requirement
+            // // Updating current APA to Submitted
+            // update new Applicant_Proposal_Association__c(
+            //     Id = apaId,
+            //     Applicant_Status__c = 'Submitted',
+            //     Proposed_Date__c = proposedDate
+            // );
+            //
+            // resp.isCurrentUserSubmitted = true;
+
+            // Updating current APA to Submitted (only for coordinator)
             update new Applicant_Proposal_Association__c(
                 Id = apaId,
                 Applicant_Status__c = 'Submitted',
                 Proposed_Date__c = proposedDate
             );
 
-            resp.isCurrentUserSubmitted = true;
+            // Not setting isCurrentUserSubmitted to true to prevent disabling fields in UI
+            resp.isCurrentUserSubmitted = false;
 
             // Fetching all NON-SIGNATORY APAs for the proposal
             List<Applicant_Proposal_Association__c> apaList = [
@@ -1642,6 +1669,8 @@ return appProposal;
             }
 
             // Updating proposal ONLY if all non-signatory APAs are submitted
+            // When the APA Is_Coordinator Contact submits the Application, 
+            // the Proposal will be updated to submitted and the fields will be locked
             if (allSubmitted && !apaList.isEmpty()) {
                 update new Application_Proposal__c(
                     Id = proposalId,

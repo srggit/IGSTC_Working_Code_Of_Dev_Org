@@ -348,7 +348,7 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
                         debugger;
                         // Use Swal.fire with promise handling for better error handling
                         if (typeof Swal !== 'undefined' && Swal.fire) {
-                            Swal.fire({
+                            swal({
                                 title: "SUCCESS",
                                 text: 'Your CV Details has been Saved successfully.',
                                 icon: "success",
@@ -522,36 +522,36 @@ angular.module('cp_app').controller('cv_wiser', function ($scope, $rootScope) {
         });
     });
 
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
+    // $scope.getApplicantStatusFromAPA = function () {
+    //     debugger;
 
-        if (!$rootScope.apaId) {
-            console.log('APA Id not available yet, skipping fetchApplicantStatus call');
-            return;
-        }
+    //     if (!$rootScope.apaId) {
+    //         console.log('APA Id not available yet, skipping fetchApplicantStatus call');
+    //         return;
+    //     }
 
-        ApplicantPortal_Contoller.fetchApplicantStatus(
-            $rootScope.apaId,
-            function (result, event) {
-                debugger;
+    //     ApplicantPortal_Contoller.fetchApplicantStatus(
+    //         $rootScope.apaId,
+    //         function (result, event) {
+    //             debugger;
 
-                if (event.status) {
-                    $rootScope.isCurrentUserSubmitted = result;
-                    $scope.isCurrentUserSubmitted = result;
+    //             if (event.status) {
+    //                 $rootScope.isCurrentUserSubmitted = result;
+    //                 $scope.isCurrentUserSubmitted = result;
 
-                    // Update editor lock state after applicant status is fetched
-                    $scope.updateEditorLockState();
-                    $scope.$apply();
-                } else {
-                    // If fetch fails, assume not submitted
-                    $rootScope.isCurrentUserSubmitted = false;
-                    $scope.isCurrentUserSubmitted = false;
-                    $scope.updateEditorLockState();
-                    $scope.$apply();
-                }
-            },
-            { escape: true }
-        );
-    };
-    $scope.getApplicantStatusFromAPA();
+    //                 // Update editor lock state after applicant status is fetched
+    //                 $scope.updateEditorLockState();
+    //                 $scope.$apply();
+    //             } else {
+    //                 // If fetch fails, assume not submitted
+    //                 $rootScope.isCurrentUserSubmitted = false;
+    //                 $scope.isCurrentUserSubmitted = false;
+    //                 $scope.updateEditorLockState();
+    //                 $scope.$apply();
+    //             }
+    //         },
+    //         { escape: true }
+    //     );
+    // };
+    // $scope.getApplicantStatusFromAPA();
 });

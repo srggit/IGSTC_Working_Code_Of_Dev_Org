@@ -27,6 +27,7 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     $scope.selectedFile;
     $scope.isPdfUploded = false;
     $scope.isLoading = true; // Spinner flag
+    $scope.showFullInfoBox = false; // Initialize info box as collapsed
 
     // ============================================
     /*var maxFileSize = 1048576; // 1MB in bytes
@@ -1143,33 +1144,33 @@ angular.module('cp_app').controller('ProjectDetailInWiserCtrl', function ($scope
     //     $scope.dobErrors[fieldName] = !(age > 26 && age < 55);
     // };
 
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
+    // $scope.getApplicantStatusFromAPA = function () {
+    //     debugger;
 
-        if (!$rootScope.apaId) {
-            console.log('APA Id not available yet, skipping fetchApplicantStatus call');
-            return;
-        }
+    //     if (!$rootScope.apaId) {
+    //         console.log('APA Id not available yet, skipping fetchApplicantStatus call');
+    //         return;
+    //     }
 
-        ApplicantPortal_Contoller.fetchApplicantStatus(
-            $rootScope.apaId,
-            function (result, event) {
-                debugger;
+    //     ApplicantPortal_Contoller.fetchApplicantStatus(
+    //         $rootScope.apaId,
+    //         function (result, event) {
+    //             debugger;
 
-                if (event.status) {
-                    $rootScope.isCurrentUserSubmitted = result;
+    //             if (event.status) {
+    //                 $rootScope.isCurrentUserSubmitted = result;
 
-                    // 🔐 Lock editor condition
-                    $scope.isEditorLocked = ($scope.proposalStage || result);
+    //                 // 🔐 Lock editor condition
+    //                 $scope.isEditorLocked = ($scope.proposalStage || result);
 
-                    // 🔒 Apply lock to CKEditor
-                    $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
-                }
-            },
-            { escape: true }
-        );
-    };
-    $scope.getApplicantStatusFromAPA();
+    //                 // 🔒 Apply lock to CKEditor
+    //                 $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
+    //             }
+    //         },
+    //         { escape: true }
+    //     );
+    // };
+    // $scope.getApplicantStatusFromAPA();
 
     $scope.toggleCkEditorReadOnly = function (isReadOnly) {
         setTimeout(function () {

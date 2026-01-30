@@ -32,7 +32,7 @@
             <div class="container mt-5">
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage"><!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -101,7 +101,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage"><!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -205,7 +205,7 @@
 
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage"><!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -258,7 +258,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage"><!-- || isCurrentUserSubmitted -->
                             <div class="progress">
                                 <div class="progress-success wp-4"></div>
                             </div>
@@ -320,7 +320,9 @@
                         <div class="col-md-12 alert bg-color-list" role="alert">
                             <ul class="font-if">
                                 <li>
-                                    <i class="fa-solid fa-circle text-success me-3"></i>Note: 2 References are required for the application.</li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Two References are required for the application.
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -349,7 +351,7 @@
                                         <i class="fas fa-plus-circle icon" ng-click="addRowsWorkPackage()"
                                             style="width:3%;"></i>
                                     </th> -->
-                                    <th ng-if="!(proposalStage || isCurrentUserSubmitted)" class="text-center">
+                                    <th ng-if="!proposalStage" class="text-center"><!-- || isCurrentUserSubmitted -->
                                         <i class="fas fa-plus-circle icon" ng-click="addRowsWorkPackage()"
                                             style="width:3%;"></i>
                                     </th>
@@ -361,28 +363,28 @@
                                     <td>{{$index+1}}</td>
                                     <td><input ng-focus="removeClass('name',$index)" id="name{{$index}}" type="text"
                                             class="form-control" ng-model="applicnt.Name"
-                                            ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                            ng-disabled="proposalStage" />
                                     </td>
                                     <td><input ng-focus="removeClass('designation',$index)" id="designation{{$index}}"
                                             type="text" class="form-control" ng-model="applicnt.Designation__c"
-                                            ng-disabled="proposalStage || isCurrentUserSubmitted" /></td>
+                                            ng-disabled="proposalStage" /></td>
                                     <td><input ng-focus="removeClass('organisation',$index)" id="organisation{{$index}}"
                                             type="text" class="form-control"
                                             ng-model="applicnt.Organisation_Institute__c"
-                                            ng-disabled="proposalStage || isCurrentUserSubmitted" />
+                                            ng-disabled="proposalStage" />
                                     </td>
                                     <td><input ng-focus="removeClass('phone',$index)" id="phone{{$index}}" type="text"
                                             class="form-control" ng-model="applicnt.Phone__c"
-                                            ng-disabled="proposalStage || isCurrentUserSubmitted" /></td>
+                                            ng-disabled="proposalStage" /></td>
                                     <td><input ng-focus="removeClass('email',$index)" id="email{{$index}}" type="email"
                                             class="form-control" ng-model="applicnt.Email__c"
-                                            ng-disabled="proposalStage || isCurrentUserSubmitted" /></td>
+                                            ng-disabled="proposalStage" /></td>
                                     <!-- <td><input ng-focus="removeClass('email',$index)" id="email{{$index}}" type="email" class="form-control" ng-model="applicnt.Email__c" ng-disabled="proposalStage" ng-change="checkEmail(applicnt.Email__c,applicnt.Id)" ng-paste="checkEmail(applicnt.Email__c,applicnt.Id)" /></td> -->
                                     <!-- <td ng-if="!proposalStage || !isCurrentUserSubmitted"><i
                                             class="fa-solid fa-circle-xmark fa-2x text-danger"
                                             ng-click="deleteRowsWorkPackage($index)"></i>
                                     </td> -->
-                                    <td ng-if="!(proposalStage || isCurrentUserSubmitted)">
+                                    <td ng-if="!proposalStage"><!-- || isCurrentUserSubmitted -->
                                         <i class="fa-solid fa-circle-xmark fa-2x text-danger"
                                             ng-click="deleteRowsWorkPackage($index)">
                                         </i>
@@ -417,7 +419,7 @@
                                     Salutation <span class="text-danger me-2">*</span>
                                 </label>
 
-                                <select class="form-control" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                <select class="form-control" ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Signatory_Salutation__c"
                                     ng-options="item for item in signatorySalutationList"
                                     ng-focus="removeClass('signSalutation')" id="signSalutation">
@@ -431,7 +433,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Signatory_First_Name__c"
                                     ng-focus="removeClass('signFirstName')" id="signFirstName" />
                             </div>
@@ -440,7 +442,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Signatory_Last_Name__c"
                                     ng-focus="removeClass('signLastName')" id="signLastName" />
                             </div>
@@ -452,7 +454,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Signatory_Institution__c"
                                     ng-focus="removeClass('signInstitution')" id="signInstitution" />
                             </div>
@@ -462,7 +464,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Signatory_Designation__c"
                                     ng-focus="removeClass('signDesignation')" id="signDesignation" />
                             </div>
@@ -472,7 +474,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Email" ng-focus="removeClass('signEmail')"
                                     id="signEmail" />
                             </div>
@@ -484,7 +486,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Institution_Name__c"
                                     ng-focus="removeClass('signInstitution2')" id="signInstitution2" />
                             </div>
@@ -494,7 +496,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input type="text" class="form-control"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-model="objContact.Contact__r.Designation__c"
                                     ng-focus="removeClass('signDesignation2')" id="signDesignation2" />
                             </div>
@@ -504,7 +506,7 @@
                                     <span class="text-danger me-2">*</span>
                                 </label>
                                 <input class="form-control" type="text" ng-model="objContact.Signatory_Emailist_Name__c" id="signEmailistName"
-                                    ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    ng-disabled="proposalStage"
                                     ng-focus="removeClass('signEmailistName')" />
                             </div>
                         </div> -->
@@ -513,7 +515,7 @@
                 </div>
 
                 <div class="row mt-5 mx-5">
-                    <div class="col-md-12 my-4" ng-if="!proposalStage && !isCurrentUserSubmitted">
+                        <div class="col-md-12 my-4" ng-if="!proposalStage">
                         <button class="blue-btn float-end" id="btnPreview" ng-click="saveParticipants()" type="button">
                             <i class="fa-solid fa-check me-2"></i>Save and Next</button>
                         <button class="blue-bordered-btn float-end me-2" ng-click="previousPage()" type="button">

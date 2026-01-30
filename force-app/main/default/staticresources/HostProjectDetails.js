@@ -23,6 +23,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
      $scope.allDocs = [];
      $scope.selectedFile = null;
      $scope.showSpinnereditProf = false;
+     $scope.showFullInfoBox = false; // Initialize info box as collapsed
 
      var maxStringSize = 6000000;
      var chunkSize = 750000;
@@ -50,33 +51,33 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           console.log('Loaded proposalId from localStorage:', $rootScope.apaId);
      }
 
-     $scope.getApplicantStatusFromAPA = function () {
-          debugger;
+     // $scope.getApplicantStatusFromAPA = function () {
+     //      debugger;
 
-          if (!$rootScope.apaId) {
-               console.log('APA Id not available yet, skipping fetchApplicantStatus call');
-               return;
-          }
+     //      if (!$rootScope.apaId) {
+     //           console.log('APA Id not available yet, skipping fetchApplicantStatus call');
+     //           return;
+     //      }
 
-          ApplicantPortal_Contoller.fetchApplicantStatus(
-               $rootScope.apaId,
-               function (result, event) {
-                    debugger;
+     //      ApplicantPortal_Contoller.fetchApplicantStatus(
+     //           $rootScope.apaId,
+     //           function (result, event) {
+     //                debugger;
 
-                    if (event.status) {
-                         $rootScope.isCurrentUserSubmitted = result;
+     //                if (event.status) {
+     //                     $rootScope.isCurrentUserSubmitted = result;
 
-                         // 🔐 Lock editor condition
-                         $scope.isEditorLocked = ($scope.proposalStage || result);
+     //                     // 🔐 Lock editor condition
+     //                     $scope.isEditorLocked = ($scope.proposalStage || result);
 
-                         // 🔒 Apply lock to CKEditor
-                         $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
-                    }
-               },
-               { escape: true }
-          );
-     };
-     $scope.getApplicantStatusFromAPA();
+     //                     // 🔒 Apply lock to CKEditor
+     //                     $scope.toggleCkEditorReadOnly($scope.isEditorLocked);
+     //                }
+     //           },
+     //           { escape: true }
+     //      );
+     // };
+     // $scope.getApplicantStatusFromAPA();
 
      $scope.toggleCkEditorReadOnly = function (isReadOnly) {
           setTimeout(function () {
@@ -482,53 +483,108 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
 
           console.log('Saving Host Project Information with Proposal Id:', $rootScope.proposalId);
 
-          // Upsert Proposal using the Proposal Id from the first page
-          IndustrialFellowshipController.saveHostProjectInformation(
-               $scope.objContact,
-               $rootScope.proposalId,
-               $rootScope.candidateId,
-               $rootScope.yearlyCallId,
-               parseInt(startDay, 10),
-               parseInt(startMonth, 10),
-               parseInt(startYear, 10),
-               parseInt(endDay, 10),
-               parseInt(endMonth, 10),
-               parseInt(endYear, 10),
-               function (result, event) {
-                    debugger;
-                    console.log("Result In saveApplicationPortalHostInformation ::", result);
-                    // Restore button
+          // Helper function to restore button state
+          var isButtonRestored = false;
+          var restoreButton = function () {
+               if (!isButtonRestored) {
+                    isButtonRestored = true;
                     $("#btnPreview").html('<i class="fa-solid fa-check me-2"></i>Save and Next');
                     $("#btnPreview").prop('disabled', false);
+               }
+          };
 
-                    if (event.status) {
+          // Safety timeout: re-enable button after 2 minutes if no response
+          var safetyTimeout = setTimeout(function () {
+               if (!isButtonRestored) {
+                    console.warn("Safety timeout: Re-enabling button after 2 minutes");
+                    restoreButton();
+                    swal({
+                         title: "TIMEOUT",
+                         text: "The request is taking longer than expected. Please try again.",
+                         icon: "warning",
+                         button: "ok!",
+                    });
+               }
+          }, 120000); // 2 minutes
 
-                         // Saving the ProposalId in Local Storage
-                         // localStorage.setItem('proposalId', result.proposalId);
-                         // localStorage.setItem('apaId', result.apa.Id);
-                         swal({
-                              title: "SUCCESS",
-                              text: 'Paired Project Details have been saved successfully.',
-                              icon: "success",
-                              button: "ok!",
-                         });
+          // Upsert Proposal using the Proposal Id from the first page
+          try {
+               IndustrialFellowshipController.saveHostProjectInformation(
+                    $scope.objContact,
+                    $rootScope.proposalId,
+                    $rootScope.candidateId,
+                    $rootScope.yearlyCallId,
+                    parseInt(startDay, 10),
+                    parseInt(startMonth, 10),
+                    parseInt(startYear, 10),
+                    parseInt(endDay, 10),
+                    parseInt(endMonth, 10),
+                    parseInt(endYear, 10),
+                    function (result, event) {
+                         try {
+                              // Clear safety timeout since we got a response
+                              clearTimeout(safetyTimeout);
 
-                         // Fetch documents
-                         // $scope.getProjectDetails();
-                         // $scope.redirectPageURL('TwoReferenceWiser');
-                         // $scope.redirectPageURL('ProjectDetailsInWiserPage');
-                         $scope.redirectPageURL('WiserApplicationPage');
-                         // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/TwoReferenceWiser');
+                              debugger;
+                              console.log("Result In saveApplicationPortalHostInformation ::", result);
+                              // Restore button
+                              restoreButton();
 
-                    } else {
-                         swal({
-                              title: "ERROR",
-                              text: "Exception !",
-                              icon: "error",
-                              button: "ok!",
-                         });
+                              if (event.status) {
+
+                                   // Saving the ProposalId in Local Storage
+                                   // localStorage.setItem('proposalId', result.proposalId);
+                                   // localStorage.setItem('apaId', result.apa.Id);
+                                   swal({
+                                        title: "SUCCESS",
+                                        text: 'Paired Project Details have been saved successfully.',
+                                        icon: "success",
+                                        button: "ok!",
+                                   });
+
+                                   // Fetch documents
+                                   // $scope.getProjectDetails();
+                                   // $scope.redirectPageURL('TwoReferenceWiser');
+                                   // $scope.redirectPageURL('ProjectDetailsInWiserPage');
+                                   $scope.redirectPageURL('WiserApplicationPage');
+                                   // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/TwoReferenceWiser');
+
+                              } else {
+                                   swal({
+                                        title: "ERROR",
+                                        text: event.message || "An error occurred while saving. Please try again.",
+                                        icon: "error",
+                                        button: "ok!",
+                                   });
+                              }
+                         } catch (error) {
+                              clearTimeout(safetyTimeout);
+                              console.error("Error in saveApplicationPortalHostInformation callback:", error);
+                              restoreButton();
+                              swal({
+                                   title: "ERROR",
+                                   text: "An unexpected error occurred. Please try again.",
+                                   icon: "error",
+                                   button: "ok!",
+                              });
+                         }
+                    },
+                    {
+                         escape: true,
+                         timeout: 120000
                     }
+               );
+          } catch (error) {
+               clearTimeout(safetyTimeout);
+               console.error("Error calling saveHostProjectInformation:", error);
+               restoreButton();
+               swal({
+                    title: "ERROR",
+                    text: "Failed to submit the form. Please try again.",
+                    icon: "error",
+                    button: "ok!",
                });
+          }
 
           // IndustrialFellowshipController.saveHostProjectInformation($scope.objContact, startDay, startMonth, startYear, endDay, endMonth, endYear, function (result, event) {
           //      debugger;
@@ -813,7 +869,8 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
                          fileReader.readAsBinaryString(file);  //Read the body of the file
                     }
                } else {
-                    swal('Info', 'Your file is too large.  Please try again.', 'info');
+                    var maxSizeMB = (maxFileSize / (1024 * 1024)).toFixed(2);
+                    swal('Info', 'Your file is too large. Maximum file size is ' + maxSizeMB + ' MB. Please try again.', 'info');
                     $scope.showSpinnereditProf = false;
                     return;
                }

@@ -2137,9 +2137,22 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             throw new AuraHandledException('Contact AccountId is null for Applicant Proposal Association: ' + apa.Id);
         }
 
+        // Get Contact IDs from APAs where Is_Signatory__c is false
+        Set<Id> contactIds = new Set<Id>();
+        List<Applicant_Proposal_Association__c> nonSignatoryAPAs = [
+            SELECT Contact__c 
+            FROM Applicant_Proposal_Association__c 
+            WHERE Proposals__c = :ProposalId 
+            AND Is_Signatory__c = false
+        ];
+        
+        for(Applicant_Proposal_Association__c nonSignatoryAPA : nonSignatoryAPAs) {
+            contactIds.add(nonSignatoryAPA.Contact__c);
+        }
+
         List<Account> acc = [
             SELECT Id, Name, Country_Type__c, 
-                (SELECT Id, Name, MailingCountry FROM Contacts) 
+                (SELECT Id, Name, MailingCountry FROM Contacts WHERE Id IN :contactIds) 
             FROM Account 
             WHERE Id = :apa.Contact__r.AccountId
         ];

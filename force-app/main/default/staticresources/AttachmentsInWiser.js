@@ -18,6 +18,32 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
         link.click();
     }
 
+    /**
+     * Downloads a Word file from the provided link
+     * Currently uses a dummy link for testing
+     * TODO: Replace dummyWordFileUrl with the actual Word file URL when available
+     */
+    $scope.downloadWordFile = function () {
+        debugger;
+        // Dummy link for Word file download - replace with actual link when available
+        // Example: var wordFileUrl = 'https://example.com/path/to/template.docx';
+        var dummyWordFileUrl = 'https://file-examples.com/storage/fe68c1c0e6c4e0c2c0e6c4e/2017/10/file_example_DOCX_10.docx';
+
+        // Create a temporary anchor element to trigger download
+        var link = document.createElement("a");
+        link.href = dummyWordFileUrl;
+        link.download = 'template.docx'; // Suggested filename for download
+        link.target = '_blank'; // Open in new tab as fallback
+
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Note: If the URL doesn't support CORS or download attribute,
+        // the file will open in a new tab instead
+    }
+
     $scope.getDataFromLocalStorage = function () {
         debugger;
         if (localStorage.getItem('candidateId')) {
@@ -34,26 +60,26 @@ angular.module('cp_app').controller('attachmentWiser_ctrl', function ($scope, $s
     }
     $scope.getDataFromLocalStorage();
 
-    $scope.getApplicantStatusFromAPA = function () {
-        debugger;
-        ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
-            debugger;
+    // $scope.getApplicantStatusFromAPA = function () {
+    //     debugger;
+    //     ApplicantPortal_Contoller.fetchApplicantStatus($rootScope.apaId, function (result, event) {
+    //         debugger;
 
-            console.log('result return onload :: ');
-            console.log(result);
-            console.log('event:', event);
+    //         console.log('result return onload :: ');
+    //         console.log(result);
+    //         console.log('event:', event);
 
-            if (event.status) {
-                $rootScope.isCurrentUserSubmitted = result;
-                CKEDITOR.config.readOnly = true;
-            } else {
-                console.log('Error in fetchApplicantStatus:', event.message);
-            }
-        }, {
-            escape: true
-        });
-    }
-    $scope.getApplicantStatusFromAPA();
+    //         if (event.status) {
+    //             $rootScope.isCurrentUserSubmitted = result;
+    //             CKEDITOR.config.readOnly = true;
+    //         } else {
+    //             console.log('Error in fetchApplicantStatus:', event.message);
+    //         }
+    //     }, {
+    //         escape: true
+    //     });
+    // }
+    // $scope.getApplicantStatusFromAPA();
 
     /**
      * Fetches proposal stage from Apex on page load

@@ -20,7 +20,7 @@
                 <div class="row mx-5">
                     <div class="col-md-12">
 
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage ">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -88,7 +88,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage ">
                             <div class="progress">
                                 <div class="progress-success wp-3"></div>
                             </div>
@@ -263,7 +263,7 @@
 
                 <div class="row mx-5">
                     <div class="col-md-12">
-                        <div class="tab-link" ng-show="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-show="proposalStage ">
                             <div class="progress">
                                 <div class="progress-success w-100"></div>
                             </div>
@@ -318,7 +318,7 @@
                             </ul>
                         </div>
 
-                        <div class="tab-link" ng-hide="proposalStage || isCurrentUserSubmitted">
+                        <div class="tab-link" ng-hide="proposalStage ">
                             <div class="progress">
                                 <div class="progress-success wp-0"></div>
                             </div>
@@ -373,44 +373,92 @@
 
                 <div class="row mt-5 mx-5">
                     <div class="col-md-12 alert bg-color-list" role="alert">
-                        <ul class="font-if" style="text-align: justify; line-height: 1.6;">
-                            <li>
-                                Provide comprehensive information on the
-                                <b>Joint Indo-German project</b> forming the basis of the WISER collaboration.
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>
-                                Clearly define the
-                                <b>roles and responsibilities</b> of both paired applicants within the project.
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>
-                                Describe the
-                                <b>objectives</b>,
-                                <b>overall work plan</b>,
-                                <b>milestones</b>, and
-                                <b>expected outcomes</b>.
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>
-                                Specify the
-                                <b>scientific</b>,
-                                <b>technological</b>, or
-                                <b>strategic value addition</b> of the collaboration at the host country, including how mobility
-                                and joint work strengthen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innovation capacity.
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>
-                                Present milestones as a
-                                <b>year-wise travel and activity plan</b> for the project duration, indicating timelines for
-                                research visits, joint experiments, and milestone-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;linked deliverables.
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-circle text-success me-3"></i>
-                                Outline
-                                <b>future plans</b> and potential follow-up work beyond the project period, where relevant.
-                            </li>
-                        </ul>
+                        <div ng-show="!showFullInfoBox" class="font-if" style="text-align: justify; line-height: 1.6;">
+                            <ul class="font-if" style="text-align: justify; line-height: 1.6;">
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Both applicants shall jointly access and complete the 'Paired Project Details' section; this is the only common section of
+                                    the application shared by both applicants and must be filled collaboratively.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Provide comprehensive information on the
+                                    <b>Joint Indo-German project </b>forming the basis of the WISER collaboration.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Clearly define the
+                                    <b>roles and responsibilities</b> of both paired applicants within the project.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Describe the
+                                    <b>objectives</b>, overall work plan,
+                                    <b>milestones</b>, and
+                                    <b>expected outcomes</b>.
+                                </li>
+                                <br/>
+                            </ul>
+                            <a href="javascript:void(0);" ng-click="showFullInfoBox = true" class="text-primary" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                <i class="fa-solid fa-chevron-down me-1"></i>Show more
+                            </a>
+                        </div>
+                        <div ng-show="showFullInfoBox">
+                            <ul class="font-if" style="text-align: justify; line-height: 1.6;">
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Both applicants shall jointly access and complete the 'Paired Project Details' section; this is the only common section of
+                                    the application shared by both applicants and must be filled collaboratively.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Provide comprehensive information on the
+                                    <b>Joint Indo-German project </b>forming the basis of the WISER collaboration.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Clearly define the
+                                    <b>roles and responsibilities</b> of both paired applicants within the project.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Describe the
+                                    <b>objectives</b>, overall work plan,
+                                    <b>milestones</b>, and
+                                    <b>expected outcomes</b>.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Specify the
+                                    <b>scientific, technological</b>, or
+                                    <b>strategic value addition </b>of the collaboration at the host country, including how
+                                    mobility and joint work strengthen innovation capacity.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Provide a
+                                    <b> year-wise travel and activity plan </b>for the project duration, indicating timelines
+                                    for research visits, joint experiments, and milestone linked deliverables.
+                                </li>
+                                <br/>
+                                <li>
+                                    <i class="fa-solid fa-circle text-success me-3"></i>
+                                    Outline future plans and potential follow-up work beyond the project period, where relevant.
+                                </li>
+                                <br/>
+                            </ul>
+                            <a href="javascript:void(0);" ng-click="showFullInfoBox = false" class="text-primary mt-2" style="text-decoration: underline; cursor: pointer; display: inline-block;">
+                                <i class="fa-solid fa-chevron-up me-1"></i>Show less
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -449,29 +497,29 @@
 
                             <div class="col-md-6">
                                 <label class="font-if color-theme">
-                                    <b>Title of project</b> (Max. characters 300)
+                                    <b>Title of project</b> (Max. characters 250)
                                     <span class="required-asterisk text-danger">*</span>
                                 </label>
-                                <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
-                                    id="titleOfProposal" ng-change="checkCharLimit(objContact, 'Title_Of__c', 300)" ng-focus="removeClass('titleOfProposal')"
+                                <input class="form-control" type="text" ng-model="objContact.Title_Of__c" ng-disabled="proposalStage " id="titleOfProposal"
+                                    ng-change="checkCharLimit(objContact, 'Title_Of__c', 250)" ng-focus="removeClass('titleOfProposal')"
                                 />
 
                                 <small class=" text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Title_Of__c ">
-                                    Maximum 300 characters allowed
+                                    Maximum 250 characters allowed
                                 </small>
                             </div>
 
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Broad area of research</b> (Max. characters 300)
+                                    <b>Broad area of research</b> (Max. characters 250)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Broad_area_of_research__c
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted " id="areaOfResearch " ng-change="checkCharLimit(objContact,
-                                    'Broad_area_of_research__c', 300)" ng-focus="removeClass('areaOfResearch')" />
+                                    " ng-disabled="proposalStage  " id="areaOfResearch " ng-change="checkCharLimit(objContact,
+                                    'Broad_area_of_research__c', 250)" ng-focus="removeClass('areaOfResearch')" />
 
                                 <small class=" text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Broad_area_of_research__c ">
-                                    Maximum 300 characters allowed
+                                    Maximum 250 characters allowed
                                 </small>
                             </div>
 
@@ -488,7 +536,7 @@
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Layman_title_of_project__c
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted " id="laymanTitle " ng-change="checkCharLimit(objContact,
+                                    " ng-disabled="proposalStage  " id="laymanTitle " ng-change="checkCharLimit(objContact,
                                     'Layman_title_of_project__c', 600)" ng-focus="removeClass('laymanTitle')" />
 
                                 <small class="text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Layman_title_of_project__c ">
@@ -502,7 +550,7 @@
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control " type="text " ng-model="objContact.Layman_abstract_of_proposed_work__c
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted " id="laymanabstract " ng-change="checkCharLimit(objContact,
+                                    " ng-disabled="proposalStage  " id="laymanabstract " ng-change="checkCharLimit(objContact,
                                     'Layman_abstract_of_proposed_work__c', 600)" ng-focus="removeClass('laymanabstract')"
                                 />
 
@@ -518,15 +566,28 @@
                         <div class="row ">
                             <div class="col-md-6 ">
                                 <label class="font-if color-theme ">
-                                    <b>Non Technical Title Of Project</b> (Max. characters 300)
+                                    <b>Non Technical Title Of Project</b> (Max. characters 250)
                                     <span class="required-asterisk text-danger ">*</span>
                                 </label>
                                 <input class="form-control" type="text " ng-model="objContact.Non_Technical_Title_Of_Project__c
-                            " ng-disabled="proposalStage || isCurrentUserSubmitted " id="nonTechnicalTitle " ng-change="checkCharLimit(objContact,
-                            'Non_Technical_Title_Of_Project__c', 300)" ng-focus="removeClass('nonTechnicalTitle')" />
+                            " ng-disabled="proposalStage  " id="nonTechnicalTitle " ng-change="checkCharLimit(objContact,
+                            'Non_Technical_Title_Of_Project__c', 250)" ng-focus="removeClass('nonTechnicalTitle')" />
 
                                 <small class="text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Non_Technical_Title_Of_Project__c ">
-                                    Maximum 300 characters allowed
+                                    Maximum 250 characters allowed
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 ">
+                                <label class="font-if color-theme ">
+                                    <b>Acronym</b> (Max. characters 50)
+                                    <span class="required-asterisk text-danger ">*</span>
+                                </label>
+                                <input class="form-control" type="text " ng-model="objContact.Acronym__c" ng-disabled="proposalStage  " id="acronym " ng-change="checkCharLimit(objContact,'Acronym__c', 50)"
+                                    ng-focus="removeClass('acronym')" />
+
+                                <small class="text-danger " ng-if="objContact._charLimitMap && objContact._charLimitMap.Acronym__c ">
+                                    Maximum 50 characters allowed
                                 </small>
                             </div>
                         </div>
@@ -546,7 +607,7 @@
                                 <form name="formPrjDet ">
                                     <input name="duration " type="number " class="form-control " placeholder="Min 24 months
                                     and Max 36 months " ng-model="objContact.Duration_In_Months_Max_36__c "
-                                        ng-disabled="proposalStage || isCurrentUserSubmitted " min="24 " max="36 " id="txtDuration "
+                                        ng-disabled="proposalStage  " min="24 " max="36 " id="txtDuration "
                                         ng-focus="removeClass2( 'txtDuration') " />
 
                                     <span class="text-danger " ng-show="formPrjDet.duration.$error.min || formPrjDet.duration.$error.max ">
@@ -562,7 +623,7 @@
                                 <span class="required-asterisk " style="color:red; ">*</span>
 
                                 <form name="formPrjDet ">
-                                    <select name="duration" class="form-control" ng-model="objContact.Duration_In_Months_Max_36__c" ng-disabled="proposalStage || isCurrentUserSubmitted"
+                                    <select name="duration" class="form-control" ng-model="objContact.Duration_In_Months_Max_36__c" ng-disabled="proposalStage "
                                         required="true" id="txtDuration" ng-focus="removeClass('txtDuration')">
                                         <option value="">-- Select Duration --</option>
                                         <option ng-value="24">24 months</option>
@@ -601,8 +662,7 @@
 
                                     <div class="col-md-10 ">
                                         <input type="text" ng-model="item.keyword" class="form-control" maxlength="255
-                                    " ng-disabled="proposalStage || isCurrentUserSubmitted" id="keywords" ng-focus="removeClass('keywords')"
-                                        />
+                                    " ng-disabled="proposalStage " id="keywords" ng-focus="removeClass('keywords')" />
                                     </div>
 
                                     <div class="col-md-2 d-flex align-items-center">
@@ -648,7 +708,7 @@
                     </div>
                     </div> -->
 
-                    <div class="col-md-12 mt-5 ">
+                    <!-- <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
                                 <label class="font-if color-theme ">Acronym (max 50 characters without space)
@@ -666,12 +726,12 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">Abstract (max 700 characters without space)
+                                <label class="font-if color-theme ">Abstract (Max. characters 700 without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -679,7 +739,7 @@
                                     <b>To use RTF more efficiently, make sure you write your content in word document first
                                         and then copy paste here</b>
                                 </small>
-                                <ng-ckeditor name="ckEditor2 " maxlength="600 " ng-change="readCharacter(objContact.Host_Abstract_Of_Project__c,0)
+                                <ng-ckeditor name="ckEditor2 " maxlength="700 " ng-change="readCharacter(objContact.Host_Abstract_Of_Project__c,0)
                                     " ng-model="objContact.Host_Abstract_Of_Project__c " ng-config="config"></ng-ckeditor>
                                 <span>Total characters : {{objRtf[0].charCount}}</span>
                                 <span class="text-danger " ng-if="objRtf[0].errorStatus ">maximum character limit is 700
@@ -691,7 +751,7 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">Non Technical Abstract Of Proposed Work (max 700 characters without space)
+                                <label class="font-if color-theme ">Non Technical Abstract Of Proposed Work (Max. 700 characters without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -716,10 +776,8 @@
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <small class="label-rtf">
                                     <br/>Please structure the project description under the following headings:
-                                    <br/> Background: Specific Objectives:
-                                    <br/> Methodology:
-                                    <br/> Expected Outcome:
-                                    <br/> Milestones with timeline: </small>
+                                    <br/> Background: Specific Objectives | Methodology | Expected Outcome | Milestones with timeline
+                                </small>
                                 <br />
                                 <small class="label-rtf ">
                                     <b>To use RTF more efficiently, make sure you write your content in word document first
@@ -737,7 +795,8 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">Work elements to be completed by Indian Awardee (max 2000 characters without space)
+                                <label class="font-if color-theme ">Work elements to be completed by Indian Awardee with year-wise travel plan and scheduled
+                                    activities. (Max. characters 2000 without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -757,7 +816,8 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">Work elements to be completed by German Awardee (max 2000 characters without space)
+                                <label class="font-if color-theme ">Work elements to be completed by German Awardee with year-wise travel plan and scheduled
+                                    activities. (Max. characters 2000 without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -777,8 +837,8 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">Linkages and convergence of these work elements for the expected outcome (max 2000 characters
-                                    without space)
+                                <label class="font-if color-theme ">Linkages and convergence of Paired Awardee's work elements for the expected outcome. Sustainability
+                                    of collaboration and future plans? (Max. characters 2000 without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -798,7 +858,7 @@
                     <div class="col-md-12 mt-5 ">
                         <div class="row ">
                             <div class="col-md-12 ">
-                                <label class="font-if color-theme ">References (max 3000 characters without space)
+                                <label class="font-if color-theme ">References (Max. characters 3000 without space)
                                 </label>
                                 <span class="required-asterisk " style="color:red; ">*</span>
                                 <br />
@@ -856,73 +916,81 @@
                             </li>
                         </ul>
                     </div>
-                </div>
 
-
-                <div class="row box-shadow-2 mt-5 p-3 mb-5">
-
-                    <div class="row mx-5 mt-3">
-                        <div class="col-md-12">
-                            <h4 class="color-theme">
-                                <b>Project Images</b>
-                            </h4>
-                        </div>
-                    </div>
-
-                    <!-- Image 1 Upload -->
-                    <div class="row mx-5 mt-3">
-                        <div class="col-md-6">
-                            <div ng-hide="proposalStage || isCurrentUserSubmitted">
-                                <label class="font-if pt-2">Image 1 (jpg/jpeg/png, 5 kb-30 kb)</label>
-                                <div class="input-group input-group-lg">
-                                    <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage || isCurrentUserSubmitted" id="Image 1" class="form-control"
-                                    />
-                                    <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
-                                        <button class="btn btn-success" ng-click="uploadImageFile('Image 1', image1Doc ? image1Doc.userDocument.Id : '', '', '30720', '5120')"
-                                            type="button">Upload</button>
-                                    </span>
-                                </div>
-                            </div>
-                            <div ng-show="image1Doc && image1Doc.userDocument.Status__c=='Uploaded'">
-                                <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image1Doc)">View Image 1</a>
+                    <div class="col-md-12 box-shadow-2 mt-5 p-3 mb-5">
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <h4 class="color-theme">
+                                    <b>Project Images</b>
+                                </h4>
                             </div>
                         </div>
 
-                        <!-- Image 2 Upload -->
-                        <div class="col-md-6">
-                            <div ng-hide="proposalStage || isCurrentUserSubmitted">
-                                <label class="font-if pt-2">Image 2 (jpg/jpeg/png, 5 kb-30 kb)</label>
-                                <div class="input-group input-group-lg">
-                                    <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage || isCurrentUserSubmitted" id="Image 2" class="form-control"
-                                    />
-                                    <span class="input-group-btn" ng-hide="proposalStage || isCurrentUserSubmitted">
-                                        <button class="btn btn-success" ng-click="uploadImageFile('Image 2', image2Doc ? image2Doc.userDocument.Id : '', '', '30720', '5120')"
-                                            type="button">Upload</button>
-                                    </span>
+                        <!-- Image 1 Upload -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div ng-hide="proposalStage ">
+                                    <label class="font-if pt-2">Image 1 (jpg/jpeg/png, Max. 1 MB, Recommended: 1200x800 pixels)</label>
+                                    <div class="input-group input-group-lg">
+                                        <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage " id="Image 1" class="form-control" />
+                                        <span class="input-group-btn" ng-hide="proposalStage">
+                                            <button class="btn btn-success" ng-click="uploadImageFile('Image 1', image1Doc ? image1Doc.userDocument.Id : '', '', '1048576', '10240')"
+                                                type="button">Upload</button>
+                                        </span>
+                                    </div>
+                                    <div ng-show="image1Doc && image1Doc.userDocument.Status__c=='Uploaded'" class="mt-2">
+                                        <span class="text-success">
+                                            <i class="fa-solid fa-check-circle me-2"></i>
+                                            <strong>Uploaded</strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div ng-show="image1Doc && image1Doc.userDocument.Status__c=='Uploaded'">
+                                    <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image1Doc)">View Image 1</a>
                                 </div>
                             </div>
-                            <div ng-show="image2Doc && image2Doc.userDocument.Status__c=='Uploaded'">
-                                <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image2Doc)">View Image 2</a>
+
+                            <!-- Image 2 Upload -->
+                            <div class="col-md-6">
+                                <div ng-hide="proposalStage ">
+                                    <label class="font-if pt-2">Image 2 (jpg/jpeg/png, Max. 1 MB, Recommended: 1200x800 pixels)</label>
+                                    <div class="input-group input-group-lg">
+                                        <input type="file" accept=".jpg,.jpeg,.png" ng-disabled="proposalStage " id="Image 2" class="form-control" />
+                                        <span class="input-group-btn" ng-hide="proposalStage ">
+                                            <button class="btn btn-success" ng-click="uploadImageFile('Image 2', image2Doc ? image2Doc.userDocument.Id : '', '', '1048576', '10240')"
+                                                type="button">Upload</button>
+                                        </span>
+                                    </div>
+                                    <div ng-show="image2Doc && image2Doc.userDocument.Status__c=='Uploaded'" class="mt-2">
+                                        <span class="text-success">
+                                            <i class="fa-solid fa-check-circle me-2"></i>
+                                            <strong>Uploaded</strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div ng-show="image2Doc && image2Doc.userDocument.Status__c=='Uploaded'">
+                                    <a class="blue-btn float-start mt-3 py-3" ng-click="filePreviewHandler(image2Doc)">View Image 2</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- File Preview Modal -->
-                    <div class="modal" id="filePreview">
-                        <div class="modal-dialog" style="min-width:120rem">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">
-                                        <div class="d-flex" style="background:unset;">
-                                            <h3 style="text-align: center">
-                                                <b>{{selectedFile.userDocument.Name}}</b>
-                                            </h3>
-                                        </div>
-                                    </h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <iframe style="width:100%;height:75vh;border: 0px;border-radius: 10px;" id="file_frame" title="File"></iframe>
+                        <!-- File Preview Modal -->
+                        <div class="modal" id="filePreview">
+                            <div class="modal-dialog" style="min-width:120rem">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">
+                                            <div class="d-flex" style="background:unset;">
+                                                <h3 style="text-align: center">
+                                                    <b>{{selectedFile.userDocument.Name}}</b>
+                                                </h3>
+                                            </div>
+                                        </h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <iframe style="width:100%;height:75vh;border: 0px;border-radius: 10px;" id="file_frame" title="File"></iframe>
+                                    </div>
                                 </div>
                             </div>
                         </div>
