@@ -1684,7 +1684,7 @@ return appProposal;
 
             } else {
                 resp.isProposalCompleted = false;
-                resp.message = 'PARTIAL_SUBMIT: Waiting for other applicants to submit';
+                resp.message = 'PARTIAL_SUBMIT: Waiting for Paired Applicant to submit.';
             }
 
             return resp;
@@ -4551,8 +4551,8 @@ return e.getMessage() + e.getLineNumber();
                 yearlyExpenseIds.add(ye.Id);
             }
             
-            // Get all Expense_Head__c records with Year information
-            List<Expense_Head__c> expenseHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c 
+            // Get all Expense_Head__c records with Year information and Description
+            List<Expense_Head__c> expenseHeads = [SELECT Id, Name, Yearly_Expense__c, Yearly_Expense__r.Year__c, Description__c
                                                    FROM Expense_Head__c 
                                                    WHERE Yearly_Expense__c IN :yearlyExpenseIds
                                                    ORDER BY Name ASC, Yearly_Expense__r.Year__c ASC];

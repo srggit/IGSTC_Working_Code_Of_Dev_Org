@@ -93,9 +93,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
         totalAmount: 0,
         researchStaffType: 'Research staff 1', // Track the backend type name
         expenseHeadIds: [], // Store Expense_Head__c IDs for deletion
-        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
-        descriptionCost: '', // Description for Cost (Index__c = 2)
-        descriptionHours: '' // Description for Hours (Index__c = 3)
+        description: '' // Single description for all Research Staff items (stored in Expense_Head__c.Description__c)
     }];
 
     // Aggregate totals for all Research Staff records
@@ -2185,9 +2183,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             totalAmount: 0,
             researchStaffType: 'Research staff ' + nextIndex, // Track the backend type name
             expenseHeadIds: [], // Store Expense_Head__c IDs for deletion (empty for new records)
-            descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
-            descriptionCost: '', // Description for Cost (Index__c = 2)
-            descriptionHours: '' // Description for Hours (Index__c = 3)
+            description: '' // Single description for all Research Staff items (stored in Expense_Head__c.Description__c)
         });
         $scope.updateResearchStaffRows();
         $scope.recalculateAll();
@@ -2284,7 +2280,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
 
         ApplicantPortal_Contoller.getExpenseHeadLineItems($rootScope.apaId, function (result, event) {
             console.log('getExpenseHeadLineItems result:', result);
+            console.log('getExpenseHeadLineItems event:', event);
             if (event.status && result != null && result.lineItems != null) {
+                console.log('Processing expense heads:', result.expenseHeads);
                 // Build maps of Expense_Head__c IDs by expense type and year from expenseHeads
                 // Map: "Research staff 1" -> {year1: "id1", year2: "id2", year3: "id3"}
                 let researchStaffHeadIdsMap = {};
@@ -2297,6 +2295,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     'Contingency': { year1: null, year2: null, year3: null },
                     'Overhead': { year1: null, year2: null, year3: null }
                 };
+
+                // Map to store descriptions by Research Staff name
+                let researchStaffDescriptionsMap = {};
 
                 if (result.expenseHeads && result.expenseHeads.length > 0) {
                     for (let j = 0; j < result.expenseHeads.length; j++) {
@@ -2314,6 +2315,24 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                 researchStaffHeadIdsMap[head.Name].year2 = head.Id;
                             } else if (year === '3') {
                                 researchStaffHeadIdsMap[head.Name].year3 = head.Id;
+                            }
+                            // Load description from Expense_Head__c (use first non-empty description found)
+                            // Since all 3 years have the same description, we only need to set it once per Research Staff name
+                            if (head.Description__c && head.Description__c !== null && head.Description__c !== undefined && head.Description__c !== '') {
+                                // Decode HTML entities in description
+                                let decodedDescription = String(head.Description__c)
+                                    .replace(/&amp;/g, '&')
+                                    .replace(/&#39;/g, '\'')
+                                    .replace(/&quot;/g, '"')
+                                    .replace(/&lt;/g, '<')
+                                    .replace(/&gt;/g, '>')
+                                    .replace(/&nbsp;/g, ' ')
+                                    .trim();
+                                // Set description for this Research Staff name (only if not already set)
+                                if (decodedDescription !== '' && (!researchStaffDescriptionsMap[head.Name] || researchStaffDescriptionsMap[head.Name] === '')) {
+                                    researchStaffDescriptionsMap[head.Name] = decodedDescription;
+                                    console.log('Loaded description for', head.Name, ':', decodedDescription);
+                                }
                             }
                         } else if (head.Name && expenseHeadIdsMap[head.Name]) {
                             // Map other expense types by year
@@ -2423,9 +2442,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                                 totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                                 researchStaffType: 'Research staff ' + newIndex, // Track the backend type name
                                 expenseHeadIds: [], // Store Expense_Head__c IDs for deletion
-                                descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
-                                descriptionCost: '', // Description for Cost (Index__c = 2)
-                                descriptionHours: '' // Description for Hours (Index__c = 3)
+                                description: '' // Single description for all Research Staff items (stored in Expense_Head__c.Description__c)
                             });
                         }
 
@@ -2449,34 +2466,40 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                             staff.expenseHeadIds = [];
                         }
 
-                        // Load Expense_Description_2__c from line item based on Index__c
-                        // Index__c = 1 → No. of Positions → descriptionPositions
-                        // Index__c = 2 → Cost → descriptionCost
-                        // Index__c = 3 → Hours → descriptionHours
-                        if (item.Expense_Description_2__c != null && item.Expense_Description_2__c !== undefined && item.Expense_Description_2__c !== '') {
-                            var descriptionValue = typeof item.Expense_Description_2__c === 'string' ? item.Expense_Description_2__c.trim() : String(item.Expense_Description_2__c);
-                            if (descriptionValue !== '') {
-                                if (item.Index__c === 1 || (item.Index__c != null && String(item.Index__c) === '1')) {
-                                    // No. of Positions
-                                    if (!staff.descriptionPositions || staff.descriptionPositions === '') {
-                                        staff.descriptionPositions = descriptionValue;
-                                    }
-                                } else if (item.Index__c === 2 || (item.Index__c != null && String(item.Index__c) === '2')) {
-                                    // Cost
-                                    if (!staff.descriptionCost || staff.descriptionCost === '') {
-                                        staff.descriptionCost = descriptionValue;
-                                    }
-                                } else if (item.Index__c === 3 || (item.Index__c != null && String(item.Index__c) === '3')) {
-                                    // Hours
-                                    if (!staff.descriptionHours || staff.descriptionHours === '') {
-                                        staff.descriptionHours = descriptionValue;
-                                    }
+                        // Load Description__c from Expense_Head__c (single description for all items)
+                        // First try to get from the descriptions map (loaded from Expense_Head__c)
+                        // Set description only once per staff record (when processing first line item for that staff)
+                        // Use expenseType (which matches head.Name) to get description from map
+                        if (!staff.description || staff.description === '') {
+                            // Try to get description using expenseType (which should match the head.Name)
+                            if (researchStaffDescriptionsMap[expenseType] && researchStaffDescriptionsMap[expenseType] !== null && researchStaffDescriptionsMap[expenseType] !== undefined && researchStaffDescriptionsMap[expenseType] !== '') {
+                                var descriptionValue = typeof researchStaffDescriptionsMap[expenseType] === 'string' ? researchStaffDescriptionsMap[expenseType].trim() : String(researchStaffDescriptionsMap[expenseType]);
+                                if (descriptionValue !== '') {
+                                    staff.description = descriptionValue;
+                                    console.log('Set description from map during line item processing for', expenseType, ':', descriptionValue);
+                                }
+                            }
+                            // Also try using staff.researchStaffType as fallback
+                            if ((!staff.description || staff.description === '') && staff.researchStaffType && researchStaffDescriptionsMap[staff.researchStaffType]) {
+                                var descriptionValue = typeof researchStaffDescriptionsMap[staff.researchStaffType] === 'string' ? researchStaffDescriptionsMap[staff.researchStaffType].trim() : String(researchStaffDescriptionsMap[staff.researchStaffType]);
+                                if (descriptionValue !== '') {
+                                    staff.description = descriptionValue;
+                                    console.log('Set description from map using researchStaffType for', staff.researchStaffType, ':', descriptionValue);
+                                }
+                            }
+                            // Backward compatibility: Also check Expense_Description_2__c from line items (for old data)
+                            // If Description__c is not set, try to get it from any of the line items
+                            if ((!staff.description || staff.description === '') && item.Expense_Description_2__c != null && item.Expense_Description_2__c !== undefined && item.Expense_Description_2__c !== '') {
+                                var descriptionValue = typeof item.Expense_Description_2__c === 'string' ? item.Expense_Description_2__c.trim() : String(item.Expense_Description_2__c);
+                                if (descriptionValue !== '') {
+                                    staff.description = descriptionValue;
+                                    console.log('Set description from Expense_Description_2__c for', expenseType, ':', descriptionValue);
                                 }
                             }
                         }
 
                         // Map line items based on Index__c and Description
-                        // Index 1 = No. of Positions, Index 2 = Cost, Index 3 = Hours
+                        // Index 1 = No. of Positions, Index 2 = Renumeration/Fellowship, Index 3 = Hours
                         if (item.Index__c === 1 || (item.Description__c && (item.Description__c.includes('No. of Positions') || item.Description__c.includes('Positions')))) {
                             // No. of Positions
                             staff.positionsYear1 = item.Year1_Expense__c || item.Number__c || 0;
@@ -2486,8 +2509,8 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                             if ($rootScope.proposalDurationMonths === 36) {
                                 staff.positionsYear3 = item.Year3_Expense__c || item.Number__c || 0;
                             }
-                        } else if (item.Index__c === 2 || (item.Description__c && item.Description__c.includes('Cost') && !item.Description__c.includes('hour'))) {
-                            // Cost
+                        } else if (item.Index__c === 2 || (item.Description__c && (item.Description__c.includes('Cost') || item.Description__c.includes('Renumeration/Fellowship') || item.Description__c.includes('Renumeration') || item.Description__c.includes('Fellowship')) && !item.Description__c.includes('hour'))) {
+                            // Cost / Renumeration/Fellowship
                             staff.costYear1 = item.Year1_Expense__c || item.Salary_Month__c || 0;
                             if ($rootScope.proposalDurationMonths >= 24) {
                                 staff.costYear2 = item.Year2_Expense__c || item.Salary_Month__c || 0;
@@ -2551,6 +2574,34 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     }
                 }
 
+                // After processing all line items, ensure descriptions are set from Expense_Head__c for all Research Staff
+                console.log('researchStaffDescriptionsMap:', researchStaffDescriptionsMap);
+                if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+                    for (let k = 0; k < $scope.budgetResearchStaffList.length; k++) {
+                        let staff = $scope.budgetResearchStaffList[k];
+                        console.log('Processing staff:', staff.researchStaffType, 'Current description:', staff.description);
+                        // If description is not set, try to get it from the descriptions map
+                        if ((!staff.description || staff.description === '') && staff.researchStaffType) {
+                            if (researchStaffDescriptionsMap[staff.researchStaffType] &&
+                                researchStaffDescriptionsMap[staff.researchStaffType] !== null &&
+                                researchStaffDescriptionsMap[staff.researchStaffType] !== undefined &&
+                                researchStaffDescriptionsMap[staff.researchStaffType] !== '') {
+                                var descriptionValue = typeof researchStaffDescriptionsMap[staff.researchStaffType] === 'string'
+                                    ? researchStaffDescriptionsMap[staff.researchStaffType].trim()
+                                    : String(researchStaffDescriptionsMap[staff.researchStaffType]);
+                                if (descriptionValue !== '') {
+                                    staff.description = descriptionValue;
+                                    console.log('Set description for', staff.researchStaffType, ':', descriptionValue);
+                                }
+                            } else {
+                                console.log('No description found in map for', staff.researchStaffType);
+                            }
+                        } else {
+                            console.log('Description already set for', staff.researchStaffType, ':', staff.description);
+                        }
+                    }
+                }
+
                 // Check if any Research Staff records were loaded from backend
                 // Only show default record if NO Research Staff records exist in backend
                 let hasResearchStaffRecords = false;
@@ -2577,9 +2628,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                         researchStaffType: 'Research staff 1',
                         expenseHeadIds: [],
-                        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
-                        descriptionCost: '', // Description for Cost (Index__c = 2)
-                        descriptionHours: '' // Description for Hours (Index__c = 3)
+                        description: '' // Single description for all Research Staff items (stored in Expense_Head__c.Description__c)
                     }];
                 } else {
                     // Records exist in backend - remove any records without expenseHeadIds (empty/default records)
@@ -2611,9 +2660,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         totalYear1: 0, totalYear2: 0, totalYear3: 0, totalAmount: 0,
                         researchStaffType: 'Research staff 1',
                         expenseHeadIds: [],
-                        descriptionPositions: '', // Description for No. of Positions (Index__c = 1)
-                        descriptionCost: '', // Description for Cost (Index__c = 2)
-                        descriptionHours: '' // Description for Hours (Index__c = 3)
+                        description: '' // Single description for all Research Staff items (stored in Expense_Head__c.Description__c)
                     }];
                     $scope.updateResearchStaffRows();
                 }
@@ -2668,23 +2715,9 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 let staff = $scope.budgetResearchStaffList[i];
                 let staffNumber = i + 1;
 
-                if (staff.descriptionPositions && staff.descriptionPositions.length > 250) {
+                if (staff.description && staff.description.length > 250) {
                     swal("Description Length Error",
-                        "Research Staff " + staffNumber + " - 'No. of Positions' description cannot exceed 250 characters. Current length: " + staff.descriptionPositions.length + " characters.",
-                        "warning");
-                    return;
-                }
-
-                if (staff.descriptionCost && staff.descriptionCost.length > 250) {
-                    swal("Description Length Error",
-                        "Research Staff " + staffNumber + " - 'Cost' description cannot exceed 250 characters. Current length: " + staff.descriptionCost.length + " characters.",
-                        "warning");
-                    return;
-                }
-
-                if (staff.descriptionHours && staff.descriptionHours.length > 250) {
-                    swal("Description Length Error",
-                        "Research Staff " + staffNumber + " - 'Hours' description cannot exceed 250 characters. Current length: " + staff.descriptionHours.length + " characters.",
+                        "Research Staff " + staffNumber + " - Description cannot exceed 250 characters. Current length: " + staff.description.length + " characters.",
                         "warning");
                     return;
                 }
@@ -2883,8 +2916,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     Year2_Expense__c: 0,
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.positionsYear1 || 0,
-                    Expense_Type__c: researchStaffType,
-                    Expense_Description_2__c: staff.descriptionPositions || ''
+                    Expense_Type__c: researchStaffType
                 };
                 // Only include Expense_Head__c if it's not null/undefined/empty
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
@@ -2902,8 +2934,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: staff.positionsYear2 || 0,
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.positionsYear2 || 0,
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionPositions || ''
+                        Expense_Type__c: researchStaffType
                     };
                     // Only include Expense_Head__c if it's not null/undefined/empty
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
@@ -2922,8 +2953,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year2_Expense__c: 0,
                         Year3_Expense__c: staff.positionsYear3 || 0,
                         Total_Expense__c: staff.positionsYear3 || 0,
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionPositions || ''
+                        Expense_Type__c: researchStaffType
                     };
                     // Only include Expense_Head__c if it's not null/undefined/empty
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
@@ -2932,18 +2962,17 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     allExpenseLineItems.push(year3LineItem);
                 }
 
-                // Child Line Item 2: Cost
+                // Child Line Item 2: Cost / Renumeration/Fellowship
                 // Year 1
                 let costYear1Item = {
                     Index__c: 2,
-                    Description__c: 'Cost',
+                    Description__c: 'Renumeration/Fellowship',
                     Salary_Month__c: staff.costYear1 || 0,
                     Year1_Expense__c: staff.costYear1 || 0,
                     Year2_Expense__c: 0,
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.costYear1 || 0,
-                    Expense_Type__c: researchStaffType,
-                    Expense_Description_2__c: staff.descriptionCost || ''
+                    Expense_Type__c: researchStaffType
                 };
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
                     costYear1Item.Expense_Head__c = year1HeadId;
@@ -2954,14 +2983,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 if ($rootScope.proposalDurationMonths >= 24) {
                     let costYear2Item = {
                         Index__c: 2,
-                        Description__c: 'Cost',
+                        Description__c: 'Renumeration/Fellowship',
                         Salary_Month__c: staff.costYear2 || 0,
                         Year1_Expense__c: 0,
                         Year2_Expense__c: staff.costYear2 || 0,
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.costYear2 || 0,
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionCost || ''
+                        Expense_Type__c: researchStaffType
                     };
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
                         costYear2Item.Expense_Head__c = year2HeadId;
@@ -2973,14 +3001,13 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                 if ($rootScope.proposalDurationMonths === 36) {
                     let costYear3Item = {
                         Index__c: 2,
-                        Description__c: 'Cost',
+                        Description__c: 'Renumeration/Fellowship',
                         Salary_Month__c: staff.costYear3 || 0,
                         Year1_Expense__c: 0,
                         Year2_Expense__c: 0,
                         Year3_Expense__c: staff.costYear3 || 0,
                         Total_Expense__c: staff.costYear3 || 0,
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionCost || ''
+                        Expense_Type__c: researchStaffType
                     };
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
                         costYear3Item.Expense_Head__c = year3HeadId;
@@ -2999,8 +3026,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     Year3_Expense__c: 0,
                     Total_Expense__c: staff.hoursYear1 || 0,
                     Time_Units__c: staff.hoursUnit || 'Hour',
-                    Expense_Type__c: researchStaffType,
-                    Expense_Description_2__c: staff.descriptionHours || ''
+                    Expense_Type__c: researchStaffType
                 };
                 if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
                     hoursYear1Item.Expense_Head__c = year1HeadId;
@@ -3018,8 +3044,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year3_Expense__c: 0,
                         Total_Expense__c: staff.hoursYear2 || 0,
                         Time_Units__c: staff.hoursUnit || 'Hour',
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionHours || ''
+                        Expense_Type__c: researchStaffType
                     };
                     if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
                         hoursYear2Item.Expense_Head__c = year2HeadId;
@@ -3038,8 +3063,7 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                         Year3_Expense__c: staff.hoursYear3 || 0,
                         Total_Expense__c: staff.hoursYear3 || 0,
                         Time_Units__c: staff.hoursUnit || 'Hour',
-                        Expense_Type__c: researchStaffType,
-                        Expense_Description_2__c: staff.descriptionHours || ''
+                        Expense_Type__c: researchStaffType
                     };
                     if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
                         hoursYear3Item.Expense_Head__c = year3HeadId;
@@ -3237,6 +3261,40 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
             allExpenseLineItems.push(overheadYear3Item);
         }
 
+        // Prepare Expense_Head__c updates for Research Staff descriptions
+        let expenseHeadUpdates = [];
+        if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+            for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
+                let staff = $scope.budgetResearchStaffList[i];
+                if (staff.description && staff.description !== null && staff.description !== undefined && staff.description !== '') {
+                    // Get Expense_Head__c IDs for this Research Staff
+                    let year1HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 0) ? staff.expenseHeadIds[0] : null;
+                    let year2HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 1) ? staff.expenseHeadIds[1] : null;
+                    let year3HeadId = (staff.expenseHeadIds && staff.expenseHeadIds.length > 2) ? staff.expenseHeadIds[2] : null;
+
+                    // Add updates for all years (will be updated after line items are saved)
+                    if (year1HeadId && year1HeadId !== 'null' && year1HeadId !== 'undefined') {
+                        expenseHeadUpdates.push({
+                            Id: year1HeadId,
+                            Description__c: staff.description
+                        });
+                    }
+                    if (year2HeadId && year2HeadId !== 'null' && year2HeadId !== 'undefined') {
+                        expenseHeadUpdates.push({
+                            Id: year2HeadId,
+                            Description__c: staff.description
+                        });
+                    }
+                    if (year3HeadId && year3HeadId !== 'null' && year3HeadId !== 'undefined') {
+                        expenseHeadUpdates.push({
+                            Id: year3HeadId,
+                            Description__c: staff.description
+                        });
+                    }
+                }
+            }
+        }
+
         // Prepare APA update object
         var updatedApa = {
             'Id': $rootScope.apaId
@@ -3270,33 +3328,80 @@ angular.module('cp_app').controller('financialWiser_Ctrl', function ($scope, $ro
                     }
 
                     // Try to parse JSON result containing Expense_Head__c IDs
+                    let saveResult = null;
                     try {
-                        let saveResult = JSON.parse(result);
-                        if (saveResult.status === 'success' && saveResult.researchStaffHeadIds) {
-                            // Update expenseHeadIds for each Research Staff record
-                            if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
-                                for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
-                                    let staff = $scope.budgetResearchStaffList[i];
-                                    let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
+                        saveResult = JSON.parse(result);
+                    } catch (e) {
+                        // If JSON parsing fails, assume it's a simple success/error string
+                        console.log('Could not parse save result as JSON: ' + e.message);
+                    }
 
-                                    // Get Expense_Head__c IDs for this Research Staff from backend response
-                                    if (saveResult.researchStaffHeadIds[researchStaffType]) {
-                                        // Store IDs in correct order: [Year1HeadId, Year2HeadId, Year3HeadId]
-                                        // Keep null values to maintain array indices
-                                        let headIds = saveResult.researchStaffHeadIds[researchStaffType];
-                                        staff.expenseHeadIds = [
-                                            headIds[0] || null,
-                                            headIds[1] || null,
-                                            headIds[2] || null
-                                        ];
+                    if (saveResult && saveResult.status === 'success' && saveResult.researchStaffHeadIds) {
+                        // Update expenseHeadIds for each Research Staff record and prepare Expense_Head__c updates
+                        let finalExpenseHeadUpdates = [];
+                        if ($scope.budgetResearchStaffList && $scope.budgetResearchStaffList.length > 0) {
+                            for (let i = 0; i < $scope.budgetResearchStaffList.length; i++) {
+                                let staff = $scope.budgetResearchStaffList[i];
+                                let researchStaffType = staff.researchStaffType || ('Research staff ' + (i + 1));
+
+                                // Get Expense_Head__c IDs for this Research Staff from backend response
+                                if (saveResult.researchStaffHeadIds[researchStaffType]) {
+                                    // Store IDs in correct order: [Year1HeadId, Year2HeadId, Year3HeadId]
+                                    // Keep null values to maintain array indices
+                                    let headIds = saveResult.researchStaffHeadIds[researchStaffType];
+                                    staff.expenseHeadIds = [
+                                        headIds[0] || null,
+                                        headIds[1] || null,
+                                        headIds[2] || null
+                                    ];
+
+                                    // Add Expense_Head__c updates with description for newly created heads
+                                    if (staff.description && staff.description !== null && staff.description !== undefined && staff.description !== '') {
+                                        if (headIds[0] && headIds[0] !== 'null' && headIds[0] !== 'undefined') {
+                                            finalExpenseHeadUpdates.push({
+                                                Id: headIds[0],
+                                                Description__c: staff.description
+                                            });
+                                        }
+                                        if (headIds[1] && headIds[1] !== 'null' && headIds[1] !== 'undefined') {
+                                            finalExpenseHeadUpdates.push({
+                                                Id: headIds[1],
+                                                Description__c: staff.description
+                                            });
+                                        }
+                                        if (headIds[2] && headIds[2] !== 'null' && headIds[2] !== 'undefined') {
+                                            finalExpenseHeadUpdates.push({
+                                                Id: headIds[2],
+                                                Description__c: staff.description
+                                            });
+                                        }
                                     }
                                 }
                             }
                         }
-                    } catch (e) {
-                        // If JSON parsing fails, assume it's a simple success/error string
-                        console.log('Could not parse save result as JSON: ' + e.message);
-                        // If result is just "success" string, that's fine - we'll still redirect
+
+                        // Update Expense_Head__c records with descriptions
+                        // We'll update them after getting the IDs from the save result
+                        let allExpenseHeadUpdates = finalExpenseHeadUpdates.length > 0 ? finalExpenseHeadUpdates : expenseHeadUpdates;
+                        if (allExpenseHeadUpdates.length > 0) {
+                            // Update Expense_Head__c records
+                            ApplicantPortal_Contoller.updateExpenseHeadDescriptions(allExpenseHeadUpdates, function (updateResult, updateEvent) {
+                                if (updateEvent && updateEvent.status) {
+                                    console.log('Expense Head descriptions updated successfully');
+                                } else {
+                                    console.error('Failed to update Expense Head descriptions:', updateResult);
+                                }
+                            });
+                        }
+                    } else if (expenseHeadUpdates.length > 0) {
+                        // If we have existing Expense_Head__c IDs, update them directly
+                        ApplicantPortal_Contoller.updateExpenseHeadDescriptions(expenseHeadUpdates, function (updateResult, updateEvent) {
+                            if (updateEvent && updateEvent.status) {
+                                console.log('Expense Head descriptions updated successfully');
+                            } else {
+                                console.error('Failed to update Expense Head descriptions:', updateResult);
+                            }
+                        });
                     }
 
                     // Show success message

@@ -184,7 +184,7 @@ angular.module('cp_app').controller('HostProjectDetailInWiserCtrl', function ($s
           debugger;
           $scope.redirectPageURL('ProjectDetailsInWiserPage');
           // window.location.replace(window.location.origin+'/ApplicantDashboard/ApplicantPortal?id='+$rootScope.userId+'#/FinancialOverview_wiser');
-          window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=' + $rootScope.candidateId;
+          // window.location.href = 'https://indo-germansciencetechnologycentre--newdevutil.sandbox.my.salesforce-sites.com/ApplicantDashboard/ApplicantPortal?id=' + $rootScope.candidateId;
      }
 
      $scope.readCharacter = function (event, index) {

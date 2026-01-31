@@ -3421,5 +3421,17 @@ public static void updateProposalStage(Id proposalId) {
         @AuraEnabled public String mailingCountry;
     }
 
+    @RemoteAction
+    public static String updateExpenseHeadDescriptions(List<Expense_Head__c> expenseHeads) {
+        try {
+            if (expenseHeads != null && !expenseHeads.isEmpty()) {
+                update expenseHeads;
+                return 'SUCCESS';
+            }
+            return 'ERROR: No expense heads provided';
+        } catch (Exception e) {
+            return 'ERROR: ' + e.getMessage();
+        }
+    }
 
 }

@@ -2301,7 +2301,7 @@ public String upsertConsortiaAccountDet(Account instanceAcc, String projectId){
             
             // Get expense heads with line items
             List<Expense_Head__c> expenseHeads = [
-                SELECT Id, Name, Proposals__c,
+                SELECT Id, Name, Proposals__c, Description__c, Yearly_Expense__c, Yearly_Expense__r.Year__c,
                     (SELECT Id, Name, Description__c, Expense_Head__c, Expense_Type__c,
                             Year1_Expense__c, Year2_Expense__c, Year3_Expense__c,
                             Total_Expense__c, Position__c, Person_Month__c, Salary_Month__c,

@@ -840,7 +840,7 @@
                                 <label class="font-if color-theme ">Linkages and convergence of Paired Awardee's work elements for the expected outcome. Sustainability
                                     of collaboration and future plans? (Max. characters 2000 without space)
                                 </label>
-                                <span class="required-asterisk " style="color:red; ">*</span>
+                                <span class="required-asterisk" style="color:red; ">*</span>
                                 <br />
                                 <small class="label-rtf ">
                                     <b>To use RTF more efficiently, make sure you write your content in word document first
